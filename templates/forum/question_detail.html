@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ question.title }}</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <!-- Question Title -->
+        <h1 class="text-center mb-4">{{ question.title }}</h1>
+        <p>{{ question.content }}</p>
+        <p><strong>Asked by:</strong> {{ question.author }} on {{ question.created_at|date:"F j, Y, g:i a" }}</p>
+
+        <!-- Answer Submission Form -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4>Submit Your Answer</h4>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="content">Your Answer</label>
+                        <textarea class="form-control" id="content" name="content" rows="5" placeholder="Write your answer here"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit Answer</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Display the List of Answers -->
+        <div class="card">
+            <div class="card-header">
+                <h4>Answers ({{ question.answers.count }})</h4>
+            </div>
+            <ul class="list-group list-group-flush">
+                {% for answer in question.answers.all %}
+                    <li class="list-group-item">
+                        <p>{{ answer.content }}</p>
+                        <p><strong>Answered by:</strong> {{ answer.author }} on {{ answer.created_at|date:"F j, Y, g:i a" }}</p>
+                        <button onclick class="btn btn-primary">Votes:{{ answer.vote }}</button>
+                    </li>
+                {% empty %}
+                    <li class="list-group-item">No answers yet. Be the first to answer!</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies (optional) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
