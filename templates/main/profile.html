@@ -1,0 +1,21 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+
+<div class="container mt-4">
+    <h2>{{ request.user.username }}'s Profile</h2>
+    <p><strong>Name:</strong> {{ request.user.first_name }} {{ request.user.last_name }}</p>
+    <p><strong>Email:</strong> {{ request.user.email }}</p>
+    <p><strong>College:</strong> {{ request.user.customuser.college }}</p>
+    <p><strong>Total Courses Enrolled:</strong> {{ total_enrolled }}</p>
+    <p><strong>Courses Completed:</strong> {{ completed_courses }}</p>
+    {% if user.resume.pdf %}
+    <a href="{{ user.resume.pdf.url }}" class="btn btn-success">Download Resume</a>
+{% else %}
+    <p>You have not completed your resume yet.</p>
+{% endif %}
+
+
+    <!-- Add profile picture and other details as needed -->
+</div>
+{% endblock %}

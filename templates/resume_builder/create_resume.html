@@ -1,0 +1,23 @@
+<!-- templates/resume_builder/create_resume.html -->
+{% extends 'main/base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Create New Resume</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="title">Resume Title:</label>
+            <input type="text" class="form-control" id="title" name="title" placeholder="Enter resume title">
+        </div>
+        <!-- Add more fields as needed -->
+        <button type="submit" class="btn btn-primary">Create Resume</button>
+    </form>
+    <form method="post" action="{% url 'resume_complete' %}">
+        {% csrf_token %}
+        
+        <button type="submit" class="btn btn-primary">Complete and Download PDF</button>
+    </form>
+    
+</div>
+{% endblock %}

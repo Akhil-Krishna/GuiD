@@ -1,0 +1,18 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+<h1>Questions</h1>
+<div class="questions-container">
+    <h2>Coding Questions</h2>
+    <ul>
+        {% for question in coding_questions %}
+        <li>
+            <h3>{{ question.title }}</h3>
+            <p>{{ question.description }}</p>
+            <p><strong>Difficulty:</strong> {{ question.difficulty }}</p>
+            <a href="{% url 'code' question.id %}"><button>Go to Code</button></a>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

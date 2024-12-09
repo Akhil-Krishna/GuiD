@@ -1,0 +1,220 @@
+<!-- templates/base.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GuiD</title>
+    <!-- Include Bootstrap CSS or your CSS framework -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body.dark-mode {
+            background-color: #121212;
+            color: white;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+        }
+        .navbar {
+            background-color: #343a40;
+        }
+        .navbar.dark-mode {
+            background-color: #1c1c1c;
+        }
+        .navbar-light-mode {
+            background-color: #ffffff;
+        }
+        .navbar-brand, .nav-link {
+            color: #fff !important;
+        }
+        .navbar-brand.dark-mode, .nav-link.dark-mode {
+            color: #fff !important;
+        }
+        .navbar-brand.light-mode, .nav-link.light-mode {
+            color: #343a40 !important;
+        }
+        .notification-badge {
+            position: relative;
+            top: -10px;
+            right: 10px;
+            padding: 1px 5px;
+            border-radius: 50%;
+            background-color: red;
+            color: white;
+        }
+        .nav-item.active .nav-link {
+            color: #007bff !important;
+        }
+        
+        
+        
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 52px;
+            height: 23px;
+          }
+          
+          /* Hide default HTML checkbox */
+          .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+          }
+          
+          /* The slider */
+          .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            -webkit-transition: .4s;
+            transition: .4s;
+          }
+          
+          .slider:before {
+            position: absolute;
+            content: "";
+            height: 17px;
+            width: 18px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+          }
+          
+          input:checked + .slider {
+            background-color: #2196F3;
+          }
+          
+          input:focus + .slider {
+            box-shadow: 0 0 1px #2196F3;
+          }
+          
+          input:checked + .slider:before {
+            -webkit-transform: translateX(26px);
+            -ms-transform: translateX(26px);
+            transform: translateX(26px);
+          }
+          
+          /* Rounded sliders */
+          .slider.round {
+            border-radius: 34px;
+          }
+          
+          .slider.round:before {
+            border-radius: 50%;
+          }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <a class="navbar-brand" href="#">GuiD</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'courses' %}">Courses</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'questions' %}">Questions</a>
+                </li>
+               
+                
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'create_resume' %}">Resume Builder</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'forum:forum_home' %}">Forum</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'notifications' %}">🔔
+                        {% if unread_notifications_count > 0 %}
+                            <span class="notification-badge">{{ unread_notifications_count }}</span>
+                        {% endif %}
+                    </a>
+                </li>
+                {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'profile' %}">Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'sign_in' %}">Log In</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'sign_up' %}">Sign Up</a>
+                    </li>
+                {% endif %}
+                <li class="nav-item">
+                    <div class="form-check form-switch">
+                        <label class="switch">
+                            <input class="form-check-input" id="darkModeSwitch" type="checkbox">
+                            <span class="slider round"></span>
+                          </label>    
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container mt-4">
+        {% block content %}
+        {% endblock %}
+    </div>
+    <!-- Include Bootstrap JS or your JS framework -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const darkModeSwitch = document.getElementById('darkModeSwitch');
+            const body = document.body;
+            const navbar = document.querySelector('.navbar');
+            const navLinks = document.querySelectorAll('.nav-link');
+            const navbarBrand = document.querySelector('.navbar-brand');
+
+            function setDarkMode() {
+                body.classList.add('dark-mode');
+                navbar.classList.add('dark-mode');
+                navbar.classList.remove('navbar-light-mode');
+                navLinks.forEach(link => link.classList.add('dark-mode'));
+                navbarBrand.classList.add('dark-mode');
+                navLinks.forEach(link => link.classList.remove('light-mode'));
+                navbarBrand.classList.remove('light-mode');
+            }
+
+            function setLightMode() {
+                body.classList.remove('dark-mode');
+                navbar.classList.remove('dark-mode');
+                navbar.classList.add('navbar-light-mode');
+                navLinks.forEach(link => link.classList.remove('dark-mode'));
+                navbarBrand.classList.remove('dark-mode');
+                navLinks.forEach(link => link.classList.add('light-mode'));
+                navbarBrand.classList.add('light-mode');
+            }
+
+            darkModeSwitch.addEventListener('change', function() {
+                if (this.checked) {
+                    setDarkMode();
+                    localStorage.setItem('darkMode', 'enabled');
+                } else {
+                    setLightMode();
+                    localStorage.setItem('darkMode', 'disabled');
+                }
+            });
+
+            if (localStorage.getItem('darkMode') === 'enabled') {
+                darkModeSwitch.checked = true;
+                setDarkMode();
+            } else {
+                setLightMode();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,128 @@
+
+
+
+
+{% extends 'main/base.html' %}
+
+{% block content %}
+
+<style>
+    #container {
+        width: 60%;
+        height: 400px;
+        border: 1px solid #6927ed;
+        float: left;
+    }
+    .output-container {
+        border: 2px solid black;
+        width: 35%;
+        margin-left: 2px;
+        float: left;
+        flex-direction: column;
+         height: 400px;
+    }
+    .output {
+        border: 1px solid #ddd;
+        padding: 10px;
+        background: #f7f7f7;
+        height: 350px;
+        overflow-y: scroll;
+    }
+    button{
+        margin-top: 10px;
+        
+  background: #5E5DF0;
+  border-radius: 999px;
+  box-shadow: #5E5DF0 0 10px 20px -10px;
+  box-sizing: border-box;
+  color: #FFFFFF;
+  cursor: pointer;
+  font-family: Inter,Helvetica,"Apple Color Emoji","Segoe UI Emoji",NotoColorEmoji,"Noto Color Emoji","Segoe UI Symbol","Android Emoji",EmojiSymbols,-apple-system,system-ui,"Segoe UI",Roboto,"Helvetica Neue","Noto Sans",sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 24px;
+  opacity: 1;
+  outline: 0 solid transparent;
+  padding: 8px 18px;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  width: fit-content;
+  word-break: break-word;
+  border: 0;
+}
+   
+</style>
+<div>
+
+    <h2>{{question.title}}</h2>
+    <p>{{question.description}}</p>
+    <div id="container"></div>
+    <div class="output-container">
+        <h3 style="margin-left: 10px;">Output:</h3>
+        <pre id="output" class="output"></pre>
+    </div>
+    <button onclick="runCode()">Run Code</button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.33.0/min/vs/loader.min.js"></script>
+<script>
+    require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.33.0/min/vs' }});
+    require(['vs/editor/editor.main'], function() {
+        window.editor = monaco.editor.create(document.getElementById('container'), {
+            value: 'print("Hello, World!")',
+            language: 'python',
+            theme: 'vs-dark'
+        });
+    });
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    function runCode() {
+        const code = window.editor.getValue();
+        const csrftoken = getCookie('csrftoken');
+        fetch("{% url 'run_code' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": csrftoken
+            },
+            body: JSON.stringify({ code: code })
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById("output").innerText = data.output || "No output returned";
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.getElementById("output").innerText = "Error: " + error;
+        });
+    }
+</script>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+

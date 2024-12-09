@@ -1,0 +1,20 @@
+<!-- templates/forum/home.html -->
+{% extends 'main/base.html' %}
+
+{% block content %}
+    <div class="container">
+        <h2>Forum Posts</h2>
+        <a href="{% url 'add_post' %}" class="btn btn-primary mb-3">Add New Post</a>
+        
+        <div class="list-group">
+            {% for post in posts %}
+                <a href="{% url 'post_detail' post.id %}" class="list-group-item list-group-item-action">
+                    <h5 class="mb-1">{{ post.title }}</h5>
+                    <small>Posted by {{ post.user.username }} on {{ post.created_at }}</small>
+                </a>
+            {% empty %}
+                <p>No posts yet. Be the first to create one!</p>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

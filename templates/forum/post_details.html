@@ -1,0 +1,44 @@
+<!-- templates/forum/post_detail.html -->
+{% extends 'main/base.html' %}
+
+{% block content %}
+    <div class="container">
+        <h2>{{ post.title }}</h2>
+        <p>{{ post.content }}</p>
+        <small>Posted by {{ post.user.username }} on {{ post.created_at }}</small>
+        
+        <div class="mt-4">
+            <h4>Comments</h4>
+            <ul class="list-group">
+                {% for comment in comments %}
+                    <li class="list-group-item">
+                        <strong>{{ comment.user.username }}:</strong> {{ comment.content }} <br>
+                        <small>Posted on {{ comment.created_at }}</small>
+                    </li>
+                {% empty %}
+                    <li class="list-group-item">No comments yet. Be the first to comment!</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="mt-4">
+            <h4>Add a Comment</h4>
+            <form method="POST" action="{% url 'add_comment' post.id %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <textarea name="content" class="form-control" rows="3" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit Comment</button>
+            </form>
+        </div>
+
+        <div class="mt-4">
+            <form method="POST" action="{% url 'like_post' post.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline-primary">
+                    Like ({{ post.likes.count }})
+                </button>
+            </form>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,31 @@
+<!-- templates/resume_builder/edit_resume.html -->
+{% extends 'main/base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Edit Resume</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="title">Resume Title:</label>
+            <input type="text" class="form-control" id="title" name="title" value="{{ resume.title }}">
+        </div>
+        <!-- Add fields for each section -->
+        <div class="form-group">
+            <label for="section-title">Section Title:</label>
+            <input type="text" class="form-control" id="section-title" name="section-title" value="">
+        </div>
+        <div class="form-group">
+            <label for="content">Content:</label>
+            <textarea class="form-control" id="content" name="content" rows="5"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Update Resume</button>
+    </form>
+    <form method="post" action="{% url 'resume_complete' %}">
+        {% csrf_token %}
+        <!-- Your form fields here -->
+        <button type="submit" class="btn btn-primary">Complete and Download PDF</button>
+    </form>
+    
+</div>
+{% endblock %}
