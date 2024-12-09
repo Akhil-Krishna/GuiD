@@ -40,7 +40,11 @@
                     <li class="list-group-item">
                         <p>{{ answer.content }}</p>
                         <p><strong>Answered by:</strong> {{ answer.author }} on {{ answer.created_at|date:"F j, Y, g:i a" }}</p>
-                        <button onclick class="btn btn-primary">Votes:{{ answer.vote }}</button>
+                        <a href="{% url 'upvote' question_id=question.id answer_id=answer.id %}" class="btn btn-primary">
+                            Votes: {{ answer.upvote }}
+                        </a>
+                        
+                        
                     </li>
                 {% empty %}
                     <li class="list-group-item">No answers yet. Be the first to answer!</li>

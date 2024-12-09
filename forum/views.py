@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Question, Answer
+from .models import Question, Answer, Vote
 from .forms import QuestionForm
 from django.contrib.auth.decorators import login_required
 
@@ -39,11 +39,18 @@ def add_answer(request, question_id):
     return render(request, 'forum/question_detail.html', {'question': question})
 
 @login_required
-def upvote_answer(request, answer_id):
+def upvote_answer(request, question_id, answer_id):
     answer = get_object_or_404(Answer, pk=answer_id)
-    if request.method == 'POST':
-        answer.vote +=1
-        return redirect('question_detail', question_id=answer.question.id)
+    value = Vote.objects.filter(user=request.user, answer=answer)
+    if  value.exists():
+        answer.upvote -= 1
+        answer.save()
+        value.delete()
+    else:
+        answer.upvote += 1
+        answer.save()
+        Vote.objects.create(user=request.user, answer=answer)
+    return redirect('question_detail', question_id=question_id)
 
 def question_detail(request, question_id):
     question = get_object_or_404(Question, id=question_id)
