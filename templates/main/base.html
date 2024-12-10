@@ -1,65 +1,84 @@
-<!-- templates/base.html -->
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GuiD</title>
-    <!-- Include Bootstrap CSS or your CSS framework -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+            transition: background-color 0.4s, color 0.4s;
+        }
         body.dark-mode {
-            background-color: #121212;
-            color: white;
-            font-family: Verdana, Geneva, Tahoma, sans-serif;
+            background: linear-gradient(135deg, #1e1e2f, #2c2c4d);
+            color: #e0e0e0;
         }
         .navbar {
-            background-color: #343a40;
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            margin: 10px;
+            transition: background-color 0.4s, box-shadow 0.4s;
         }
         .navbar.dark-mode {
-            background-color: #1c1c1c;
+            background: rgba(30, 30, 47, 0.8);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
         }
-        .navbar-light-mode {
-            background-color: #ffffff;
-        }
-        .navbar-brand, .nav-link {
-            color: #fff !important;
-        }
-        .navbar-brand.dark-mode, .nav-link.dark-mode {
-            color: #fff !important;
-        }
-        .navbar-brand.light-mode, .nav-link.light-mode {
+        .nav-link {
+            font-size: 1rem;
             color: #343a40 !important;
+            transition: color 0.3s, transform 0.3s;
+        }
+        .nav-link:hover {
+            color: #007bff !important;
+            transform: scale(1.05);
+        }
+        .nav-link.dark-mode {
+            color: #e0e0e0 !important;
+        }
+        .nav-link.dark-mode:hover {
+            color: #76c7f2 !important;
         }
         .notification-badge {
-            position: relative;
-            top: -10px;
-            right: 10px;
-            padding: 1px 5px;
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            padding: 4px 8px;
             border-radius: 50%;
-            background-color: red;
+            background-color: #ff3e3e;
             color: white;
+            font-size: 0.8rem;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
-        .nav-item.active .nav-link {
-            color: #007bff !important;
+        .container {
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(15px);
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
         }
-        
-        
-        
+        .container.dark-mode {
+            background: rgba(30, 30, 47, 0.9);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
         .switch {
             position: relative;
             display: inline-block;
             width: 52px;
             height: 23px;
-          }
-          
-          /* Hide default HTML checkbox */
-          .switch input {
+        }
+        .switch input {
             opacity: 0;
             width: 0;
             height: 0;
-          }
-          
-          /* The slider */
-          .slider {
+        }
+        .slider {
             position: absolute;
             cursor: pointer;
             top: 0;
@@ -67,11 +86,10 @@
             right: 0;
             bottom: 0;
             background-color: #ccc;
-            -webkit-transition: .4s;
-            transition: .4s;
-          }
-          
-          .slider:before {
+            border-radius: 34px;
+            transition: 0.4s;
+        }
+        .slider:before {
             position: absolute;
             content: "";
             height: 17px;
@@ -79,32 +97,24 @@
             left: 4px;
             bottom: 4px;
             background-color: white;
-            -webkit-transition: .4s;
-            transition: .4s;
-          }
-          
-          input:checked + .slider {
-            background-color: #2196F3;
-          }
-          
-          input:focus + .slider {
-            box-shadow: 0 0 1px #2196F3;
-          }
-          
-          input:checked + .slider:before {
-            -webkit-transform: translateX(26px);
-            -ms-transform: translateX(26px);
-            transform: translateX(26px);
-          }
-          
-          /* Rounded sliders */
-          .slider.round {
-            border-radius: 34px;
-          }
-          
-          .slider.round:before {
             border-radius: 50%;
-          }
+            transition: 0.4s;
+        }
+        input:checked + .slider {
+            background-color: #4caf50;
+        }
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        footer {
+            margin-top: 20px;
+            text-align: center;
+            padding: 10px;
+            color: #7d7d7d;
+        }
+        footer.dark-mode {
+            color: #bdbdbd;
+        }
     </style>
 </head>
 <body>
@@ -115,105 +125,68 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto">
+                <li class="nav-item"><a class="nav-link" href="{% url 'courses' %}">Courses</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'questions' %}">Questions</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'create_resume' %}">Resume Builder</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'question_list' %}">Forum</a></li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'courses' %}">Courses</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'questions' %}">Questions</a>
-                </li>
-               
-                
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'create_resume' %}">Resume Builder</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'question_list' %}">Forum</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'notifications' %}">🔔
+                    <a class="nav-link" href="{% url 'notifications' %}">
+                        🔔
                         {% if unread_notifications_count > 0 %}
                             <span class="notification-badge">{{ unread_notifications_count }}</span>
                         {% endif %}
                     </a>
                 </li>
                 {% if user.is_authenticated %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'profile' %}">Profile</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
-                    </li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'profile' %}">Profile</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Log Out</a></li>
                 {% else %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'sign_in' %}">Log In</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'sign_up' %}">Sign Up</a>
-                    </li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'sign_in' %}">Log In</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'sign_up' %}">Sign Up</a></li>
                 {% endif %}
                 <li class="nav-item">
-                    <div class="form-check form-switch">
-                        <label class="switch">
-                            <input class="form-check-input" id="darkModeSwitch" type="checkbox">
-                            <span class="slider round"></span>
-                          </label>    
-                    </div>
+                    <label class="switch">
+                        <input id="darkModeSwitch" type="checkbox">
+                        <span class="slider"></span>
+                    </label>
                 </li>
             </ul>
         </div>
     </nav>
-    <div class="container mt-4">
+    <div class="container">
         {% block content %}
         {% endblock %}
     </div>
-    <!-- Include Bootstrap JS or your JS framework -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <footer>
+        <p>&copy; 2024 GuiD. All rights reserved.</p>
+    </footer>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const darkModeSwitch = document.getElementById('darkModeSwitch');
             const body = document.body;
             const navbar = document.querySelector('.navbar');
-            const navLinks = document.querySelectorAll('.nav-link');
-            const navbarBrand = document.querySelector('.navbar-brand');
+            const container = document.querySelector('.container');
 
-            function setDarkMode() {
-                body.classList.add('dark-mode');
-                navbar.classList.add('dark-mode');
-                navbar.classList.remove('navbar-light-mode');
-                navLinks.forEach(link => link.classList.add('dark-mode'));
-                navbarBrand.classList.add('dark-mode');
-                navLinks.forEach(link => link.classList.remove('light-mode'));
-                navbarBrand.classList.remove('light-mode');
-            }
-
-            function setLightMode() {
-                body.classList.remove('dark-mode');
-                navbar.classList.remove('dark-mode');
-                navbar.classList.add('navbar-light-mode');
-                navLinks.forEach(link => link.classList.remove('dark-mode'));
-                navbarBrand.classList.remove('dark-mode');
-                navLinks.forEach(link => link.classList.add('light-mode'));
-                navbarBrand.classList.add('light-mode');
-            }
-
-            darkModeSwitch.addEventListener('change', function() {
-                if (this.checked) {
-                    setDarkMode();
+            function toggleDarkMode(isDarkMode) {
+                if (isDarkMode) {
+                    body.classList.add('dark-mode');
+                    navbar.classList.add('dark-mode');
+                    container.classList.add('dark-mode');
                     localStorage.setItem('darkMode', 'enabled');
                 } else {
-                    setLightMode();
+                    body.classList.remove('dark-mode');
+                    navbar.classList.remove('dark-mode');
+                    container.classList.remove('dark-mode');
                     localStorage.setItem('darkMode', 'disabled');
                 }
-            });
-
-            if (localStorage.getItem('darkMode') === 'enabled') {
-                darkModeSwitch.checked = true;
-                setDarkMode();
-            } else {
-                setLightMode();
             }
+
+            darkModeSwitch.checked = localStorage.getItem('darkMode') === 'enabled';
+            toggleDarkMode(darkModeSwitch.checked);
+
+            darkModeSwitch.addEventListener('change', function() {
+                toggleDarkMode(this.checked);
+            });
         });
     </script>
 </body>

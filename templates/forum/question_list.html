@@ -1,56 +1,43 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Questions</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-</head>
-<body>
-    <div class="container mt-5">
-        <!-- Page Heading -->
-        <h1 class="text-center mb-4">Questions</h1>
+{% extends 'main/base.html' %}
+{% block content %}
+<div class="container mt-5">
+    <!-- Page Heading -->
+    <h1 class="text-center mb-4">Questions</h1>
 
-        <!-- Question Submission Form -->
+    <!-- Question Submission Form -->
+    <div class="card mb-4">
         <div class="card mb-4">
-            <div class="card mb-4">
-            <div class="card-header">
-                <h4>Add a New Question</h4>
-            </div>
-            <div class="card-body">
-                <form method="POST">
-                    {% csrf_token %}
-                    {{ form.as_p }}
-                    <button type="submit" class="btn btn-primary">Submit Question</button>
-                </form>
-            </div>
+        <div class="card-header">
+            <h4>Add a New Question</h4>
         </div>
-
-        </div>
-
-        <!-- List of Questions -->
-        <div class="card">
-            <div class="card-header">
-                <h4>Existing Questions</h4>
-            </div>
-            <ul class="list-group list-group-flush">
-                {% for question in questions %}
-                    <li class="list-group-item">
-                        <h5>
-                            <a href="{% url 'add_answer' question.id %}">{{ question.title }}</a>
-                        </h5>
-                        <p>Asked by {{ question.author }} on {{ question.created_at|date:"F j, Y, g:i a" }}</p>
-                    </li>
-                {% empty %}
-                    <li class="list-group-item">No questions have been posted yet.</li>
-                {% endfor %}
-            </ul>
+        <div class="card-body">
+            <form method="POST">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-primary">Submit Question</button>
+            </form>
         </div>
     </div>
 
-    <!-- Bootstrap JS and dependencies (optional) -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-</body>
-</html>
+    </div>
+
+    <!-- List of Questions -->
+    <div class="card">
+        <div class="card-header">
+            <h4>Existing Questions</h4>
+        </div>
+        <ul class="list-group list-group-flush">
+            {% for question in questions %}
+                <li class="list-group-item">
+                    <h5>
+                        <a href="{% url 'add_answer' question.id %}">{{ question.title }}</a>
+                    </h5>
+                    <p>Asked by {{ question.author }} on {{ question.created_at|date:"F j, Y, g:i a" }}</p>
+                </li>
+            {% empty %}
+                <li class="list-group-item">No questions have been posted yet.</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}

@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from .models import Question, Answer, Vote
 from .forms import QuestionForm
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 
 @login_required
 def question_list(request):
@@ -40,17 +41,30 @@ def add_answer(request, question_id):
 
 @login_required
 def upvote_answer(request, question_id, answer_id):
+    # Fetch the answer based on the provided ID
     answer = get_object_or_404(Answer, pk=answer_id)
+    
+    # Check if the user has already voted for this answer
     value = Vote.objects.filter(user=request.user, answer=answer)
-    if  value.exists():
+    
+    if value.exists():
+        # If the user already voted, remove the vote (decrement the upvote)
         answer.upvote -= 1
         answer.save()
-        value.delete()
+        value.delete()  # Remove the user's vote from the database
+        vote_status = 'removed'
     else:
+        # If the user hasn't voted yet, add the vote (increment the upvote)
         answer.upvote += 1
         answer.save()
-        Vote.objects.create(user=request.user, answer=answer)
-    return redirect('question_detail', question_id=question_id)
+        Vote.objects.create(user=request.user, answer=answer)  # Create a new vote
+        vote_status = 'added'
+    
+    # Return the updated vote count and status in a JSON response
+    return JsonResponse({
+        'upvote': answer.upvote,
+        'vote_status': vote_status
+    })
 
 def question_detail(request, question_id):
     question = get_object_or_404(Question, id=question_id)

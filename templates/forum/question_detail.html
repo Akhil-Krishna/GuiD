@@ -1,61 +1,80 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ question.title }}</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-</head>
-<body>
-    <div class="container mt-5">
-        <!-- Question Title -->
-        <h1 class="text-center mb-4">{{ question.title }}</h1>
-        <p>{{ question.content }}</p>
-        <p><strong>Asked by:</strong> {{ question.author }} on {{ question.created_at|date:"F j, Y, g:i a" }}</p>
+{% extends 'main/base.html' %}
 
-        <!-- Answer Submission Form -->
-        <div class="card mb-4">
-            <div class="card-header">
-                <h4>Submit Your Answer</h4>
-            </div>
-            <div class="card-body">
-                <form method="post">
-                    {% csrf_token %}
-                    <div class="form-group">
-                        <label for="content">Your Answer</label>
-                        <textarea class="form-control" id="content" name="content" rows="5" placeholder="Write your answer here"></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Submit Answer</button>
-                </form>
-            </div>
+{% block content %}
+<div class="container mt-5">
+    <!-- Question Title -->
+    <h1 class="text-center mb-4">{{ question.title }}</h1>
+    <p>{{ question.content }}</p>
+    <p><strong>Asked by:</strong> {{ question.author }} on {{ question.created_at|date:"F j, Y, g:i a" }}</p>
+
+    <!-- Answer Submission Form -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4>Submit Your Answer</h4>
         </div>
-
-        <!-- Display the List of Answers -->
-        <div class="card">
-            <div class="card-header">
-                <h4>Answers ({{ question.answers.count }})</h4>
-            </div>
-            <ul class="list-group list-group-flush">
-                {% for answer in question.answers.all %}
-                    <li class="list-group-item">
-                        <p>{{ answer.content }}</p>
-                        <p><strong>Answered by:</strong> {{ answer.author }} on {{ answer.created_at|date:"F j, Y, g:i a" }}</p>
-                        <a href="{% url 'upvote' question_id=question.id answer_id=answer.id %}" class="btn btn-primary">
-                            Votes: {{ answer.upvote }}
-                        </a>
-                        
-                        
-                    </li>
-                {% empty %}
-                    <li class="list-group-item">No answers yet. Be the first to answer!</li>
-                {% endfor %}
-            </ul>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="content">Your Answer</label>
+                    <textarea class="form-control" id="content" name="content" rows="5" placeholder="Write your answer here"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit Answer</button>
+            </form>
         </div>
     </div>
 
-    <!-- Bootstrap JS and dependencies (optional) -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-</body>
-</html>
+    <!-- Display the List of Answers -->
+    <div class="card">
+        <div class="card-header">
+            <h4>Answers ({{ question.answers.count }})</h4>
+        </div>
+        <ul class="list-group list-group-flush">
+            {% for answer in question.answers.all %}
+            <li class="list-group-item">
+                <p>{{ answer.content }}</p>
+                <p><strong>Answered by:</strong> {{ answer.author }} on {{ answer.created_at|date:"F j, Y, g:i a" }}</p>
+                <button class="btn btn-primary" onclick="handleUpvote({{ question.id|escapejs }}, {{ answer.id|escapejs }})">
+                    Votes: <span id="vote-count-{{ answer.id }}">{{ answer.upvote }}</span>
+                </button>
+            </li>
+            {% empty %}
+            <li class="list-group-item">No answers yet. Be the first to answer!</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+<script>
+    function handleUpvote(questionId, answerId) {
+        // Make a GET request to the upvote URL using AJAX
+        fetch(`/forum/question/${questionId}/upvote/${answerId}/`, {
+            method: 'GET',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',  // CSRF token for security
+            },
+        })
+        .then(response => response.json())  // Parse the JSON response
+        .then(data => {
+            if (data.upvote !== undefined) {
+                // If upvote was successful, update the vote count dynamically
+                document.querySelector(`#vote-count-${answerId}`).textContent = data.upvote;
+
+                // Optional: Change the button text or color depending on whether the vote was added or removed
+                const upvoteButton = document.querySelector(`#upvote-btn-${answerId}`);
+                if (data.vote_status === 'added') {
+                    upvoteButton.classList.add('btn-success');
+                    upvoteButton.classList.remove('btn-primary');
+                } else {
+                    upvoteButton.classList.add('btn-primary');
+                    upvoteButton.classList.remove('btn-success');
+                }
+            } else if (data.error) {
+                alert(data.error);  // Show error if something went wrong
+            }
+        })
+        .catch(error => console.error('Error:', error));  // Log any errors to console
+    }
+</script>
+
+{% endblock %}
