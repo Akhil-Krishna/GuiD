@@ -1,0 +1,43 @@
+{% extends 'main/base.html' %}
+{% block content %}
+<div class="container mt-5">
+    <!-- Page Heading -->
+    <h1 class="text-center mb-4">Questions</h1>
+
+    <!-- Question Submission Form -->
+    <div class="card mb-4">
+        <div class="card mb-4">
+        <div class="card-header">
+            <h4>Add a New Question</h4>
+        </div>
+        <div class="card-body">
+            <form method="POST">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-primary">Submit Question</button>
+            </form>
+        </div>
+    </div>
+
+    </div>
+
+    <!-- List of Questions -->
+    <div class="card">
+        <div class="card-header">
+            <h4>Existing Questions</h4>
+        </div>
+        <ul class="list-group list-group-flush">
+            {% for question in questions %}
+                <li class="list-group-item">
+                    <h5>
+                        <a href="{% url 'add_answer' question.id %}">{{ question.title }}</a>
+                    </h5>
+                    <p>Asked by {{ question.author }} on {{ question.created_at|date:"F j, Y, g:i a" }}</p>
+                </li>
+            {% empty %}
+                <li class="list-group-item">No questions have been posted yet.</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}

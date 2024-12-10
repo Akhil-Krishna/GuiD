@@ -2,22 +2,94 @@
 {% extends 'main/base.html' %}
 
 {% block content %}
-<div class="container">
-    <h2>Create New Resume</h2>
-    <form method="post">
-        {% csrf_token %}
-        <div class="form-group">
-            <label for="title">Resume Title:</label>
-            <input type="text" class="form-control" id="title" name="title" placeholder="Enter resume title">
-        </div>
-        <!-- Add more fields as needed -->
-        <button type="submit" class="btn btn-primary">Create Resume</button>
-    </form>
-    <form method="post" action="{% url 'resume_complete' %}">
-        {% csrf_token %}
-        
-        <button type="submit" class="btn btn-primary">Complete and Download PDF</button>
-    </form>
-    
-</div>
+    <div class="glass-card p-4 shadow-sm rounded-lg">
+        <h2 class="text-center mb-4">Create New Resume</h2>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="title" class="font-weight-bold">Resume Title:</label>
+                <input 
+                    type="text" 
+                    class="form-control form-control-lg rounded-pill" 
+                    id="title" 
+                    name="title" 
+                    placeholder="Enter resume title"
+                    required
+                >
+            </div>
+            <!-- Additional fields can go here -->
+            <div class="d-flex justify-content-between">
+                <button 
+                    type="submit" 
+                    class="btn btn-primary rounded-pill px-4 py-2 shadow-sm"
+                >
+                    Create Resume
+                </button>
+                <form method="post" action="{% url 'resume_complete' %}">
+                    {% csrf_token %}
+                    <button 
+                        type="submit" 
+                        class="btn btn-success rounded-pill px-4 py-2 shadow-sm"
+                    >
+                        Complete and Download PDF
+                    </button>
+                </form>
+            </div>
+        </form>
+    </div>
+
+<style>
+    body {
+        font-family: 'Inter', Arial, sans-serif;
+        background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+    }
+
+    /* Glassmorphic Card */
+    .glass-card {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Form Inputs */
+    .form-control {
+        background: rgba(255, 255, 255, 0.6);
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        color: #495057;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        background: rgba(255, 255, 255, 0.8);
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        border-color: #007bff;
+    }
+
+    /* Buttons */
+    .btn-primary {
+        background: linear-gradient(135deg, #007bff, #0056b3);
+        border: none;
+        color: white;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #0056b3, #004085);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-success {
+        background: linear-gradient(135deg, #28a745, #218838);
+        border: none;
+        color: white;
+        transition: all 0.3s ease;
+    }
+
+    .btn-success:hover {
+        background: linear-gradient(135deg, #218838, #19692c);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+</style>
 {% endblock %}
