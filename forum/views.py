@@ -76,3 +76,16 @@ def question_detail(request, question_id):
             return redirect('question_detail', question_id=question.id)
 
     return render(request, 'forum/question_detail.html', {'question': question})
+
+@login_required
+def delete_answer(request, question_id, answer_id):
+    # Fetch the answer and check permissions
+    answer = get_object_or_404(Answer, id=answer_id)
+    question = get_object_or_404(Question, id=question_id)
+
+    if request.user == answer.author:
+        answer.delete()
+        return JsonResponse({'success': True, 'message': 'Answer deleted successfully.'})
+    else:
+        return JsonResponse({'success': False, 'message': 'You are not authorized to delete this answer.'}, status=403)
+    
