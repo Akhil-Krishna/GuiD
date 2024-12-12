@@ -2,6 +2,9 @@
 
 {% block content %}
 <div class="container mt-5">
+    <!-- Back Button -->
+    <button class="btn btn-secondary mb-4" onclick="goBack()">Back</button>
+
     <!-- Question Title -->
     <h1 class="text-center mb-4">{{ question.title }}</h1>
     <p>{{ question.content }}</p>
@@ -37,9 +40,8 @@
                 <button class="btn btn-primary" onclick="handleUpvote({{ question.id|escapejs }}, {{ answer.id|escapejs }})">
                     Votes: <span id="vote-count-{{ answer.id }}">{{ answer.upvote }}</span>
                 </button>
-                <a href="#" class="btn btn-danger" onclick="handleDeleteAnswer({{ question.id }}, {{ answer.id }})">Delete</a>
+                <a href="#" class="btn btn-danger" onclick="handleDeleteAnswer({{ answer.id }})">Delete</a>
             </li>
-            
             {% empty %}
             <li class="list-group-item">No answers yet. Be the first to answer!</li>
             {% endfor %}
@@ -48,49 +50,40 @@
 </div>
 
 <script>
+    function goBack() {
+        window.location.href = "/forum/forum";
+    }
+
     function handleUpvote(questionId, answerId) {
-        // Make a GET request to the upvote URL using AJAX
         fetch(`/forum/question/${questionId}/upvote/${answerId}/`, {
             method: 'GET',
             headers: {
-                'X-CSRFToken': '{{ csrf_token }}',  // CSRF token for security
+                'X-CSRFToken': '{{ csrf_token }}',
             },
         })
-        .then(response => response.json())  // Parse the JSON response
+        .then(response => response.json())
         .then(data => {
             if (data.upvote !== undefined) {
-                // If upvote was successful, update the vote count dynamically
                 document.querySelector(`#vote-count-${answerId}`).textContent = data.upvote;
-
-                // Optional: Change the button text or color depending on whether the vote was added or removed
-                const upvoteButton = document.querySelector(`#upvote-btn-${answerId}`);
-                if (data.vote_status === 'added') {
-                    upvoteButton.classList.add('btn-success');
-                    upvoteButton.classList.remove('btn-primary');
-                } else {
-                    upvoteButton.classList.add('btn-primary');
-                    upvoteButton.classList.remove('btn-success');
-                }
             } else if (data.error) {
-                alert(data.error);  // Show error if something went wrong
+                alert(data.error);
             }
         })
-        .catch(error => console.error('Error:', error));  // Log any errors to console
+        .catch(error => console.error('Error:', error));
     }
 
-    function handleDeleteAnswer(questionId, answerId) {
+    function handleDeleteAnswer(answerId) {
         if (confirm('Are you sure you want to delete this answer?')) {
-            fetch(`/forum/question/${questionId}/answer/${answerId}/delete/`, {
+            fetch(`/forum/delete_answer/${answerId}/`, {
                 method: 'GET',
                 headers: {
-                    'X-CSRFToken': '{{ csrf_token }}',  // Include CSRF token for security
+                    'X-CSRFToken': '{{ csrf_token }}',
                 },
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
                     alert(data.message);
-                    // Remove the answer from the list
                     const answerElement = document.querySelector(`#answer-${answerId}`);
                     if (answerElement) {
                         answerElement.remove();
@@ -102,7 +95,6 @@
             .catch(error => console.error('Error:', error));
         }
     }
-    
 </script>
 
 {% endblock %}
