@@ -1,0 +1,32 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-header text-center">
+            <h2>{{ resume.title }}</h2>
+        </div>
+        <div class="card-body">
+            <h4>Personal Details</h4>
+            <p><strong>Name:</strong> {{ resume.name }}</p>
+            <p><strong>Email:</strong> {{ resume.email }}</p>
+            <p><strong>Phone:</strong> {{ resume.phone }}</p>
+
+            <h4>Summary</h4>
+            <p>{{ resume.summary }}</p>
+
+            <h4>Education</h4>
+            <p>{{ resume.education|linebreaks }}</p>
+
+            <h4>Experience</h4>
+            <p>{{ resume.experience|linebreaks }}</p>
+
+            <h4>Skills</h4>
+            <p>{{ resume.skills|linebreaks }}</p>
+        </div>
+    </div>
+    <div class="text-center mt-4">
+        <a href="{% url 'resume_list' %}" class="btn btn-secondary">Back to Resumes</a>
+    </div>
+</div>
+{% endblock %}

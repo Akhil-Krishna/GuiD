@@ -4,20 +4,24 @@ from .forms import QuestionForm
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 
-@login_required
+
 def question_list(request):
     if request.method == 'POST':
-        form = QuestionForm(request.POST)
-        if form.is_valid():
-            question = form.save(commit=False)  # Create a question object but don't save yet
-            question.author = request.user  # Set the author to the logged-in user
-            question.save()  # Save the question to the database
-            return redirect('question_list')  # Redirect to the question list page after saving
+        if request.user.is_authenticated:  # Check if the user is logged in
+            form = QuestionForm(request.POST)
+            if form.is_valid():
+                question = form.save(commit=False)  # Create a question object but don't save yet
+                question.author = request.user  # Set the author to the logged-in user
+                question.save()  # Save the question to the database
+                return redirect('question_list')  # Redirect to the question list page after saving
+        else:
+            return redirect('sign_in')  # Redirect to login if not authenticated
     else:
-        form = QuestionForm()
+        form = QuestionForm() if request.user.is_authenticated else None  # Only show form to logged-in users
 
-    questions = Question.objects.all().order_by('-created_at')
+    questions = Question.objects.all().order_by('-created_at')  # Fetch all questions
     return render(request, 'forum/question_list.html', {'questions': questions, 'form': form})
+
 
 @login_required
 def add_answer(request, question_id):
@@ -76,3 +80,23 @@ def question_detail(request, question_id):
             return redirect('question_detail', question_id=question.id)
 
     return render(request, 'forum/question_detail.html', {'question': question})
+
+@login_required
+def delete_answer(request, answer_id):
+    # Fetch the answer and check permissions
+    answer = get_object_or_404(Answer, id=answer_id)
+    if request.user == answer.author:
+        answer.delete()
+        return JsonResponse({'success': True, 'message': 'Answer deleted successfully.'})
+    else:
+        return JsonResponse({'success': False, 'message': 'You are not authorized to delete this answer.'}, status=403)
+    
+@login_required
+def delete_question(request, question_id):
+    
+    question = get_object_or_404(Question, id=question_id)
+    if request.user == question.author:
+        question.delete()
+        return JsonResponse({'success': True, 'message': 'Question deleted successfully.'})
+    else:
+        return JsonResponse({'success': False, 'message': 'You are not authorized to delete this question.'}, status=403)
