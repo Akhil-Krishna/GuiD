@@ -1,129 +1,16 @@
-<!-- templates/resume_builder/edit_resume.html -->
 {% extends 'main/base.html' %}
 
 {% block content %}
-    <div class="glass-card p-4 shadow-sm rounded-lg">
-        <h2 class="text-center mb-4">Edit Resume</h2>
-        <form method="post">
-            {% csrf_token %}
-            <!-- Resume Title -->
-            <div class="form-group">
-                <label for="title" class="font-weight-bold">Resume Title:</label>
-                <input 
-                    type="text" 
-                    class="form-control form-control-lg rounded-pill" 
-                    id="title" 
-                    name="title" 
-                    value="{{ resume.title }}" 
-                    placeholder="Enter resume title"
-                    required
-                >
-            </div>
-
-            <!-- Section Title -->
-            <div class="form-group">
-                <label for="section-title" class="font-weight-bold">Section Title:</label>
-                <input 
-                    type="text" 
-                    class="form-control rounded-pill" 
-                    id="section-title" 
-                    name="section-title" 
-                    placeholder="Enter section title" 
-                    required
-                >
-            </div>
-
-            <!-- Content -->
-            <div class="form-group">
-                <label for="content" class="font-weight-bold">Content:</label>
-                <textarea 
-                    class="form-control rounded-lg" 
-                    id="content" 
-                    name="content" 
-                    rows="5" 
-                    placeholder="Enter the content for this section" 
-                    required
-                ></textarea>
-            </div>
-
-            <!-- Buttons -->
-            <div class="d-flex justify-content-between">
-                <button 
-                    type="submit" 
-                    class="btn btn-primary rounded-pill px-4 py-2 shadow-sm"
-                >
-                    Update Resume
-                </button>
-                <form method="post" action="{% url 'resume_complete' %}">
-                    {% csrf_token %}
-                    <button 
-                        type="submit" 
-                        class="btn btn-success rounded-pill px-4 py-2 shadow-sm"
-                    >
-                        Complete and Download PDF
-                    </button>
-                </form>
-            </div>
-        </form>
+<div class="container mt-5">
+    <h2>Edit Resume</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Update Resume</button>
+    </form>
+    <div class="text-center mt-4">
+        <a href="{% url 'resume_list' %}" class="btn btn-secondary">Back to Resumes</a>
     </div>
+</div>
 
-<style>
-    body {
-        font-family: 'Inter', Arial, sans-serif;
-        background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
-    }
-
-    /* Glassmorphic Card */
-    .glass-card {
-        background: rgba(255, 255, 255, 0.7);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    }
-
-    /* Form Inputs */
-    .form-control {
-        background: rgba(255, 255, 255, 0.6);
-        border: 1px solid rgba(0, 0, 0, 0.1);
-        color: #495057;
-        font-size: 1rem;
-        transition: all 0.3s ease;
-    }
-
-    .form-control:focus {
-        background: rgba(255, 255, 255, 0.8);
-        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-        border-color: #007bff;
-    }
-
-    /* Buttons */
-    .btn-primary {
-        background: linear-gradient(135deg, #007bff, #0056b3);
-        border: none;
-        color: white;
-        transition: all 0.3s ease;
-    }
-
-    .btn-primary:hover {
-        background: linear-gradient(135deg, #0056b3, #004085);
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    }
-
-    .btn-success {
-        background: linear-gradient(135deg, #28a745, #218838);
-        border: none;
-        color: white;
-        transition: all 0.3s ease;
-    }
-
-    .btn-success:hover {
-        background: linear-gradient(135deg, #218838, #19692c);
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    }
-
-    textarea.form-control {
-        resize: none;
-        background: rgba(255, 255, 255, 0.6);
-    }
-</style>
 {% endblock %}
