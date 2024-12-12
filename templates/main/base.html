@@ -230,7 +230,6 @@
     </div>
     
     
-    
     <div class="container">
         {% block content %}
         {% endblock %}
@@ -240,7 +239,16 @@
     
     
     
-    
+    <!-- Floating Chatbot Icon -->
+                <div class="chatbot-icon" onclick="toggleChatbot()">
+                    <i class="fa fa-comments"></i>
+                </div>
+            
+    <!-- Chatbot Popup Window -->
+                <div class="chatbot-popup">
+                    <textarea placeholder="Type your message here..."></textarea>
+                    <button onclick="sendChatMessage()">Send</button>
+                </div>
     <footer>
         <p>&copy; 2024 GuiD. All rights reserved.</p>
     </footer>
