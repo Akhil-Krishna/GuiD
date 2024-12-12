@@ -11,21 +11,27 @@
     <p><strong>Asked by:</strong> {{ question.author }} on {{ question.created_at|date:"F j, Y, g:i a" }}</p>
 
     <!-- Answer Submission Form -->
-    <div class="card mb-4">
-        <div class="card-header">
-            <h4>Submit Your Answer</h4>
-        </div>
-        <div class="card-body">
-            <form method="post">
-                {% csrf_token %}
-                <div class="form-group">
-                    <label for="content">Your Answer</label>
-                    <textarea class="form-control" id="content" name="content" rows="5" placeholder="Write your answer here"></textarea>
-                </div>
-                <button type="submit" class="btn btn-primary">Submit Answer</button>
-            </form>
-        </div>
+{% if user.is_authenticated %}
+<div class="card mb-4">
+    <div class="card-header">
+        <h4>Submit Your Answer</h4>
     </div>
+    <div class="card-body">
+        <form method="post" action="{% url 'add_answer' question.id %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="content">Your Answer</label>
+                <textarea class="form-control" id="content" name="content" rows="5" placeholder="Write your answer here"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit Answer</button>
+        </form>
+    </div>
+</div>
+{% else %}
+<p class="text-center">
+    You need to <a href="{% url 'sign_in' %}">log in</a> to submit an answer.
+</p>
+{% endif %}
 
     <!-- Display the List of Answers -->
     <div class="card">
@@ -51,7 +57,7 @@
 
 <script>
     function goBack() {
-        window.location.href = "/forum/forum";
+        window.location.href = "/forum/question_list";
     }
 
     function handleUpvote(questionId, answerId) {

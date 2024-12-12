@@ -4,19 +4,31 @@
     <!-- Page Heading -->
     <h1 class="text-center mb-4">Questions</h1>
 
-    <!-- Question Submission Form -->
-    <div class="card mb-4">
-        <div class="card-header">
-            <h4>Add a New Question</h4>
-        </div>
-        <div class="card-body">
-            <form method="POST">
-                {% csrf_token %}
-                {{ form.as_p }}
-                <button type="submit" class="btn btn-primary">Submit Question</button>
-            </form>
-        </div>
+   <!-- Question Submission Form -->
+{% if user.is_authenticated %}
+<div class="card mb-4">
+    <div class="card-header">
+        <h4>Add a New Question</h4>
     </div>
+    <div class="card-body">
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary">Submit Question</button>
+        </form>
+    </div>
+</div>
+{% else %}
+<div class="card mb-4">
+    <div class="card-header">
+        <h4>Add a New Question</h4>
+    </div>
+    <div class="card-body text-center">
+        <p>You need to <a href="{% url 'sign_in' %}">log in</a> to submit a question.</p>
+    </div>
+</div>
+{% endif %}
+
 
     <div class="container mt-5">
     
@@ -31,7 +43,7 @@
                         <!-- Question Title and Details -->
                         <div class="question-content flex-grow-1">
                             <h5 class="mb-2">
-                                <a href="{% url 'add_answer' question.id %}" class="text-primary text-decoration-none">{{ question.title }}</a>
+                                <a href="{% url 'question_detail' question.id %}" class="text-primary text-decoration-none">{{ question.title }}</a>
                             </h5>
                             <p class="text-muted small mb-0">Asked by {{ question.author }} on {{ question.created_at|date:"F j, Y, g:i a" }}</p>
                         </div>

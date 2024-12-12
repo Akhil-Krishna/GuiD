@@ -4,20 +4,24 @@ from .forms import QuestionForm
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 
-@login_required
+
 def question_list(request):
     if request.method == 'POST':
-        form = QuestionForm(request.POST)
-        if form.is_valid():
-            question = form.save(commit=False)  # Create a question object but don't save yet
-            question.author = request.user  # Set the author to the logged-in user
-            question.save()  # Save the question to the database
-            return redirect('question_list')  # Redirect to the question list page after saving
+        if request.user.is_authenticated:  # Check if the user is logged in
+            form = QuestionForm(request.POST)
+            if form.is_valid():
+                question = form.save(commit=False)  # Create a question object but don't save yet
+                question.author = request.user  # Set the author to the logged-in user
+                question.save()  # Save the question to the database
+                return redirect('question_list')  # Redirect to the question list page after saving
+        else:
+            return redirect('sign_in')  # Redirect to login if not authenticated
     else:
-        form = QuestionForm()
+        form = QuestionForm() if request.user.is_authenticated else None  # Only show form to logged-in users
 
-    questions = Question.objects.all().order_by('-created_at')
+    questions = Question.objects.all().order_by('-created_at')  # Fetch all questions
     return render(request, 'forum/question_list.html', {'questions': questions, 'form': form})
+
 
 @login_required
 def add_answer(request, question_id):
