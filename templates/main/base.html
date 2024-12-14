@@ -189,9 +189,9 @@
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item"><a class="nav-link" href="{% url 'courses' %}">Courses</a></li>
                 <li class="nav-item"><a class="nav-link" href="{% url 'questions' %}">Questions</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'resume_list' %}">Resume Builder</a></li>
                 <li class="nav-item"><a class="nav-link" href="{% url 'question_list' %}">Forum</a></li>
                 {% if user.is_authenticated %}
+                    <li class="nav-item"><a class="nav-link" href="{% url 'resume_list' %}">Resume Builder</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'profile' %}">Profile</a></li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'notifications' %}">

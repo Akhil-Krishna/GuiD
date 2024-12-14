@@ -16,6 +16,8 @@
                     <a href="{% url 'edit_resume' resume.id %}" class="btn btn-secondary">Edit</a>
                     <a href="{% url 'delete_resume' resume.id %}" class="btn btn-danger" 
                        onclick="return confirm('Are you sure you want to delete this resume?');">Delete</a>
+                    <a href="{% url 'download_resume' resume.id %}" class="btn btn-success">Download PDF</a>
+
                 </div>
             </li>
         {% empty %}
