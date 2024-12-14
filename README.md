@@ -1,4 +1,4 @@
-# GUID - SAMPLE PROTOTYPE : An AI-driven training and career development Application
+# GUID :- An AI-driven training and career development Application
 
 It is an initial sample version of GuiD website 
 
