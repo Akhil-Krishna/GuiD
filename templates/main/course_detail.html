@@ -2,13 +2,13 @@
 
 {% block content %}
 
-<<!-- templates/course_detail.html -->
+<!-- templates/course_detail.html -->
 <div class="container mt-4">
     <h2>{{ course.title }}</h2>
     <hr>
     <div class="slide-content">
         <h3>{{ slide.title }}</h3>
-        <p>{{ slide.content }}</p>
+        {{ slide.content|safe }}
     </div>
     <div class="d-flex justify-content-between">
         {% if prev_slide %}

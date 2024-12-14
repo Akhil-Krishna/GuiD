@@ -178,3 +178,63 @@ def complete_course(request, course_id):
     enrollment.completed = True
     enrollment.save()
     return redirect('profile')
+
+
+### Rather than storing content in db we can use md 
+
+# from django.shortcuts import render, get_object_or_404, redirect
+# from .models import Course, Enrollment, Slide  # Assuming you have a Slide model
+# import os
+# from django.conf import settings
+# def course_detail(request, course_id, slide_order=1):
+#     course = get_object_or_404(Course, pk=course_id)
+#     slides = course.slides.all().order_by('order')
+#     slide = get_object_or_404(Slide, course=course, order=slide_order)
+
+#     # Determine the correct content file path based on course and slide order
+#     if course_id==1:
+#         course_slug="Django"
+#     elif course_id==2:
+#         course_slug="React"
+#     content_dir = os.path.join('course_content', course_slug)  # Use course slug for organization
+#     content_file = f'slide{slide_order}.md'  # Assuming Markdown format
+#     content_path = os.path.join('course_content', 'Django', f'slide{slide_order}.md')
+
+#     # Read content from the file
+#     with open(f"static/main/course_content/Django/slide{slide_order}.md", 'r') as f:
+#         slide_content = f.read()
+
+#     next_slide = slides.filter(order__gt=slide.order).first()
+#     prev_slide = slides.filter(order__lt=slide.order).last()
+
+#     context = {
+#         'course': course,
+#         'slide': slide,
+#         'slide_content': slide_content,  # Add slide_content to context
+#         'next_slide': next_slide,
+#         'prev_slide': prev_slide,
+#     }
+#     return render(request, 'main/course_detail.html', context)
+
+
+
+
+# # views.py (where users start a course)
+
+# from .models import Course, Enrollment
+
+# def start_course(request, course_id):
+#     course = Course.objects.get(id=course_id)
+#     # Create an enrollment record if it doesn't exist
+#     enrollment, created = Enrollment.objects.get_or_create(user=request.user, course=course)
+#     # Redirect to the first slide (order=0)
+#     return redirect('course_detail', course_id=course.id, slide_order=0)
+ 
+
+# # views.py
+# def complete_course(request, course_id):
+#     course = get_object_or_404(Course, id=course_id)
+#     enrollment, created = Enrollment.objects.get_or_create(user=request.user, course=course)
+#     enrollment.completed = True
+#     enrollment.save()
+#     return redirect('profile')
