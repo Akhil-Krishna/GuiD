@@ -43,6 +43,7 @@ class Notification(models.Model):
 class Course(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField()
+    image = models.ImageField(upload_to='course_images/', null=True, blank=True)
     #image = models.ImageField(upload_to='course_images/', null=True, blank=True)  # Optional course image
 
     def __str__(self):
