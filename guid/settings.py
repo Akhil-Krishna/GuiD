@@ -25,7 +25,11 @@ SECRET_KEY = 'django-insecure-pi3!u-dk4k66^xg+&49o3u@553x+b17+9#7ato0-=v8@ee6$$_
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'parthippr.pythonanywhere.com',  # Your live domain on PythonAnywhere
+    '127.0.0.1',  # For local testing
+    'localhost',  # For local testing
+]
 
 
 
@@ -63,7 +67,7 @@ ROOT_URLCONF = 'guid.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['templates'],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')], 
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
