@@ -6,84 +6,135 @@
     <title>GuiD</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
+        :root {
+            --primary-color: #007bff;
+            --secondary-color: #6c757d;
+            --light-bg: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+            --dark-bg: linear-gradient(135deg, #1e1e2f, #2c2c4d);
+            --transition-speed: 0.3s;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
             font-family: 'Inter', Arial, sans-serif;
-            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
-            transition: background-color 0.4s, color 0.4s;
+            background: var(--light-bg);
+            color: #333;
+            line-height: 1.6;
+            transition: all var(--transition-speed) ease;
+            padding-top: 80px; /* Accommodate fixed header */
         }
+
         body.dark-mode {
-            background: linear-gradient(135deg, #1e1e2f, #2c2c4d);
+            background: var(--dark-bg);
             color: #e0e0e0;
         }
-        header{
-            position: fixed;
-            /*top: 10;*/
-            z-index: 1000;
-            width: 100%;
-        }
+
+        /* Improved Navbar */
         .navbar {
-            background: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(25px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            border-radius: 0 0 10px 10px;
-            margin-bottom: 10px ;
-            transition: background-color 0.4s, box-shadow 0.4s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            transition: all var(--transition-speed) ease;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1050;
         }
+
         .navbar.dark-mode {
-            background: rgba(30, 30, 47, 0.8);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            background: rgba(30, 30, 47, 0.9);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
-        .nav-link {
-            font-size: 1rem;
-            color: #343a40 !important;
-            transition: color 0.3s, transform 0.3s;
+
+        .navbar-brand {
+            font-weight: 600;
+            color: var(--primary-color) !important;
+            transition: transform var(--transition-speed);
         }
-        .nav-link:hover {
-            color: #007bff !important;
+
+        .navbar-brand:hover {
             transform: scale(1.05);
         }
+
+        .nav-link {
+            position: relative;
+            color: #343a40 !important;
+            font-weight: 500;
+            transition: all var(--transition-speed) ease;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background-color: var(--primary-color);
+            transition: width var(--transition-speed);
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
         .nav-link.dark-mode {
             color: #e0e0e0 !important;
         }
-        .nav-link.dark-mode:hover {
-            color: #76c7f2 !important;
-        }
+
+        /* Notification Badge */
         .notification-badge {
             position: absolute;
-            top: 8px;
-            right: 8px;
-            padding: 4px 8px;
-            border-radius: 50%;
+            top: -5px;
+            right: -5px;
             background-color: #ff3e3e;
             color: white;
-            font-size: 0.8rem;
-            font-weight: bold;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 0.7rem;
         }
-        .container {           
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.7);
+
+        /* Container */
+        .container {
+            background: rgba(255, 255, 255, 0.8);
             backdrop-filter: blur(15px);
             border-radius: 15px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-top: 20px;
+            transition: all var(--transition-speed) ease;
         }
+
         .container.dark-mode {
             background: rgba(30, 30, 47, 0.9);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
         }
+
+        /* Dark Mode Toggle */
         .switch {
             position: relative;
             display: inline-block;
-            width: 50px;
-            height: 23px;
+            width: 60px;
+            height: 34px;
+            margin-left: 15px;
         }
+
         .switch input {
             opacity: 0;
             width: 0;
             height: 0;
         }
+
         .slider {
             position: absolute;
             cursor: pointer;
@@ -92,185 +143,313 @@
             right: 0;
             bottom: 0;
             background-color: #ccc;
+            transition: .4s;
             border-radius: 34px;
-            transition: 0.4s;
         }
+
         .slider:before {
             position: absolute;
             content: "";
-            height: 17px;
-            width: 18px;
+            height: 26px;
+            width: 26px;
             left: 4px;
             bottom: 4px;
             background-color: white;
+            transition: .4s;
             border-radius: 50%;
-            transition: 0.4s;
         }
+
         input:checked + .slider {
-            background-color: #4caf50;
+            background-color: var(--primary-color);
         }
+
         input:checked + .slider:before {
             transform: translateX(26px);
         }
-        footer {
-            margin-top: 20px;
-            text-align: center;
+
+        /* Chatbot Icon */
+        .chatbot-icon {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background-color: #00b5ec;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            cursor: pointer;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .chatbot-icon:hover {
+            transform: scale(1.1);
+            background-color: #00a0d6;
+        }
+
+        /* WhatsApp-like Chatbot Popup */
+        .chatbot-popup {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 350px;
+            max-height: 500px;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            display: none;
+            flex-direction: column;
+            z-index: 1100;
+            overflow: hidden;
+        }
+
+        .chatbot-popup.dark-mode {
+            background-color: #2c2c4d;
+            color: #e0e0e0;
+        }
+
+        .chatbot-header {
+            background-color: #00b5ec;
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chatbot-header.dark-mode {
+            background-color: #1e1e2f;
+        }
+
+        .chatbot-messages {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .message {
+            max-width: 80%;
+            margin-bottom: 10px;
             padding: 10px;
-            color: #7d7d7d;
+            border-radius: 10px;
+            clear: both;
         }
+
+        .user-message {
+            background-color: #dcf8c6;
+            align-self: flex-end;
+            margin-left: auto;
+        }
+
+        .ai-message {
+            background-color: #f1f0f0;
+            align-self: flex-start;
+        }
+
+        .dark-mode .user-message {
+            background-color: #2c5e3a;
+            color: #e0e0e0;
+        }
+
+        .dark-mode .ai-message {
+            background-color: #3a3a3a;
+            color: #e0e0e0;
+        }
+
+        .chatbot-input-area {
+            display: flex;
+            padding: 10px;
+            background-color: #f0f0f0;
+        }
+
+        .dark-mode .chatbot-input-area {
+            background-color: #1e1e2f;
+        }
+
+        .chatbot-input-area input {
+            flex-grow: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 20px;
+            margin-right: 10px;
+        }
+
+        .chatbot-input-area button {
+            background-color: #00b5ec;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 480px) {
+            .chatbot-popup {
+                width: calc(100% - 40px);
+                right: 20px;
+                bottom: 90px;
+            }
+        }
+
+        /* Footer */
+        footer {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 20px 0;
+            text-align: center;
+            color: var(--secondary-color);
+            margin-top: 30px;
+        }
+
         footer.dark-mode {
-            color: #bdbdbd;
+            background-color: rgba(30, 30, 47, 0.5);
+            color: #a0a0a0;
         }
-          
-        /* Floating Chatbot Icon */
-    .chatbot-icon {
-        position: fixed;
-        bottom: 30px;
-        right: 20px;
-        background-color: #00b5ec;
-        color: #fff;
-        width: 56px;
-        height: 56px;
-        border-radius: 50%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        cursor: pointer;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-        z-index: 100;
-    }
 
-    /* Chatbot Popup Window */
-    .chatbot-popup {
-        display: none;
-        position: fixed;
-        bottom: 100px;
-        right: 20px;
-        background-color: #fff;
-        border-radius: 10px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-        width: 300px;
-        padding: 20px;
-        z-index: 100;
-    }
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            body {
+                padding-top: 60px;
+            }
 
-    .chatbot-popup textarea {
-        width: 100%;
-        height: 100px;
-        resize: none;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        padding: 10px;
-        font-size: 14px;
-    }
+            .container {
+                padding: 15px;
+            }
 
-    .chatbot-popup button {
-        display: block;
-        margin-top: 10px;
-        padding: 8px 16px;
-        background-color: #08b5ea;
-        color: #fff;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-    }
+            .navbar {
+                padding: 10px 0;
+            }
+
+            .chatbot-icon {
+                width: 50px;
+                height: 50px;
+                right: 15px;
+                bottom: 15px;
+            }
+
+            .chatbot-popup {
+                width: calc(100% - 30px);
+                right: 15px;
+                bottom: 90px;
+            }
+        }
     </style>
-    {% block styling%}
-    {%endblock%}
+    {% block styling %}{% endblock %}
 </head>
 <body>
     <header>
-    <nav class="navbar navbar-expand-lg">
-        <a class="navbar-brand" href="{% url 'index' %}">GuiD</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item"><a class="nav-link" href="{% url 'courses' %}">Courses</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'questions' %}">Questions</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'question_list' %}">Forum</a></li>
-                {% if user.is_authenticated %}
-                    <li class="nav-item"><a class="nav-link" href="{% url 'resume_list' %}">Resume Builder</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'profile' %}">Profile</a></li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'notifications' %}">
-                            🔔
-                            {% if unread_notifications_count > 0 %}
-                                <span class="notification-badge">{{ unread_notifications_count }}</span>
-                            {% endif %}
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <form method="post" action="{% url 'logout' %}">
-                            {% csrf_token %}
-                            <button type="submit" class="nav-link" style="padding: 0; border: none; background: none;">
-                                Log Out
-                            </button>
-                        </form>
-                    </li>
-                {% else %}
-                    <li class="nav-item"><a class="nav-link" href="{% url 'sign_in' %}">Log In</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'sign_up' %}">Sign Up</a></li>
-                {% endif %}
-                <li class="nav-item">
-                    <label class="switch">
-                        <input id="darkModeSwitch" type="checkbox">
-                        <span class="slider"></span>
-                    </label>
-                </li>
-            </ul>
-        </div>
-    </nav>
+        <nav class="navbar navbar-expand-lg">
+            <div class="container-fluid px-4">
+                <a class="navbar-brand" href="{% url 'index' %}">GuiD</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+                    <span class="navbar-toggler-icon"><i class="fas fa-bars"></i></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ml-auto align-items-center">
+                        <li class="nav-item"><a class="nav-link" href="{% url 'courses' %}">Courses</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'questions' %}">Questions</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'question_list' %}">Forum</a></li>
+                        {% if user.is_authenticated %}
+                            <li class="nav-item"><a class="nav-link" href="{% url 'resume_list' %}">Resume Builder</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{% url 'profile' %}">Profile</a></li>
+                            <li class="nav-item">
+                                <form method="post" action="{% url 'logout' %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="nav-link" style="background:none; border:none;">
+                                        Log Out
+                                    </button>
+                                </form>
+                            </li>
+                            <li class="nav-item position-relative">
+                                <a class="nav-link" href="{% url 'notifications' %}">
+                                    <i class="fa fa-bell"></i>
+                                    {% if unread_notifications_count > 0 %}
+                                        <span class="notification-badge">{{ unread_notifications_count }}</span>
+                                    {% endif %}
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="nav-item"><a class="nav-link" href="{% url 'sign_in' %}">Log In</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{% url 'sign_up' %}">Sign Up</a></li>
+                        {% endif %}
+                        <li class="nav-item">
+                            <label class="switch">
+                                <input id="darkModeSwitch" type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
     </header>
-    
-    {# added to make content below header#}
-    <div style="min-height: 70px;">
-         
-    </div>
-    
     
     <div class="container">
         {% block content %}
         {% endblock %}
     </div>
     
+    <div class="chatbot-icon" onclick="toggleChatbot()">
+        <i class="fas fa-comment-dots"></i>
+    </div>
+
+    <!-- WhatsApp-like Chatbot Popup -->
+    <div class="chatbot-popup" id="chatbotPopup">
+        <div class="chatbot-header">
+            <h5 class="mb-0">GuiD Chatbot</h5>
+            <button class="btn btn-link text-white p-0" onclick="toggleChatbot()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="chatbot-messages" id="chatMessages">
+            <!-- Messages will be dynamically inserted here -->
+        </div>
+        
+        <div class="chatbot-input-area">
+            <input 
+                type="text" 
+                id="chatInput" 
+                placeholder="Type a message..." 
+                onkeypress="handleChatInputKeyPress(event)"
+            >
+            <button onclick="sendChatMessage()">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
     
-    
-    
-    
-    <!-- Floating Chatbot Icon -->
-                <div class="chatbot-icon" onclick="toggleChatbot()">
-                    <i class="fa fa-comments"></i>
-                </div>
-            
-    <!-- Chatbot Popup Window -->
-                <div class="chatbot-popup">
-                    <textarea placeholder="Type your message here..."></textarea>
-                    <button onclick="sendChatMessage()">Send</button>
-                </div>
     <footer>
         <p>&copy; 2024 GuiD. All rights reserved.</p>
     </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const darkModeSwitch = document.getElementById('darkModeSwitch');
             const body = document.body;
             const navbar = document.querySelector('.navbar');
             const container = document.querySelector('.container');
+            const footer = document.querySelector('footer');
 
             function toggleDarkMode(isDarkMode) {
-                if (isDarkMode) {
-                    body.classList.add('dark-mode');
-                    navbar.classList.add('dark-mode');
-                    container.classList.add('dark-mode');
-                    localStorage.setItem('darkMode', 'enabled');
-                } else {
-                    body.classList.remove('dark-mode');
-                    navbar.classList.remove('dark-mode');
-                    container.classList.remove('dark-mode');
-                    localStorage.setItem('darkMode', 'disabled');
-                }
+                [body, navbar, container, footer].forEach(el => {
+                    if (el) el.classList.toggle('dark-mode', isDarkMode);
+                });
+                localStorage.setItem('darkMode', isDarkMode ? 'enabled' : 'disabled');
             }
 
             darkModeSwitch.checked = localStorage.getItem('darkMode') === 'enabled';
@@ -280,8 +459,7 @@
                 toggleDarkMode(this.checked);
             });
         });
-    </script>
-    <script>
+
         function toggleChatbot() {
             var chatbotPopup = document.querySelector('.chatbot-popup');
             chatbotPopup.style.display = chatbotPopup.style.display === 'none' ? 'block' : 'none';
@@ -292,6 +470,116 @@
             // Call the view function named 'chatbot' with the message
             // Example: window.location.href = '/chatbot?message=' + encodeURIComponent(message);
         }
+        
+        function syncChatbotDarkMode() {
+            const chatbotPopup = document.getElementById('chatbotPopup');
+            const chatbotHeader = chatbotPopup.querySelector('.chatbot-header');
+            
+            if (document.body.classList.contains('dark-mode')) {
+                chatbotPopup.classList.add('dark-mode');
+                chatbotHeader.classList.add('dark-mode');
+            } else {
+                chatbotPopup.classList.remove('dark-mode');
+                chatbotHeader.classList.remove('dark-mode');
+            }
+        }
+
+        // Toggle Chatbot Visibility
+        function toggleChatbot() {
+            const chatbotPopup = document.getElementById('chatbotPopup');
+            chatbotPopup.style.display = 
+                chatbotPopup.style.display === 'flex' ? 'none' : 'flex';
+            
+            // Sync dark mode when opening
+            syncChatbotDarkMode();
+        }
+
+        async function sendChatMessage() {
+            const chatInput = document.getElementById('chatInput');
+            const chatMessages = document.getElementById('chatMessages');
+            const message = chatInput.value.trim();
+        
+            if (message) {
+                // Add user message
+                const userMessageEl = document.createElement('div');
+                userMessageEl.classList.add('message', 'user-message');
+                userMessageEl.textContent = message;
+                chatMessages.appendChild(userMessageEl);
+                
+                // Scroll to bottom
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+        
+                // Clear input
+                chatInput.value = '';
+        
+                try {
+                    // Send message to OpenAI API
+                    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer YOUR_OPENAI_API_KEY' // Replace with your actual API key
+                        },
+                        body: JSON.stringify({
+                            model: "gpt-3.5-turbo", // You can change the model if needed
+                            messages: [
+                                {"role": "system", "content": "You are a helpful assistant."},
+                                {"role": "user", "content": message}
+                            ]
+                        })
+                    });
+        
+                    if (!response.ok) {
+                        throw new Error('API request failed');
+                    }
+        
+                    const data = await response.json();
+                    const aiResponse = data.choices[0].message.content;
+        
+                    // Add AI response
+                    const aiMessageEl = document.createElement('div');
+                    aiMessageEl.classList.add('message', 'ai-message');
+                    aiMessageEl.textContent = aiResponse;
+                    chatMessages.appendChild(aiMessageEl);
+        
+                    // Scroll to bottom
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+        
+                } catch (error) {
+                    console.error('Error:', error);
+        
+                    // Add error message
+                    const errorMessageEl = document.createElement('div');
+                    errorMessageEl.classList.add('message', 'error-message');
+                    errorMessageEl.textContent = 'Sorry, there was an error processing your message.';
+                    chatMessages.appendChild(errorMessageEl);
+                }
+            }
+        }
+        
+        // Optional: Add event listeners for sending message
+        document.addEventListener('DOMContentLoaded', () => {
+            const sendButton = document.getElementById('sendButton');
+            const chatInput = document.getElementById('chatInput');
+        
+            if (sendButton) {
+                sendButton.addEventListener('click', sendChatMessage);
+            }
+        
+            if (chatInput) {
+                chatInput.addEventListener('keypress', (event) => {
+                    if (event.key === 'Enter') {
+                        sendChatMessage();
+                    }
+                });
+            }
+        });
+
+        // Sync dark mode on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const darkModeSwitch = document.getElementById('darkModeSwitch');
+            darkModeSwitch.addEventListener('change', syncChatbotDarkMode);
+        });
     </script>
 </body>
 </html>
