@@ -1,110 +1,231 @@
 {% extends 'main/base.html' %}
-{% block content%}
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <style>
-        
-      
-        .hero {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            padding: 2rem 4rem;
-        }
-        .hero-text {
-            flex: 1;
-            max-width: 600px;
-            margin-right: 2rem;
-        }
-        .hero-text h1 {
-            font-size: 3rem;
-            color: #2c2c2c;
-        }
-        .hero-text p {
-            margin: 1rem 0;
-            color: #555;
-        }
-        .hero-text .cta {
-            display: inline-block;
-            padding: 0.75rem 1.5rem;
-            background-color: #08b5ea;
-            color: #fff;
-            font-weight: bold;
-            text-decoration: none;
-            border-radius: 5px;
-            margin-top: 1rem;
-        }
-        .hero-image {
-            flex: 1;
-        }
-        .hero-image img {
-            max-width: 100%;
-            border-radius: 10px;
-        }
-        .features {
-            text-align: center;
-            padding: 2rem 4rem;
-            background-color: #fff;
-        }
-        .features h2 {
-            font-size: 2rem;
-            margin-bottom: 1rem;
-        }
-        .features .feature-list {
-            display: flex;
-            justify-content: space-around;
-            margin-top: 2rem;
-        }
-        .feature {
-            max-width: 300px;
-            text-align: left;
-        }
-        .feature h3 {
-            font-size: 1.25rem;
-            color: #2c2c2c;
-        }
-        .feature p {
-            color: #555;
-        }
-       
-      
-    </style>
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+    /* General Styling */
+    body {
+        font-family: 'Inter', Arial, sans-serif;
+    }
 
+    /* Hero Section */
+    .hero {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        padding: 3rem;
+        background: linear-gradient(135deg, #1984a4, #88a1b9);
+        color: white;
+    }
+    .hero-text {
+        flex: 1;
+        max-width: 600px;
+        animation: fadeInLeft 1s;
+    }
+    .hero-text h1 {
+        font-size: 3.5rem;
+        margin-bottom: 1rem;
+    }
+    .hero-text p {
+        margin: 1rem 0;
+        font-size: 1.2rem;
+    }
+    .hero-text .cta {
+        display: inline-block;
+        padding: 0.75rem 1.5rem;
+        background-color: white;
+        color: #08b5ea;
+        font-weight: bold;
+        text-decoration: none;
+        border-radius: 5px;
+        margin-top: 1rem;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .hero-text .cta:hover {
+        transform: scale(1.1);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+    .hero-image {
+        flex: 1;
+        animation: fadeInRight 1s;
+    }
+    .hero-image img {
+        max-width: 100%;
+        border-radius: 15px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
 
+    /* Features Section */
+    .features {
+        padding: 4rem 3rem;
+        background-color: #f8f9fa;
+        text-align: center;
+    }
+    .features h2 {
+        font-size: 2.5rem;
+        margin-bottom: 1.5rem;
+        animation: fadeIn 1s;
+    }
+    .features .feature-list {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+        margin-top: 2rem;
+    }
+    .feature {
+        max-width: 300px;
+        margin: 1rem;
+        animation: fadeInUp 1s;
+    }
+    .feature h3 {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+    .feature p {
+        color: #555;
+    }
 
-    <section class="hero">
-        <div class="hero-text">
-            <h1>Welcome to GuiD</h1>
-            <p>Embark on a transformative journey of learning and skill development. Our AI-powered roadmap and courses ensure you reach your goals effectively.</p>
-            <a href="#roadmap" class="cta">Explore Roadmap</a>
+    /* Additional Content Section */
+    .additional-content {
+        padding: 4rem 3rem;
+        text-align: center;
+    }
+    .additional-content h2 {
+        font-size: 2.5rem;
+        margin-bottom: 1.5rem;
+    }
+    .additional-content .card {
+        background-color: white;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .additional-content .card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Footer Call to Action */
+    .footer-cta {
+        padding: 2rem;
+        background: linear-gradient(135deg, #2086a5, #7ba7b5);
+        text-align: center;
+        color: white;
+    }
+    .footer-cta a {
+        display: inline-block;
+        padding: 0.75rem 1.5rem;
+        background-color: white;
+        color: #08b5ea;
+        font-weight: bold;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .footer-cta a:hover {
+        transform: scale(1.1);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Animations */
+    @keyframes fadeInLeft {
+        from {
+            opacity: 0;
+            transform: translateX(-50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    @keyframes fadeInRight {
+        from {
+            opacity: 0;
+            transform: translateX(50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+</style>
+
+<section class="hero">
+    <div class="hero-text">
+        <h1>Welcome to GuiD</h1>
+        <p>Embark on a transformative journey of learning and skill development. Our AI-powered roadmap and courses ensure you reach your goals effectively.</p>
+        <a href="#roadmap" class="cta">Explore Roadmap</a>
+    </div>
+    {% load static %}
+    <div class="hero-image">
+        <img src="{% static 'main/images/image3.png' %}" alt="Learning illustration">
+    </div>
+</section>
+
+<section class="features">
+    <h2>What Makes GuiD Special?</h2>
+    <div class="feature-list">
+        <div class="feature">
+            <h3>Structured Roadmap</h3>
+            <p>Follow a step-by-step path to master skills and earn badges at each stage.</p>
         </div>
-        {% load static %}
-
-        <div class="hero-image">
-            <img src="{% static 'main/images/image3.png' %}" alt="Learning illustration">
+        <div class="feature">
+            <h3>Interactive Learning</h3>
+            <p>Engage with AI-powered training and community-driven resources.</p>
         </div>
-    </section>
+        <div class="feature">
+            <h3>Personalized Reviews</h3>
+            <p>Track your progress and improve with tailored feedback.</p>
+        </div>
+    </div>
+</section>
 
-    <section class="features">
-        <h2>What Makes GuiD Special?</h2>
-        <div class="feature-list">
-            <div class="feature">
-                <h3>Structured Roadmap</h3>
-                <p>Follow a step-by-step path to master skills and earn badges at each stage.</p>
-            </div>
-            <div class="feature">
-                <h3>Interactive Learning</h3>
-                <p>Engage with AI-powered training and community-driven resources.</p>
-            </div>
-            <div class="feature">
-                <h3>Personalized Reviews</h3>
-                <p>Track your progress and improve with tailored feedback.</p>
+<section class="additional-content">
+    <h2>Start Your Learning Journey</h2>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <h3>Explore Courses</h3>
+                <p>Dive into a wide range of courses tailored to your interests and goals.</p>
             </div>
         </div>
-    </section>
+        <div class="col-md-4">
+            <div class="card">
+                <h3>Build Your Resume</h3>
+                <p>Create a professional resume and showcase your achievements.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <h3>Join the Community</h3>
+                <p>Engage with peers, share ideas, and grow together.</p>
+            </div>
+        </div>
+    </div>
+</section>
 
+<div class="footer-cta">
+    <h2>Ready to Get Started?</h2>
+    <a href="{% url 'sign_up' %}">Join GuiD Today</a>
+</div>
 
-
-
-
-   
 {% endblock %}
