@@ -140,7 +140,7 @@ from .models import Course , Slide
 def courses(request):
     courses = Course.objects.all()
     return render(request, 'main/courses.html', {'courses': courses})
-
+@login_required
 def course_detail(request, course_id, slide_order=1):
     course = get_object_or_404(Course, pk=course_id)
     slides = course.slides.all().order_by('order')
@@ -163,7 +163,7 @@ def course_detail(request, course_id, slide_order=1):
 # views.py (where users start a course)
 
 from .models import Course, Enrollment
-
+@login_required
 def start_course(request, course_id):
     course = Course.objects.get(id=course_id)
     # Create an enrollment record if it doesn't exist
@@ -172,6 +172,7 @@ def start_course(request, course_id):
     return redirect('course_detail', course_id=course.id, slide_order=0)
 
 # views.py
+@login_required
 def complete_course(request, course_id):
     course = get_object_or_404(Course, id=course_id)
     enrollment, created = Enrollment.objects.get_or_create(user=request.user, course=course)
