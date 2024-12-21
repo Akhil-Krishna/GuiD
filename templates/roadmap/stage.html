@@ -1,0 +1,78 @@
+
+
+
+
+
+
+
+
+{% extends 'main/base.html' %}
+
+{% block content %}
+<style>
+    /* Styling for smaller and more compact cards */
+    .custom-card {
+        width: 100%; /* Set a fixed width for the card */
+        margin: 10px auto; /* Add some spacing between cards */
+        padding: 10px; /* Adjust padding to make it compact */
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 3px 4px rgba(0, 0, 0, 0.2); /* Add light shadow */
+        text-align: center;
+        transition: all 0.3s ease-in-out;
+        display: flex;
+    }
+
+    .custom-card img {
+        height: 120px; /* Smaller image height */
+        object-fit: cover;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+    }
+
+    .custom-card .card-title {
+        font-size: 1rem; /* Smaller font size */
+        font-weight: bold;
+        margin: 5px 0;
+    }
+
+    .custom-card .card-text {
+        font-size: 0.85rem; /* Smaller font size */
+        color: #555;
+        margin-bottom: 10px;
+    }
+
+    .custom-card .btn {
+        font-size: 0.85rem; /* Smaller button text */
+        padding: 5px 10px; /* Compact button size */
+    }
+
+    /* Container adjustments */
+    .course-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px; /* Add spacing between cards */
+    }
+
+    .custom-card:hover {
+        transform: scale(1.05); /* Hover effect */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+</style>
+
+<h1 class="text-center my-4">Stage {{id}}</h1>
+
+<div class="container course-container">
+    {% for course in courses %}
+    <div class="custom-card card">
+   
+        <div class="card-body">
+            <h5 class="card-title">{{ course.title }}</h5>
+            <p class="card-text">{{ course.description|truncatewords:15 }}</p>
+            <a href="#" class="btn btn-primary" style="width: 100%;">Start</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

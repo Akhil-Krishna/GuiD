@@ -423,7 +423,7 @@
                 placeholder="Type a message..." 
                 onkeypress="handleChatInputKeyPress(event)"
             >
-            <button onclick="sendChatMessage()">
+            <button id="sendButton" onclick="sendChatMessage()">
                 <i class="fas fa-paper-plane"></i>
             </button>
         </div>
@@ -494,92 +494,115 @@
             syncChatbotDarkMode();
         }
 
-        async function sendChatMessage() {
-            const chatInput = document.getElementById('chatInput');
-            const chatMessages = document.getElementById('chatMessages');
-            const message = chatInput.value.trim();
-        
-            if (message) {
-                // Add user message
-                const userMessageEl = document.createElement('div');
-                userMessageEl.classList.add('message', 'user-message');
-                userMessageEl.textContent = message;
-                chatMessages.appendChild(userMessageEl);
-                
-                // Scroll to bottom
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-        
-                // Clear input
-                chatInput.value = '';
-        
-                try {
-                    // Send message to OpenAI API
-                    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': 'Bearer YOUR_OPENAI_API_KEY' // Replace with your actual API key
-                        },
-                        body: JSON.stringify({
-                            model: "gpt-3.5-turbo", // You can change the model if needed
-                            messages: [
-                                {"role": "system", "content": "You are a helpful assistant."},
-                                {"role": "user", "content": message}
-                            ]
-                        })
-                    });
-        
-                    if (!response.ok) {
-                        throw new Error('API request failed');
-                    }
-        
-                    const data = await response.json();
-                    const aiResponse = data.choices[0].message.content;
-        
-                    // Add AI response
-                    const aiMessageEl = document.createElement('div');
-                    aiMessageEl.classList.add('message', 'ai-message');
-                    aiMessageEl.textContent = aiResponse;
-                    chatMessages.appendChild(aiMessageEl);
-        
-                    // Scroll to bottom
-                    chatMessages.scrollTop = chatMessages.scrollHeight;
-        
-                } catch (error) {
-                    console.error('Error:', error);
-        
-                    // Add error message
-                    const errorMessageEl = document.createElement('div');
-                    errorMessageEl.classList.add('message', 'error-message');
-                    errorMessageEl.textContent = 'Sorry, there was an error processing your message.';
-                    chatMessages.appendChild(errorMessageEl);
-                }
-            }
-        }
-        
-        // Optional: Add event listeners for sending message
-        document.addEventListener('DOMContentLoaded', () => {
-            const sendButton = document.getElementById('sendButton');
-            const chatInput = document.getElementById('chatInput');
-        
-            if (sendButton) {
-                sendButton.addEventListener('click', sendChatMessage);
-            }
-        
-            if (chatInput) {
-                chatInput.addEventListener('keypress', (event) => {
-                    if (event.key === 'Enter') {
-                        sendChatMessage();
-                    }
-                });
-            }
-        });
+        let messageHistory = [];
 
-        // Sync dark mode on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            const darkModeSwitch = document.getElementById('darkModeSwitch');
-            darkModeSwitch.addEventListener('change', syncChatbotDarkMode);
+async function sendChatMessage() {
+    const chatInput = document.getElementById('chatInput');
+    const chatMessages = document.getElementById('chatMessages');
+    const message = chatInput.value.trim();
+
+    if (message) {
+        // Add user message
+        const userMessageEl = document.createElement('div');
+        userMessageEl.classList.add('message', 'user-message');
+        userMessageEl.textContent = message;
+        chatMessages.appendChild(userMessageEl);
+        
+        // Add to message history
+        messageHistory.push({"role": "user", "content": message});
+        
+        // Scroll to bottom
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        // Clear input
+        chatInput.value = '';
+
+        try {
+            // Show typing indicator
+            const typingIndicator = document.createElement('div');
+            typingIndicator.classList.add('message', 'ai-message', 'typing');
+            typingIndicator.textContent = '...';
+            chatMessages.appendChild(typingIndicator);
+
+            // Send message to Django backend
+            const response = await fetch('/chat/', {  // Update this URL to match your Django URL configuration
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    message: message,
+                    history: messageHistory
+                })
+            });
+
+            // Remove typing indicator
+            typingIndicator.remove();
+
+            if (!response.ok) {
+                throw new Error('Failed to get response');
+            }
+
+            const data = await response.json();
+            
+            if (data.status === 'success') {
+                // Add AI response
+                const aiMessageEl = document.createElement('div');
+                aiMessageEl.classList.add('message', 'ai-message');
+                
+                aiMessageEl.textContent = data.response;
+                chatMessages.appendChild(aiMessageEl);
+                
+                // Add to message history
+                messageHistory.push({"role": "assistant", "content": data.response});
+            } else {
+                throw new Error(data.error || 'Unknown error occurred');
+            }
+
+        } catch (error) {
+            console.error('Error:', error);
+
+            // Add error message
+            const errorMessageEl = document.createElement('div');
+            errorMessageEl.classList.add('message', 'error-message');
+            errorMessageEl.textContent = 'Sorry, there was an error processing your message.';
+            chatMessages.appendChild(errorMessageEl);
+        }
+
+        // Scroll to bottom
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+}
+
+// Event listeners
+document.addEventListener('DOMContentLoaded', () => {
+    const sendButton = document.getElementById('sendButton');
+    const chatInput = document.getElementById('chatInput');
+
+    if (sendButton) {
+        sendButton.addEventListener('click', sendChatMessage);
+    }
+
+    if (chatInput) {
+        chatInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                sendChatMessage();
+            }
         });
-    </script>
+    }
+
+    // Dark mode sync
+    const darkModeSwitch = document.getElementById('darkModeSwitch');
+    if (darkModeSwitch) {
+        darkModeSwitch.addEventListener('change', syncChatbotDarkMode);
+    }
+});
+
+function syncChatbotDarkMode(event) {
+    const isDarkMode = event?.target?.checked ?? false;
+    document.documentElement.setAttribute('data-theme', isDarkMode ? 'dark' : 'light');
+}
+</script>
+
 </body>
 </html>

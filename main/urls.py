@@ -22,5 +22,5 @@ urlpatterns = [
     path('profile/', profile, name='profile'),
     path('notifications/', notifications, name='notifications'),
     path('notifications/read/<int:notification_id>/', mark_as_read, name='mark_as_read'),
-    
+    path('chat/', views.chat_with_llama, name='chat_with_llama'),
 ]

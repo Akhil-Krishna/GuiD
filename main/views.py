@@ -181,6 +181,49 @@ def complete_course(request, course_id):
     return redirect('profile')
 
 
+
+
+
+# views.py
+import json
+import requests
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def chat_with_llama(request):
+    try:
+        data = json.loads(request.body)
+        user_message = data.get('message')
+        
+        # Ollama runs locally on port 11434 by default
+        response = requests.post('http://localhost:11434/api/generate', 
+            json={
+                "model": "llama3.2:1b",
+                "prompt": user_message,
+                "stream": False
+            })
+        
+        if response.status_code == 200:
+            return JsonResponse({
+                'response': response.json()['response'],
+                'status': 'success'
+            })
+        else:
+            return JsonResponse({
+                'error': 'Failed to get response from Llama-2',
+                'status': 'error'
+            }, status=500)
+            
+    except Exception as e:
+        return JsonResponse({
+            'error': str(e),
+            'status': 'error'
+        }, status=500)
+
+
 ### Rather than storing content in db we can use md 
 
 # from django.shortcuts import render, get_object_or_404, redirect

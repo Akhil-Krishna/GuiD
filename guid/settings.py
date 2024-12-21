@@ -48,7 +48,8 @@ INSTALLED_APPS = [
     'main',
     'channels',
     'resume_builder',
-    'forum'
+    'forum',
+    'roadmap'
     
 ]
 
