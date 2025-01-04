@@ -70,7 +70,7 @@
         <div class="card-body">
             <h5 class="card-title">{{ course.title }}</h5>
             <p class="card-text">{{ course.description|truncatewords:15 }}</p>
-            <a href="#" class="btn btn-primary" style="width: 100%;">Start</a>
+            <a href="{% url 'start_course' stage course.id %}" class="btn btn-primary" style="width: 100%;">Start</a>
         </div>
     </div>
     {% endfor %}

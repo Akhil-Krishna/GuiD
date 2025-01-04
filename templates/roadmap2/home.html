@@ -1,0 +1,10 @@
+{% extends "main/base.html" %}
+
+{% block content %}
+<h1>Roadmap</h1>
+<ul>
+    {% for stage in stages %}
+    <li><a href="{% url 'stage_detail' stage.id %}">{{ stage.name }}</a></li>
+    {% endfor %}
+</ul>
+{% endblock %}

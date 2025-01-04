@@ -49,8 +49,9 @@ INSTALLED_APPS = [
     'channels',
     'resume_builder',
     'forum',
-    'roadmap'
-    
+    'roadmap',
+    'roadmap2'
+        
 ]
 
 MIDDLEWARE = [

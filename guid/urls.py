@@ -22,7 +22,8 @@ urlpatterns = [
     path('',include('main.urls')),
     path('resume/', include('resume_builder.urls')),
     path('forum/',include('forum.urls')),
-    path('roadmap/',include('roadmap.urls'))
+    #path('roadmap/',include('roadmap.urls')),
+    path('roadmap/',include('roadmap2.urls'))
 ]
 
 
