@@ -1,0 +1,149 @@
+{% extends "main/base.html" %}
+{% load roadmap_filters %}
+
+{% block styling %}
+<style>
+    .roadmap-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        text-align: center;
+    }
+
+    .roadmap {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .stage-checkpoint {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 20px 0;
+        width: 100%;
+        transition: transform 0.3s, background-color 0.3s;
+    }
+
+    .stage-link {
+        text-decoration: none;
+        color: inherit;
+        display: flex;
+        align-items: center;
+        width: 100%;
+        padding: 20px;
+        border-radius: 10px;
+        background-color: #ffffff;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .stage-link:hover {
+        transform: scale(1.05);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .circle {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background-color: #4caf50;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5em;
+        margin-right: 20px;
+        transition: background-color 0.3s;
+    }
+
+    .stage-link:hover .circle {
+        background-color: #388e3c;
+    }
+
+    .stage-details {
+        flex-grow: 1;
+        text-align: left;
+    }
+
+    .stage-details h2 {
+        margin: 0;
+        font-size: 1.2em;
+        transition: color 0.3s;
+    }
+
+    .stage-details p {
+        margin: 5px 0 0;
+        color: #666;
+        transition: color 0.3s;
+    }
+
+    .stage-link:hover .stage-details h2,
+    .stage-link:hover .stage-details p {
+        color: #333;
+    }
+
+    .badge {
+        max-width: 50px;
+        max-height: 50px;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+
+    .stage-checkpoint {
+        animation: fadeIn 0.5s ease-in-out;
+    }
+
+    @media (max-width: 600px) {
+        .roadmap {
+            flex-direction: column;
+        }
+
+        .stage-checkpoint {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .circle {
+            margin-bottom: 10px;
+        }
+
+        .stage-details {
+            text-align: center;
+        }
+    }
+</style>
+
+{% endblock %}
+
+{% block content %}
+    <div class="roadmap-container">
+        <h1>Roadmap Stages</h1>
+        <div class="roadmap">
+            {% for stage in stages %}
+                <div class="stage-checkpoint">
+                    <a href="{% url 'roadmap_course' stage.id 1 %}" class="stage-link">
+                        <div class="circle">{{ forloop.counter }}</div>
+                        <div class="stage-details">
+                            <h2>{{ stage.name }}</h2>
+                            <p>{{ stage.description }}</p>
+                            {% if progress|dict_get:stage.id %}
+                                {% if progress|dict_get:stage.id.badge_earned %}
+                                    <img src="{{ progress|dict_get:stage.id.badge_image.url }}" alt="Badge for {{ stage.name }}" class="badge" />
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
+

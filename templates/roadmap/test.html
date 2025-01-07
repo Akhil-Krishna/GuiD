@@ -1,0 +1,32 @@
+{% extends "main/base.html" %}
+{% block content %}
+<h1>{{ stage.name }} - Stage Test</h1>
+<form method="post">
+    {% csrf_token %}
+    <ul>
+        {% for question in questions %}
+        <li>
+            <p>{{ question.question_text }}</p>
+            
+                <label>
+                    <input type="radio" name="question_{{ question.id }}" value="{{ question.option_a }}">
+                    {{ question.option_a }}
+                </label> <br>
+                <label>
+                    <input type="radio" name="question_{{ question.id }}" value="{{ question.option_b }}">
+                    {{ question.option_b }}
+                </label><br>
+                <label>
+                    <input type="radio" name="question_{{ question.id }}" value="{{ question.option_c }}">
+                    {{ question.option_c }}
+                </label><br>
+                <label>
+                    <input type="radio" name="question_{{ question.id }}" value="{{ question.option_d }}">
+                    {{ question.option_d }}
+                </label><br>
+        </li>
+        {% endfor %}
+    </ul>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+{% endblock %}

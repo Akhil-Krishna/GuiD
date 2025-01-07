@@ -1,0 +1,10 @@
+
+{% extends "main/base.html" %}
+
+{% block content %}
+<h1>{{ course.title }}</h1>
+<p>{{ course.description }}</p>
+<nav>
+    <a href="{% url 'roadmap_slide' course.id 1 %}" class="btn btn-primary">Start Course</a>
+</nav>
+{% endblock %}
