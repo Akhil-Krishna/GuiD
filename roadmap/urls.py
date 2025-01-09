@@ -2,7 +2,7 @@
 from django.urls import path
 
 
-from roadmap.views import RoadmapStageView ,  RoadmapCourseView , RoadmapSlideView,RoadmapTestView
+from roadmap.views import RoadmapStageView ,  RoadmapCourseView , RoadmapSlideView,RoadmapTestView 
 urlpatterns = [
     path('', RoadmapStageView.as_view(), name='roadmap_stages'),
     path('stage/<int:stage_id>/course/<int:course_order>/', RoadmapCourseView.as_view(), name='roadmap_course'),

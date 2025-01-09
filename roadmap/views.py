@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.http import JsonResponse
 
-from .models import RoadmapCourse,RoadmapSlide,RoadmapStage,UserProgress,RoadmapTest,TestQuestion
+from .models import RoadmapCourse,RoadmapSlide,RoadmapStage,UserProgress,RoadmapTest,TestQuestion,TestAttempt ,UserBadge
 class RoadmapStageView(View):
     @method_decorator(login_required)
     def get(self, request):
@@ -72,16 +72,16 @@ from django.utils.decorators import method_decorator
 from django.contrib import messages
 from django.urls import reverse
 from django.http import HttpResponseForbidden
-
+from django.db.models import Max
 class RoadmapTestView(View):
     @method_decorator(login_required)
     def get(self, request, stage_id):
         stage = get_object_or_404(RoadmapStage, id=stage_id)
-        
+
         # Check if user has completed all courses in the stage
         user_progress = get_object_or_404(UserProgress, user=request.user, stage=stage)
         last_course = RoadmapCourse.objects.filter(stage=stage).order_by('-order').first()
-        
+
         if not user_progress.current_course or user_progress.current_course.order < last_course.order:
             messages.error(request, "Please complete all courses before taking the test.")
             return redirect('roadmap_stages')
@@ -90,27 +90,27 @@ class RoadmapTestView(View):
         questions = list(TestQuestion.objects.filter(test=test))
         total_questions = len(questions)
 
-        # Get current question number from session or start with first question
+        # Get current question number from session or start with the first question
         current_question_idx = request.session.get(f'test_{test.id}_current_question', 0)
-        
+
         # Get previously saved answers from session
         saved_answers = request.session.get(f'test_{test.id}_answers', {})
-        
-        # Get current question
+
+        # Get the current question
         current_question = questions[current_question_idx]
-        
+
         # Check if this is the first/last question
         is_first_question = current_question_idx == 0
         is_last_question = current_question_idx == total_questions - 1
 
-        # Create options list for template
+        # Add options for the current question
         options = [
             ('A', current_question.option_a),
             ('B', current_question.option_b),
             ('C', current_question.option_c),
             ('D', current_question.option_d),
         ]
-        
+
         context = {
             'stage': stage,
             'question': current_question,
@@ -119,11 +119,10 @@ class RoadmapTestView(View):
             'is_first_question': is_first_question,
             'is_last_question': is_last_question,
             'selected_option': saved_answers.get(str(current_question.id)),
-            'options': options,  # Add options to context
+            'options': options,  # Pass the options to the template
         }
-        
-        return render(request, 'roadmap/test_question.html', context)
 
+        return render(request, 'roadmap/test_question.html', context)
     @method_decorator(login_required)
     def post(self, request, stage_id):
         stage = get_object_or_404(RoadmapStage, id=stage_id)
@@ -131,8 +130,9 @@ class RoadmapTestView(View):
         questions = list(TestQuestion.objects.filter(test=test))
         total_questions = len(questions)
 
-        # Handle navigation between questions
+        # Keep the navigation logic as is until submission...
         if 'next' in request.POST or 'previous' in request.POST:
+            # ... (keep existing navigation code) ...
             # Save current answer
             current_question_idx = request.session.get(f'test_{test.id}_current_question', 0)
             current_question = questions[current_question_idx]
@@ -152,56 +152,90 @@ class RoadmapTestView(View):
             elif 'previous' in request.POST and current_question_idx > 0:
                 request.session[f'test_{test.id}_current_question'] = current_question_idx - 1
             
+            
             return redirect('roadmap_test', stage_id=stage_id)
 
-        # Handle test submission
+        # Modified submission handling
         elif 'submit' in request.POST:
             saved_answers = request.session.get(f'test_{test.id}_answers', {})
             
-            # Save the last question's answer if provided
+            # Save the last answer if provided
             current_question_idx = request.session.get(f'test_{test.id}_current_question', 0)
             current_question = questions[current_question_idx]
             selected_option = request.POST.get('selected_option')
             if selected_option:
                 saved_answers[str(current_question.id)] = selected_option
-            
+
             # Calculate score
             correct_answers = 0
+            question_results = []  # Track individual question results
             for question in questions:
-                if (saved_answers.get(str(question.id)) == question.correct_option):
+                is_correct = saved_answers.get(str(question.id)) == question.correct_option
+                if is_correct:
                     correct_answers += 1
+                question_results.append({
+                    'question': question,
+                    'selected': saved_answers.get(str(question.id)),
+                    'correct': is_correct
+                })
 
             score_percentage = (correct_answers / total_questions) * 100
+            passed = score_percentage >= test.passing_score
+
+            # Record the attempt
+            TestAttempt.objects.create(
+                user=request.user,
+                test=test,
+                score=score_percentage,
+                passed=passed
+            )
+
+            # Get previous best score
+            best_score = TestAttempt.objects.filter(
+                user=request.user,
+                test=test
+            ).aggregate(Max('score'))['score__max']
 
             # Clear test session data
             for key in list(request.session.keys()):
                 if key.startswith(f'test_{test.id}'):
                     del request.session[key]
 
-            # Update user progress based on score
-            user_progress = get_object_or_404(UserProgress, user=request.user, stage=stage)
-            if score_percentage >= test.passing_score:
+            # Update progress if passed
+            if passed:
+                user_progress = get_object_or_404(UserProgress, user=request.user, stage=stage)
                 user_progress.is_stage_completed = True
                 user_progress.badge_earned = True
                 user_progress.save()
-                
-                # Get next stage if exists
-                next_stage = RoadmapStage.objects.filter(id__gt=stage.id).first()
-                if next_stage:
-                    messages.success(request, 
-                        f'Congratulations! You passed with {score_percentage:.1f}%. Moving to next stage!')
-                    return redirect('roadmap_course', 
-                                 stage_id=next_stage.id, 
-                                 course_order=1)
-                else:
-                    messages.success(request, 
-                        f'Congratulations! You completed all stages with {score_percentage:.1f}%!')
-                    return redirect('roadmap_stages')
-            else:
-                messages.error(request, 
-                    f'You scored {score_percentage:.1f}%. Required: {test.passing_score}%. Please try again.')
-                return redirect('roadmap_course', 
-                             stage_id=stage.id, 
-                             course_order=1)
+
+                # Create badge record
+                UserBadge.objects.get_or_create(
+                    user=request.user,
+                    stage=stage
+                )
+
+            # Get next stage if exists
+            next_stage = RoadmapStage.objects.filter(id__gt=stage.id).first()
+            
+            # Prepare improvement tips
+            tips = [
+                "Review the course material carefully",
+                "Take notes during the courses",
+                "Practice with similar examples",
+                "Focus on understanding concepts rather than memorizing"
+            ]
+
+            return render(request, 'roadmap/test_result.html', {
+                'stage': stage,
+                'score': score_percentage,
+                'passed': passed,
+                'best_score': best_score,
+                'passing_score': test.passing_score,
+                'next_stage': next_stage,
+                'tips': tips if not passed else None,
+                'badge_image': stage.badge_image if passed else None,
+                'total_questions': total_questions,
+                'correct_answers': correct_answers,
+            })
 
         return redirect('roadmap_test', stage_id=stage_id)

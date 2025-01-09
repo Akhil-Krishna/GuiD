@@ -1,4 +1,6 @@
 from django.shortcuts import render, get_object_or_404
+
+from roadmap.models import RoadmapStage, UserBadge, UserProgress
 from .models import CodingQuestion
 
 def index(request):
@@ -89,19 +91,46 @@ def sign_in(request):
 
 
 from .models import Enrollment
+
+
+# views.py
+
 def profile(request):
+    # Existing enrollment data
     enrollments = Enrollment.objects.filter(user=request.user)
     total_enrolled = enrollments.count()
     completed_courses = enrollments.filter(completed=True).count()
-
+    
+    # Get user's badges with stage information
+    earned_badges = UserBadge.objects.filter(user=request.user).select_related('stage').order_by('earned_date')
+    
+    # Get current roadmap progress
+    current_progress = UserProgress.objects.filter(
+        user=request.user,
+        is_stage_completed=False
+    ).select_related('stage', 'current_course').first()
+    
+    # Calculate overall roadmap progress
+    total_stages = RoadmapStage.objects.count()
+    completed_stages = UserProgress.objects.filter(
+        user=request.user,
+        is_stage_completed=True
+    ).count()
+    
+    # Calculate progress percentage
+    progress_percentage = (completed_stages / total_stages * 100) if total_stages > 0 else 0
+    
     context = {
         'user': request.user,
         'total_enrolled': total_enrolled,
         'completed_courses': completed_courses,
+        'earned_badges': earned_badges,
+        'current_progress': current_progress,
+        'completed_stages': completed_stages,
+        'total_stages': total_stages,
+        'progress_percentage': progress_percentage,
     }
-    return render(request, 'main/profile.html', context)
-
-
+    return render(request, 'main/profile_test.html', context)
 
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
