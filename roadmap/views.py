@@ -6,43 +6,243 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.http import JsonResponse
 
+
+#myupdate
+
+
+
+
+
+
 from .models import RoadmapCourse,RoadmapSlide,RoadmapStage,UserProgress,RoadmapTest,TestQuestion,TestAttempt ,UserBadge
 class RoadmapStageView(View):
     @method_decorator(login_required)
     def get(self, request):
         stages = RoadmapStage.objects.all()
-        progress = {stage.id: UserProgress.objects.filter(user=request.user, stage=stage).first() for stage in stages}
-        return render(request, 'roadmap/stages.html', {'stages': stages, 'progress': progress})
+        progress_dict = {}
+        
+        # Get all user progress records
+        user_progresses = UserProgress.objects.filter(user=request.user)
+        
+        # First stage is always accessible
+        first_stage = stages.first()
+        if first_stage:
+            progress_dict[first_stage.id] = {
+                'accessible': True,
+                'progress': user_progresses.filter(stage=first_stage).first()
+            }
+        
+        # Process remaining stages
+        completed_stages = 0  # Counter for completed stages
+        for index, stage in enumerate(stages):
+            progress = user_progresses.filter(stage=stage).first()
+            accessible = False
+            
+            if index == 0:  # First stage is always accessible
+                accessible = True
+            else:  # Other stages depend on the completion of the previous stage
+                previous_stage = stages[index - 1]
+                previous_progress = user_progresses.filter(stage=previous_stage).first()
+                accessible = previous_progress and previous_progress.is_stage_completed
+            
+            # Check if the current stage is completed
+            if progress and progress.is_stage_completed:
+                completed_stages += 1
+            
+            progress_dict[stage.id] = {
+                'accessible': accessible,
+                'progress': progress
+            }
+        
+        # Calculate progress percentage
+        total_stages = stages.count()
+        progress_percentage = (completed_stages / total_stages) * 100 if total_stages > 0 else 0
+
+        return render(request, 'roadmap/stages.html', {
+            'stages': stages,
+            'progress_dict': progress_dict,
+            'progress_percentage': progress_percentage,
+        })
 
 
+#fourth
+#third update
+
+
+
+
+# class RoadmapCourseView(View):
+#     @method_decorator(login_required)
+#     def get(self, request, stage_id, course_order):
+#         stage = get_object_or_404(RoadmapStage, id=stage_id)
+#         course = get_object_or_404(RoadmapCourse, stage=stage, order=course_order)
+#         progress, created = UserProgress.objects.get_or_create(user=request.user, stage=stage)
+#         if progress.current_course != course and not progress.is_stage_completed:
+#             progress.current_course = course
+#             progress.save()
+#         return render(request, 'roadmap/course.html', {'stage': stage, 'course': course})
+#sixthee
+
+
+class RoadmapCourseList(View):
+    @method_decorator(login_required)
+    def get(self, request, stage_id ,course_order=1):
+        stage = get_object_or_404(RoadmapStage, id=stage_id)
+        course_list=RoadmapCourse.objects.filter(stage=stage).values()
+        
+        progress, created = UserProgress.objects.get_or_create(
+            user=request.user,
+            stage=stage,
+            defaults={'current_course': None, 'current_slide': None}
+        )
+
+        # If user completed previous course but hasn't moved to next course
+        if course_order == 1 and not progress.is_stage_completed:
+            # Find the last incomplete course or the last course they were on
+            current_course = progress.current_course
+            if current_course and current_course.order > 1:
+                return redirect('roadmap_course', stage_id=stage_id, course_order=current_course.order)
+
+        # Get the requested course
+        course = get_object_or_404(RoadmapCourse, stage=stage, order=course_order)
+        
+        # If switching to a new course, reset slide progress
+        if progress.current_course != course and not progress.is_stage_completed:
+            progress.current_course = course
+            progress.current_slide = None
+            progress.save()
+
+        # If user has a current_slide in THIS course, redirect to that
+        if progress.current_slide and progress.current_slide.course == course:
+            return redirect('roadmap_slide', course_id=course.id, slide_order=progress.current_slide.order)
+        
+        total_slides = RoadmapSlide.objects.filter(course=course).count()
+        first_slide = RoadmapSlide.objects.filter(course=course).order_by('order').first()
+
+        
+        return render(request,"roadmap/list.html",context={"course_list":course_list,
+                                                           'stage': stage, 
+            'course': course,
+            'total_slides': total_slides,
+            'first_slide': first_slide,
+            'has_progress': bool(progress.current_slide and progress.current_slide.course == course),
+            'progress': progress
+                                                           
+                                                           })
+        
+# views.py
+class StageCourseListView(View):
+    @method_decorator(login_required)
+    def get(self, request, stage_id):
+        stage = get_object_or_404(RoadmapStage, id=stage_id)
+        courses = RoadmapCourse.objects.filter(stage=stage).order_by('order')
+        
+        progress, created = UserProgress.objects.get_or_create(
+            user=request.user, 
+            stage=stage,
+            defaults={'current_course': None}
+        )
+        
+        courses_status = []
+        current_course_order = progress.current_course.order if progress.current_course else 0
+        
+        for course in courses:
+            status = {
+                'course': course,
+                'status': 'locked',  # default status
+            }
+            
+            # First course is always available
+            if course.order == 1:
+                status['status'] = 'start' if current_course_order == 0 else 'complete'
+            # Current course
+            elif course.order == current_course_order:
+                status['status'] = 'in_progress'
+            # Completed courses - now accessible
+            elif course.order < current_course_order:
+                status['status'] = 'complete'
+            # Next available course
+            elif course.order == current_course_order + 1:
+                status['status'] = 'start'
+            
+            # Make completed courses clickable
+            status['clickable'] = status['status'] in ['complete', 'in_progress', 'start']
+            
+            courses_status.append(status)
+        
+        return render(request, 'roadmap/stage_courses.html', {
+            'stage': stage,
+            'courses_status': courses_status,
+            'progress': progress,
+        })
+        
+#changing this view
 class RoadmapCourseView(View):
     @method_decorator(login_required)
     def get(self, request, stage_id, course_order):
         stage = get_object_or_404(RoadmapStage, id=stage_id)
+        
+        # Get or create progress for new users
+        progress, created = UserProgress.objects.get_or_create(
+            user=request.user,
+            stage=stage,
+            defaults={'current_course': None, 'current_slide': None}
+        )
+        # delete if and make elif if
         course = get_object_or_404(RoadmapCourse, stage=stage, order=course_order)
-        progress, created = UserProgress.objects.get_or_create(user=request.user, stage=stage)
+        
+        if course_order==1:
+            return redirect('roadmap_slide', course_id=course.id, slide_order=1)
+        
+
+        # If user completed previous course but hasn't moved to next course
+        elif course_order == 1 and not progress.is_stage_completed:
+            # Find the last incomplete course or the last course they were on
+            current_course = progress.current_course
+            if current_course and current_course.order > 1:
+                return redirect('roadmap_course', stage_id=stage_id, course_order=current_course.order)
+
+        # Get the requested course
+        course = get_object_or_404(RoadmapCourse, stage=stage, order=course_order)
+        
+        
+        
+        # If switching to a new course, reset slide progress
         if progress.current_course != course and not progress.is_stage_completed:
             progress.current_course = course
+            progress.current_slide = None
             progress.save()
-        return render(request, 'roadmap/course.html', {'stage': stage, 'course': course})
 
+        # If user has a current_slide in THIS course, redirect to that
+        if progress.current_slide and progress.current_slide.course == course:
+            return redirect('roadmap_slide', course_id=course.id, slide_order=progress.current_slide.order)
+        
+        total_slides = RoadmapSlide.objects.filter(course=course).count()
+        first_slide = RoadmapSlide.objects.filter(course=course).order_by('order').first()
 
-class RoadmapSlideView(View):
-    @method_decorator(login_required)
-    def get(self, request, course_id, slide_order):
-        course = get_object_or_404(RoadmapCourse, id=course_id)
-        slide = get_object_or_404(RoadmapSlide, course=course, order=slide_order)
-        slides = course.slides.all()
-        next_slide = slides.filter(order__gt=slide.order).first()
-        prev_slide = slides.filter(order__lt=slide.order).last()
-        return render(request, 'roadmap/slide.html', {'slide': slide, 'next_slide': next_slide, 'prev_slide': prev_slide})
-
+        return render(request, 'roadmap/course.html', {
+            'stage': stage, 
+            'course': course,
+            'total_slides': total_slides,
+            'first_slide': first_slide,
+            'has_progress': bool(progress.current_slide and progress.current_slide.course == course),
+            'progress': progress
+        })
 class RoadmapSlideView(View):
     @method_decorator(login_required)
     def get(self, request, course_id, slide_order, *args, **kwargs):
-        course = RoadmapCourse.objects.get(id=course_id)
-        slide = RoadmapSlide.objects.get(course=course, order=slide_order)
+        course = get_object_or_404(RoadmapCourse, id=course_id)
+        slide = get_object_or_404(RoadmapSlide, course=course, order=slide_order)
         slides = RoadmapSlide.objects.filter(course=course).order_by("order")
+        
+        # Update user's current slide
+        progress = get_object_or_404(UserProgress, 
+            user=request.user, 
+            stage=course.stage
+        )
+        progress.current_slide = slide
+        progress.save()
+
         prev_slide = slides.filter(order__lt=slide_order).last()
         next_slide = slides.filter(order__gt=slide_order).first()
         
@@ -56,12 +256,11 @@ class RoadmapSlideView(View):
             "prev_slide": prev_slide,
             "next_slide": next_slide,
             "is_last_course": is_last_course,
+            "course": course,
         }
         return render(request, "roadmap/slide.html", context)
 
-
-
-
+#fifth update
 
 
 

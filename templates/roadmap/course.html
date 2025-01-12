@@ -4,7 +4,18 @@
 {% block content %}
 <h1>{{ course.title }}</h1>
 <p>{{ course.description }}</p>
-<nav>
-    <a href="{% url 'roadmap_slide' course.id 1 %}" class="btn btn-primary">Start Course</a>
-</nav>
+{% if not has_progress and first_slide %}
+<a href="{% url 'roadmap_slide' course.id first_slide.order %}" class="btn btn-primary">
+    Start Course
+</a>
+{% elif has_progress %}
+<a href="{% url 'roadmap_slide' course.id progress.current_slide.order %}" class="btn btn-primary">
+    Resume Course
+</a>
+{% endif %}
+
+<div class="course-info">
+<p>Total Slides: {{ total_slides }}</p>
+</div>
+
 {% endblock %}

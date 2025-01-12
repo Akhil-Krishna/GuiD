@@ -4,7 +4,7 @@
 {% block content %}
 <h1>Slide {{ slide.order }}</h1>
 <div>
-    <p>{{ slide.content }}</p>
+    <p>{{ slide.content|safe }}</p>
 </div>
 
 <div class="navigation">

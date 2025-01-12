@@ -1,0 +1,23 @@
+{% extends 'main/base.html'%}
+
+{% block content %}
+    <h2>Courses</h2>
+    {% for course in course_list %}
+        <div style="margin:20px; border-radius : 20px; width:95%;">
+            <h3>{{ course.title }}</h3>
+            <p>{{ course.description }}</p>
+            {% if not has_progress and first_slide %}
+            <a href="{% url 'roadmap_course' course.id first_slide.order %}" class="btn btn-primary">
+                Start Course
+            </a>
+            {% elif has_progress %}
+            <a href="{% url 'roadmap_course' course.id progress.current_slide.order %}" class="btn btn-primary">
+                Resume Course
+            </a>
+            {% endif %}
+
+            
+
+        </div>
+    {% endfor %}
+{% endblock %}

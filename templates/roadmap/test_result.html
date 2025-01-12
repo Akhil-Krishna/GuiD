@@ -49,11 +49,11 @@
         </div>
         {% endif %}
 
-        <!-- Navigation Buttons -->
+        <!-- Navigation Buttons my update-->
         <div class="flex justify-center space-x-4">
             {% if passed %}
                 {% if next_stage %}
-                <a href="{% url 'roadmap_course' stage_id=next_stage.id course_order=1 %}">
+                <a href="{% url 'roadmap_stages' %}">
                     Start Next Stage
                 </a>
                 {% else %}

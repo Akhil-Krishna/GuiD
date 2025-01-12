@@ -74,7 +74,7 @@ class UserProgress(models.Model):
     current_course = models.ForeignKey(RoadmapCourse, null=True, blank=True, on_delete=models.SET_NULL)
     is_stage_completed = models.BooleanField(default=False)  # If the stage is fully completed
     badge_earned = models.BooleanField(default=False)  # If the badge is earned for this stage
-
+    current_slide = models.ForeignKey(RoadmapSlide, null=True, blank=True, on_delete=models.SET_NULL) 
     class Meta:
         unique_together = ('user', 'stage')
 

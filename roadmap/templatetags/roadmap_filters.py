@@ -24,3 +24,7 @@ def mul(value, arg):
         return float(value) * float(arg)
     except ValueError:
         return ''
+    
+@register.filter
+def get(dictionary, key):
+    return dictionary.get(key)

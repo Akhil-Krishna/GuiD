@@ -3,134 +3,201 @@
 
 {% block styling %}
 <style>
-    /* Roadmap container styling */
+    /*myupdate*/
+    /* General Roadmap Styles */ 
+    
     .roadmap-container {
-        text-align: center;
-        margin: 20px auto;
         max-width: 800px;
+        margin: 0 auto;
         padding: 20px;
+        
     }
 
-    .roadmap-container h1 {
-        font-size: 2.5rem;
-        margin-bottom: 30px;
-        color: #2c3e50;
-        font-weight: bold;
-    }
-
-    /* Roadmap layout */
     .roadmap {
+        position: relative;
         display: flex;
         flex-direction: column;
-        gap: 40px;
-        position: relative;
+        align-items: center;
+        padding: 20px 0;
+        
     }
 
-    /* Connecting line */
-    .roadmap::before {
-        content: "";
+    .stage {
+        display: flex;
+        align-items: center;
+        position: relative;
+        margin-bottom: 50px;
+        width: 100%;
+    }
+
+    .stage:last-child {
+        margin-bottom: 0;
+    }
+
+    /* Vertical Line Path */
+    .path {
         position: absolute;
         top: 0;
-        left: 40px;
-        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
         width: 4px;
-        background: #e1e1e1;
+        height: 100%;
+        background-color: #ecf0f1;
         z-index: 0;
     }
 
-    .stage-checkpoint {
-        display: flex;
-        align-items: center;
-        position: relative;
+    .path .progress {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: {{ progress_percentage }}%;
+        background-color: #3498db;
         z-index: 1;
     }
 
-    .circle {
+    /* Circle representing stage number */
+    .stage-circle {
         width: 60px;
         height: 60px;
         border-radius: 50%;
-        background: linear-gradient(135deg, #3498db, #2ecc71);
+        background-color: #bdc3c7;
         color: white;
-        font-size: 1.2rem;
         display: flex;
         justify-content: center;
         align-items: center;
+        font-size: 1.5rem;
         font-weight: bold;
-        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
-        flex-shrink: 0;
+        z-index: 2;
+        position: relative;
     }
 
+    .stage-circle.completed {
+        background-color: #2ecc71;
+    }
+
+    .stage-circle.in-progress {
+        background-color: #3498db;
+    }
+
+    /* Stage details rectangle */
     .stage-details {
-        margin-left: 20px;
-        padding: 15px;
-        background: white;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        background-color: white;
+        border: 2px solid #bdc3c7;
+        padding: 20px;
+        border-radius: 10px;
+        margin-left: 80px;
         flex-grow: 1;
-        transition: transform 0.3s;
-        text-decoration: none;
+        transition: transform 0.3s, box-shadow 0.3s;
+        position: relative;
+        z-index: 2;
     }
 
-    .stage-checkpoint:hover .stage-details {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    .stage-details:hover {
+        transform: scale(1.03);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
     }
 
     .stage-details h2 {
+        margin: 0 0 10px;
         font-size: 1.5rem;
-        color: #34495e;
-        margin-bottom: 5px;
     }
 
     .stage-details p {
-        font-size: 1rem;
         color: #7f8c8d;
+        font-size: 1rem;
+        margin-bottom: 10px;
     }
 
-    .stage-details img {
+    .status-badge {
+        display: inline-block;
+        padding: 6px 10px;
+        border-radius: 4px;
+        font-size: 0.9rem;
         margin-top: 10px;
-        width: 50px;
-        height: 50px;
+        color: white;
     }
-    
-   
+
+    .status-complete {
+        background-color: #2ecc71;
+    }
+
+    .status-progress {
+        background-color: #3498db;
+    }
+
+    .status-start {
+        background-color: #f1c40f;
+    }
+
+    .locked-message {
+        color: #e74c3c;
+        font-size: 0.9rem;
+        margin-top: 10px;
+    }
+
     /* Responsive Design */
     @media (max-width: 768px) {
-        .roadmap::before {
-            left: 20px;
-        }
-
-        .circle {
-            width: 50px;
-            height: 50px;
-            font-size: 1rem;
+        .stage {
+            flex-direction: column;
+            align-items: flex-start;
         }
 
         .stage-details {
-            margin-left: 15px;
+            margin-left: 0;
+            margin-top: 20px;
+        }
+
+        .path {
+            left: 25px;
         }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-    <div class="roadmap-container">
-        <h1>Roadmap Stages</h1>
-        <div class="roadmap">
-            {% for stage in stages %}
-                <div class="stage-checkpoint">
-                    <div class="circle">{{ forloop.counter }}</div>
-                    <a href="{% url 'roadmap_course' stage.id 1 %}" class="stage-details" style="text-decoration: none;" >
-                        <h2>{{ stage.name }}</h2>
-                        <p>{{ stage.description }}</p>
-                        {% if progress|dict_get:stage.id %}
-                            {% if progress|dict_get:stage.id.badge_earned %}
-                                <img src="{{ progress|dict_get:stage.id.badge_image.url }}" alt="Badge for {{ stage.name }}" class="badge" />
-                            {% endif %}
-                        {% endif %}
-                    </a>
-                </div>
-            {% endfor %}
+<div class="roadmap-container">
+    <h1>Roadmap Stages</h1>
+    <div class="roadmap">
+        <div class="path" style="position:absolute; left:32px; top:102px; ">
+            <div class="progress"  style="height: {{ progress_percentage }}% ; width: 6px ; background-color:rgb(50,250,10);"></div>
         </div>
+        {% for stage in stages %}
+        {% with stage_progress=progress_dict|get:stage.id %}
+        <div class="stage">
+            <div class="stage-circle {% if stage_progress.progress and stage_progress.progress.is_stage_completed %}completed{% elif stage_progress.accessible %}in-progress{% endif %}">
+                {{ forloop.counter }}
+            </div>
+            {% if stage_progress.accessible %}
+            <a href="{% url 'stage_courses' stage.id %}" class="stage-details" style="text-decoration: none;">
+            {% else %}
+            <div class="stage-details">
+            {% endif %}
+                <h2>{{ stage.name }}</h2>
+                <p>{{ stage.description }}</p>
+
+                {% if stage_progress.accessible %}
+                    {% if stage_progress.progress %}
+                        {% if stage_progress.progress.is_stage_completed %}
+                            <div class="status-badge status-complete">Completed</div>
+                        {% else %}
+                            <div class="status-badge status-progress">In Progress</div>
+                        {% endif %}
+                    {% else %}
+                        <div class="status-badge status-start">Start Stage</div>
+                    {% endif %}
+                {% else %}
+                    <div class="locked-message">🔒 Complete previous stage to unlock</div>
+                {% endif %}
+
+            {% if stage_progress.accessible %}
+            </a>
+            {% else %}
+            </div>
+            {% endif %}
+        </div>
+        {% endwith %}
+        {% endfor %}
     </div>
+</div>
 {% endblock %}

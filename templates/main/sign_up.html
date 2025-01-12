@@ -1,7 +1,7 @@
 {% extends 'main/base.html' %}
 
 {% block content %}
-<div class="container">
+<div class="container py-5">
     <!-- Sign Up Section -->
     <div class="row justify-content-center">
         <div class="col-md-8 col-lg-6">
@@ -16,10 +16,28 @@
                 <div class="card-body p-4">
                     <form method="POST" enctype="multipart/form-data">
                         {% csrf_token %}
-                        <!-- Django Form Fields Rendered with Custom Styling -->
-                        <div class="form-group mb-3">
-                            {{ form.as_p }}
+
+                        <!-- Custom Error Alert -->
+                        {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {{ form.non_field_errors }}
                         </div>
+                        {% endif %}
+
+                        <!-- Django Form Fields Rendered with Custom Styling -->
+                        {% for field in form %}
+                        <div class="form-group mb-3">
+                            <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                            {{ field }}
+
+                            <!-- Error Handling -->
+                            {% if field.errors %}
+                            <div class="text-danger small mt-1">
+                                {{ field.errors|join:"<br>" }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
 
                         <!-- Submit Button -->
                         <div class="text-center">
@@ -47,14 +65,15 @@
 <!-- Additional Custom Styles -->
 <style>
     body {
-        background: #f8f9fa; /* Light gray background */
+        background: linear-gradient(to right, #ececec, #f8f9fa); /* Gradient background */
     }
     .card {
+        border-radius: 15px;
         transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
     .card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
     }
     .btn-primary {
         background-color: #007bff;
@@ -64,8 +83,22 @@
         background-color: #0056b3;
         border-color: #004085;
     }
-    .form-group label {
+    .form-label {
         font-weight: 600;
+        color: #333;
+    }
+    .form-control {
+        border-radius: 8px;
+        padding: 10px;
+        border: 1px solid #ccc;
+    }
+    .form-control:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    }
+    .alert-danger {
+        border-radius: 8px;
+        font-size: 14px;
     }
 </style>
 {% endblock %}

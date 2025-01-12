@@ -1,0 +1,40 @@
+<!-- templates/roadmap/stage_courses.html -->
+{% extends 'main/base.html' %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-2xl font-bold mb-6">{{ stage.name }} - Courses</h1>
+    
+    <div class="grid gap-6">
+        {% for course_status in courses_status %}
+            <div class="border rounded-lg p-4 {% if course_status.status == 'locked' %}bg-gray-100{% endif %}">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-xl font-semibold">{{ course_status.course.title }}</h2>
+                    
+  {# my update #}                  
+                    {% if course_status.status == 'complete' %}
+                        <a href="{% url 'roadmap_course' stage.id 1 %}" 
+                           >
+                            Review Course
+                        </a>
+                    {% elif course_status.status == 'in_progress' %}
+                        <a href="{% url 'roadmap_course' stage.id course_status.course.order %}" 
+                           >
+                            Continue
+                        </a>
+                    {% elif course_status.status == 'start' %}
+                        <a href="{% url 'roadmap_course' stage.id course_status.course.order %}" 
+                           >
+                            Start Course
+                        </a>
+                    {% else %}
+                        <span class="px-4 py-2 bg-gray-500 text-white rounded-full">Locked</span>
+                    {% endif %}
+                </div>
+                
+                <p class="mt-2 text-gray-600">{{ course_status.course.description }}</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
