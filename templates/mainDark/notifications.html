@@ -1,0 +1,36 @@
+{% extends 'mainDark/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4 text-center">Notifications</h2>
+    <div class="row">
+        {% for notification in notifications %}
+        <div class="col-md-6 mb-3">
+            <div class="card {% if not notification.is_read %}border-primary{% else %}border-light{% endif %} shadow-sm">
+                <div class="card-body">
+                    <p class="card-text">
+                        <strong>{{ notification.message }}</strong>
+                    </p>
+                    {% if notification.link %}
+                    <a href="{{ notification.link }}" target="_blank" class="btn btn-sm btn-info text-white">
+                        More Info
+                    </a>
+                    {% endif %}
+                    {% if not notification.is_read %}
+                    <a href="{% url 'mark_as_read' notification.id %}" class="btn btn-sm btn-warning">
+                        Mark as Read
+                    </a>
+                    {% else %}
+                    <span class="badge badge-secondary">Read</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center">
+            <p class="text-muted">No notifications available.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

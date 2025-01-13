@@ -1,40 +1,176 @@
-<!-- templates/roadmap/stage_courses.html -->
 {% extends 'main/base.html' %}
 
-{% block content %}
-<div class="container mx-auto px-4 py-8">
-    <h1 class="text-2xl font-bold mb-6">{{ stage.name }} - Courses</h1>
+
+{% block styling%}
+
+<style>
+    .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 20px;
+    }
     
-    <div class="grid gap-6">
+    .page-title {
+        font-size: 1.8rem;
+        font-weight: bold;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+    
+    .courses-list {
+       
+        margin-bottom: 20px;
+    }
+    
+    .course-card {
+        flex: 1 1 calc(50% - 20px);
+        background: #3470ac;
+        color: white;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 15px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s, box-shadow 0.2s;
+        margin-bottom: 20px;
+        
+    }
+    
+    .course-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    
+    .course-card.locked {
+        background: #4a6594;
+        color: #999;
+        border-color: #e0e0e0;
+    }
+    
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom:1px solid rgb(179, 235, 245) ;
+    }
+    
+    .course-title {
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin: 0;
+        color: #333;
+        
+    }
+    
+    .action {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .status-icon {
+        color: green;
+        font-size: 1.2rem;
+    }
+    
+    .button {
+        font-size: 0.9rem;
+        padding: 5px 10px;
+        border-radius: 4px;
+        text-decoration: none;
+        transition: background-color 0.3s, color 0.3s;
+        
+    }
+    
+    .button.review {
+        background-color: #e6ffed;
+        color: #2c662d;
+        border: 1px solid #28a745;
+        text-decoration: none;
+    }
+    
+    .button.review:hover {
+        background-color: #d4f5d9;
+    }
+    
+    .button.continue {
+        background-color: #e8f4fd;
+        color: #0056b3;
+        border: 1px solid #007bff;
+        text-decoration: none;
+    }
+    
+    .button.continue:hover {
+        background-color: #d6e9f7;
+    }
+    
+    .button.start {
+        background-color: #fff7e6;
+        color: #8a6d3b;
+        border: 1px solid #f0ad4e;
+        text-decoration: none;
+    }
+    
+    .button.start:hover {
+        background-color: #ffecb3;
+    }
+    
+    .button.locked {
+        background-color: #f8f9fa;
+        color: #6c757d;
+        border: 1px solid #ced4da;
+        cursor: not-allowed;
+    }
+    
+    .course-description {
+        margin-top: 10px;
+        font-size: 0.95rem;
+        color: #ced4da;
+    }
+    
+    @media (max-width: 768px) {
+        .course-card {
+            flex: 1 1 100%;
+        }
+    }
+    
+   
+    </style>
+    
+
+{% endblock %}
+
+{% block content %}
+<div class="container" >
+    <h1 class="page-title">{{ stage.name }} - Courses</h1>
+    <div class="courses-list" >
         {% for course_status in courses_status %}
-            <div class="border rounded-lg p-4 {% if course_status.status == 'locked' %}bg-gray-100{% endif %}">
-                <div class="flex justify-between items-center">
-                    <h2 class="text-xl font-semibold">{{ course_status.course.title }}</h2>
+            <div class="course-card {% if course_status.status == 'locked' %}locked{% endif %}">
+                <div class="card-header">
+                    <h2 class="course-title" style="color: white;">{{ course_status.course.title }}</h2>
+                    <div class="action">
+                        {% if course_status.status == 'complete' %}
+                            <span class="status-icon">✅</span>
+                            <a href="{% url 'roadmap_course' stage.id course_status.course.order %}" class="button review">
+                                Review Course (Completed)
+                            </a>
+                        {% elif course_status.status == 'in_progress' %}
+                            <a href="{% url 'roadmap_course' stage.id course_status.course.order %}" class="button continue">
+                                Continue
+                            </a>
+                        {% elif course_status.status == 'start' %}
+                            <a href="{% url 'roadmap_course' stage.id course_status.course.order %}" class="button start">
+                                Start Course
+                            </a>
+                        {% else %}
+                            <span class="button locked">Locked</span>
+                        {% endif %}
+                    </div>
                     
-  {# my update #}                  
-                    {% if course_status.status == 'complete' %}
-                        <a href="{% url 'roadmap_course' stage.id 1 %}" 
-                           >
-                            Review Course
-                        </a>
-                    {% elif course_status.status == 'in_progress' %}
-                        <a href="{% url 'roadmap_course' stage.id course_status.course.order %}" 
-                           >
-                            Continue
-                        </a>
-                    {% elif course_status.status == 'start' %}
-                        <a href="{% url 'roadmap_course' stage.id course_status.course.order %}" 
-                           >
-                            Start Course
-                        </a>
-                    {% else %}
-                        <span class="px-4 py-2 bg-gray-500 text-white rounded-full">Locked</span>
-                    {% endif %}
                 </div>
-                
-                <p class="mt-2 text-gray-600">{{ course_status.course.description }}</p>
+                <p class="course-description">{{ course_status.course.description }}</p>
             </div>
         {% endfor %}
     </div>
 </div>
 {% endblock %}
+

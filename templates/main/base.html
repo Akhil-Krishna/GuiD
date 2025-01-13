@@ -33,7 +33,7 @@
             color: #333;
             line-height: 1.6;
             transition: all var(--transition-speed) ease;
-            padding-top: 80px; /* Accommodate fixed header */
+            padding-top: 80px; /* Accommodate fixed header chan*/
         }
 
         body.dark-mode {
@@ -441,7 +441,7 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const darkModeSwitch = document.getElementById('darkModeSwitch');
@@ -555,7 +555,7 @@ async function sendChatMessage() {
                 const aiMessageEl = document.createElement('div');
                 aiMessageEl.classList.add('message', 'ai-message');
                 
-                aiMessageEl.textContent = data.response;
+                aiMessageEl.innerHTML = marked.parse(data.response);
                 chatMessages.appendChild(aiMessageEl);
                 
                 // Add to message history

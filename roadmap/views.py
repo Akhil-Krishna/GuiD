@@ -10,6 +10,7 @@ from django.http import JsonResponse
 #myupdate
 
 
+#error causing updates
 
 
 
@@ -176,66 +177,57 @@ class StageCourseListView(View):
             'progress': progress,
         })
         
-#changing this view
+#changing this viewbb
 class RoadmapCourseView(View):
     @method_decorator(login_required)
     def get(self, request, stage_id, course_order):
         stage = get_object_or_404(RoadmapStage, id=stage_id)
-        
-        # Get or create progress for new users
+        course = get_object_or_404(RoadmapCourse, stage=stage, order=course_order)
+
+        # Get or create progress for the user
         progress, created = UserProgress.objects.get_or_create(
             user=request.user,
             stage=stage,
             defaults={'current_course': None, 'current_slide': None}
         )
-        # delete if and make elif if
-        course = get_object_or_404(RoadmapCourse, stage=stage, order=course_order)
-        
-        if course_order==1:
-            return redirect('roadmap_slide', course_id=course.id, slide_order=1)
-        
 
-        # If user completed previous course but hasn't moved to next course
-        elif course_order == 1 and not progress.is_stage_completed:
-            # Find the last incomplete course or the last course they were on
-            current_course = progress.current_course
-            if current_course and current_course.order > 1:
-                return redirect('roadmap_course', stage_id=stage_id, course_order=current_course.order)
+        # Check if reviewing a completed course
+        is_review = progress.current_course and course.order < progress.current_course.order
 
-        # Get the requested course
-        course = get_object_or_404(RoadmapCourse, stage=stage, order=course_order)
-        
-        
-        
-        # If switching to a new course, reset slide progress
-        if progress.current_course != course and not progress.is_stage_completed:
-            progress.current_course = course
-            progress.current_slide = None
-            progress.save()
+        # Update progress for new courses
+        if not is_review:
+            if course_order == 1 or progress.current_course != course:
+                progress.current_course = course
+                progress.current_slide = None  # Reset slide for new course
+                progress.save()
 
-        # If user has a current_slide in THIS course, redirect to that
-        if progress.current_slide and progress.current_slide.course == course:
-            return redirect('roadmap_slide', course_id=course.id, slide_order=progress.current_slide.order)
-        
-        total_slides = RoadmapSlide.objects.filter(course=course).count()
+            # Redirect to the current slide if resuming
+            if progress.current_slide and progress.current_slide.course == course:
+                return redirect('roadmap_slide', course_id=course.id, slide_order=progress.current_slide.order)
+
+        # Start from the first slide for reviews or new courses
         first_slide = RoadmapSlide.objects.filter(course=course).order_by('order').first()
+        if first_slide:
+            return redirect('roadmap_slide', course_id=course.id, slide_order=first_slide.order)
 
+        # Render course details if no slides are available
+        total_slides = RoadmapSlide.objects.filter(course=course).count()
         return render(request, 'roadmap/course.html', {
-            'stage': stage, 
+            'stage': stage,
             'course': course,
             'total_slides': total_slides,
-            'first_slide': first_slide,
             'has_progress': bool(progress.current_slide and progress.current_slide.course == course),
             'progress': progress
         })
+
+#gpt recommended
 class RoadmapSlideView(View):
     @method_decorator(login_required)
-    def get(self, request, course_id, slide_order, *args, **kwargs):
+    def get(self, request, course_id, slide_order):
         course = get_object_or_404(RoadmapCourse, id=course_id)
         slide = get_object_or_404(RoadmapSlide, course=course, order=slide_order)
         slides = RoadmapSlide.objects.filter(course=course).order_by("order")
         
-        # Update user's current slide
         progress = get_object_or_404(UserProgress, 
             user=request.user, 
             stage=course.stage
@@ -260,7 +252,23 @@ class RoadmapSlideView(View):
         }
         return render(request, "roadmap/slide.html", context)
 
-#fifth update
+    @method_decorator(login_required)
+    def post(self, request, course_id, slide_order):
+        course = get_object_or_404(RoadmapCourse, id=course_id)
+        progress = get_object_or_404(UserProgress, user=request.user, stage=course.stage)
+        
+        if 'complete_course' in request.POST:
+            next_course = RoadmapCourse.objects.filter(
+                stage=course.stage, 
+                order__gt=course.order
+            ).first()
+            progress.current_course = next_course
+            progress.current_slide = None
+            progress.save()
+            return redirect('stage_courses', stage_id=course.stage.id)
+        
+        return redirect('roadmap_slide', course_id=course_id, slide_order=slide_order)
+    #fifth update
 
 
 
@@ -438,3 +446,50 @@ class RoadmapTestView(View):
             })
 
         return redirect('roadmap_test', stage_id=stage_id)
+    
+    
+    
+    
+    
+## AI enhancer for slides    
+    
+    
+import logging
+import json
+import requests
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
+
+logger = logging.getLogger(__name__)
+
+def chat_with_llama(request):
+    try:
+        data = json.loads(request.body)
+        user_message = data.get('message')
+        
+        response = requests.post('http://localhost:11434/api/generate', 
+            json={
+                "model": "llama3.2:1b",
+                "prompt": user_message,
+                "stream": False
+            })
+        
+        if response.status_code == 200:
+            return JsonResponse({
+                'response': response.json()['response'],
+                'status': 'success'
+            })
+        else:
+            logger.error(f"Llama API Error: {response.status_code} - {response.text}")
+            return JsonResponse({
+                'error': 'Failed to get response from Llama API',
+                'status': 'error'
+            }, status=500)
+            
+    except Exception as e:
+        logger.exception("Error in chat_with_llama view")
+        return JsonResponse({
+            'error': str(e),
+            'status': 'error'
+        }, status=500)

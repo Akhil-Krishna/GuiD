@@ -1,0 +1,128 @@
+{% extends 'mainDark/base.html' %}
+
+{% block styling %}
+<style>
+  /* Global Styling */
+
+
+  /* Questions Section */
+  .questions-section {
+    padding: 20px;
+  }
+
+  h1 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 20px;
+    font-size: 2.5rem;
+  }
+
+  .questions-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px; /* Space between cards */
+  }
+
+  .question-card {
+    width: 320px; /* Adjust card width */
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .question-card:hover {
+    transform: translateY(-5px); /* Lift card on hover */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  }
+
+  .question-card .card-header {
+    background: #1984a4;
+    color: #fff;
+    padding: 10px 15px;
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+  }
+
+  .question-card .card-body {
+    padding: 15px;
+  }
+
+  .question-card h3 {
+    font-size: 1.1rem;
+    color: #333;
+    margin-bottom: 10px;
+  }
+
+  .question-card p {
+    font-size: 0.9rem;
+    color: #555;
+    margin: 5px 0;
+  }
+
+  .question-card .difficulty {
+    display: inline-block;
+    background: #dac32f;
+    color: #fff;
+    border-radius: 3px;
+    padding: 3px 8px;
+    font-size: 0.85rem;
+    margin-top: 8px;
+  }
+
+  .question-card .card-footer {
+    text-align: center;
+    padding: 10px;
+  
+    border-top: 1px solid #e0e0e0;
+  }
+
+  .question-card a {
+    display: inline-block;
+    background-color: #5ab382;
+    color: #fff;
+    padding: 8px 12px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    border-radius: 6px;
+    transition: background-color 0.3s ease;
+  }
+
+  .question-card a:hover {
+    background-color: #49ab75;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<h1>Questions</h1>
+
+<div class="questions-section">
+  <div class="questions-container">
+    
+    {% for question in coding_questions %}
+      <div class="question-card">
+        <!-- Card Header -->
+        <div class="card-header">
+          {{ question.title }}
+        </div>
+
+        <!-- Card Body -->
+        <div class="card-body">
+          <p>{{ question.description }}</p>
+          <span class="difficulty">Difficulty: {{ question.difficulty }}</span>
+        </div>
+
+        <!-- Card Footer -->
+        <div class="card-footer">
+          <a href="{% url 'code' question.id %}">Go to Code</a>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

@@ -1,10 +1,122 @@
 
 {% extends "main/base.html" %}
 
+
+
 {% block content %}
-<h1>Slide {{ slide.order }}</h1>
-<div>
-    <p>{{ slide.content|safe }}</p>
+
+<style>
+    /* General Styles */
+    
+    h1 {
+        position: relative;
+        padding: 20px;
+        margin: 0;
+    }
+
+    /* Enhancer Button */
+    .enhancer-button {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background-color: #00b1c1;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        font-size: 24px;
+        cursor: pointer;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .enhancer-button:hover {
+        transform: scale(1.2);
+        box-shadow: 0 6px 10px rgba(255, 251, 41, 0.6);
+        border: 2px solid rgba(0, 153, 255, 0.584);
+        
+    }
+
+    /* Popper (Popup) */
+    #popper {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0);
+        z-index: 1000;
+        width: 80%;
+        max-width: 600px;
+        padding: 20px;
+        background-color: #f9f9f9;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        opacity: 0;
+        transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+        overflow-y: auto;
+        max-height: 95%;
+    }
+    #popper.visible {
+        display: block;
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+
+    /* Close Button */
+    #popper button {
+        position: fixed;
+        top: 1px;
+        right: 1px;
+        background-color: #ffffff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 20px;
+        cursor: pointer;
+        float: right;
+        
+    }
+    #popper button:hover {
+        background-color: #d4b5b5;
+    }
+
+    /* Dim Background */
+    #overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+    }
+    #overlay.visible {
+        display: block;
+    }
+    #here{
+        overflow-y: auto;
+        scroll-behavior:smooth ;
+    }
+</style>
+</head>
+<body>
+
+<h1>Slide {{ slide.order }}
+<button class="enhancer-button" onclick="sendMagic()">🪄</button>
+</h1>
+<div id="contentSlide">{{ slide.content|safe }}</div>
+
+<!-- Popup Window -->
+<div id="overlay"></div>
+<div id="popper">
+<h4>ArK - enhancer</h4>
+<button onclick="closePop()">❌</button>
+<div id="here">
+    <!-- Response from AI will go here -->
+     <hr>
+     
+</div>
 </div>
 
 <div class="navigation">
@@ -15,13 +127,122 @@
         <a href="{% url 'roadmap_slide' slide.course.id next_slide.order %}" class="btn btn-secondary">Next</a>
     {% else %}
         {% if is_last_course %}
-            <!-- Redirect to the test page if it's the last course of the stage -->
+            <!-- Redirect to the test page if it's the last course of the stage error causing updateeeeeeeeeeeeeeeeeeeeeeeeeeeeeee -->
             <a href="{% url 'roadmap_test' slide.course.stage.id %}" class="btn btn-success">Complete Stage and Take Test</a>
         {% else %}
             <!-- Redirect to the next course -->
-            <a href="{% url 'roadmap_course' slide.course.stage.id slide.course.order|add:1 %}" class="btn btn-success">Complete Course</a>
-        {% endif %}
+            {% if not next_slide and not is_last_course %}
+            <form method="post" class="inline">
+                {% csrf_token %}
+                <button type="submit" name="complete_course" class="btn btn-secondary inline">
+                    Complete Course
+                </button>
+            </form>
+            {% endif %}
+            {% endif %}
+            
     {% endif %}
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+
+<script>
+    
+    async function sendMagic(){
+        
+        const popper = document.getElementById("popper");
+        const overlay = document.getElementById("overlay");
+
+        // Show the popup and overlay with animation
+        popper.classList.add("visible");
+        overlay.classList.add("visible");
+
+        // Add custom animation
+        popper.style.animation = "popIn 0.3s ease-out";
+        
+        let message= document.getElementById('contentSlide').textContent +". Note : Explain the above content in more understanding manner  ";
+        let area=document.getElementById('here');
+        console.log('well');
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log(document.getElementById('contentSlide').textContent);
+        });
+        console.log(document.getElementById('contentSlide').textContent);
+        console.log('hi');
+        if (message) {
+            
+    
+            try {
+                // Show typing indicator
+                const typingIndicator = document.createElement('div');
+                
+                typingIndicator.textContent = '...';
+                area.appendChild(typingIndicator);
+    
+                // Send message to Django backend
+                const response = await fetch('/chat/', {  // Update this URL to match your Django URL configuration
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                    })
+                });
+    
+                // Remove typing indicator
+                typingIndicator.remove();
+    
+                if (!response.ok) {
+                    throw new Error('Failed to get response'+response.body);
+                }
+    
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    // Add AI response
+                    const horiz = document.createElement('hr');
+                   
+                    area.appendChild(horiz);
+                    
+                    const breaking = document.createElement('br');
+                   
+                    area.appendChild(breaking);
+                    
+                    const aiMessageEl = document.createElement('div');
+                    aiMessageEl.innerHTML = marked.parse(data.response);
+                    area.appendChild(aiMessageEl);
+                    area.appendChild(breaking);
+                    // Add to message history
+                } else {
+                    throw new Error(data.error || 'Unknown error occurred');
+                }
+    
+            } catch (error) {
+                console.error('Error:', error);
+    
+                // Add error message
+                const errorMessageEl = document.createElement('div');
+              
+                errorMessageEl.textContent = 'Sorry, there was an error processing your message.'+error;
+                area.appendChild(errorMessageEl);
+            }
+    
+            // Scroll to bottom
+            area.scrollTop = area.scrollHeight;
+            
+        }
+        
+        
+    }
+    function closePop() {
+        const popper = document.getElementById("popper");
+        const overlay = document.getElementById("overlay");
+
+        // Hide the popup and overlay
+        popper.classList.remove("visible");
+        overlay.classList.remove("visible");
+    }
+</script>
 
 {% endblock %}
