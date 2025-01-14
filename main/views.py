@@ -213,32 +213,73 @@ def complete_course(request, course_id):
 
 
 
-# views.py
+# views.py erorrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr
+
+# main/utils/rag_utils.py
+
+# main/views.py
+
+# main/views.py
+# main/views.py
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
 import json
 import requests
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_http_methods
+from .utilss.rag_utils import RAGProcessor
+
+rag_processor = None
+
+def get_rag_processor():
+    global rag_processor
+    if rag_processor is None:
+        rag_processor = RAGProcessor()
+    return rag_processor
 
 @csrf_exempt
-@require_http_methods(["POST"])
 def chat_with_llama(request):
     try:
+        processor = get_rag_processor()
         data = json.loads(request.body)
         user_message = data.get('message')
         
-        # Ollama runs locally on port 11434 by default
-        response = requests.post('http://localhost:11434/api/generate', 
+        # Check if query matches dataset
+        is_similar, context = processor.find_similar_questions(user_message)
+        
+        if is_similar:
+            # Use RAG approach with fallback
+            prompt = f"""Answer the following question. First, use the provided context if it's relevant. 
+            If the context doesn't fully answer the question or if you have additional relevant information, 
+            please include your own knowledge to provide a complete answer.
+
+            Context from similar questions:
+            {context}
+
+            Question: {user_message}
+
+            Please provide a complete, helpful answer:"""
+        else:
+            # For general queries, create a prompt that encourages a complete response
+            prompt = f"""Please provide a complete and helpful answer to the following question, 
+            using your knowledge to give the best possible response:
+
+            Question: {user_message}
+
+            Answer:"""
+        
+        # Call Llama
+        response = requests.post('http://localhost:11434/api/generate',
             json={
                 "model": "llama3.2:1b",
-                "prompt": user_message,
-                "stream": False
+                "prompt": prompt,
+                "stream": False,
+                "temperature": 0.7  # Add some variability to responses
             })
         
         if response.status_code == 200:
             return JsonResponse({
                 'response': response.json()['response'],
-                'status': 'success'
+                'status': 'success',
+                'used_dataset': is_similar
             })
         else:
             return JsonResponse({
@@ -251,8 +292,6 @@ def chat_with_llama(request):
             'error': str(e),
             'status': 'error'
         }, status=500)
-
-
 ### Rather than storing content in db we can use md 
 
 # from django.shortcuts import render, get_object_or_404, redirect
