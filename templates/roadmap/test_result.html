@@ -1,73 +1,140 @@
 {% extends 'main/base.html' %}
 
+{% block styling %}
+    <style>
+        .result-container {
+            background-color: #1f2937;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+            padding: 2rem;
+            max-width: 600px;
+            margin: auto;
+            font-weight: 500;
+            border-radius: 30px;
+           
+            color: #e5e7eb;
+        }
+
+        .result-header h2 {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #f3f4f6;
+        }
+
+        .result-header h3 {
+            font-size: 1.25rem;
+            color: #9ca3af;
+        }
+
+        .score-display {
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+
+        .score-passed {
+            color: #22c55e; /* Green */
+        }
+
+        .score-failed {
+            color: #ef4444; /* Red */
+        }
+
+        .badge-section img {
+            max-width: 100px;
+            height: auto;
+            margin-bottom: 0.5rem;
+            border: 2px solid #3b82f6;
+            border-radius: 50%;
+        }
+
+        .tips-section li {
+            margin-bottom: 0.5rem;
+            color: #d1d5db;
+        }
+
+        .action-buttons a {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+
+        .action-buttons .btn-primary {
+            background-color: #2563eb;
+            color: #ffffff;
+        }
+
+        .action-buttons .btn-primary:hover {
+            background-color: #1d4ed8;
+        }
+
+        .action-buttons .btn-secondary {
+            background-color: #374151;
+            color: #d1d5db;
+        }
+
+        .action-buttons .btn-secondary:hover {
+            background-color: #4b5563;
+        }
+    </style>
+{% endblock %}
+
 {% block content %}
-<div class="container mx-auto px-4 py-8">
-    <div class="max-w-2xl mx-auto bg-white rounded-lg shadow-md p-6">
+<div class="py-8">
+    <div class="result-container">
         <!-- Result Header -->
-        <div class="text-center mb-8">
-            <h2 class="text-3xl font-bold mb-4">Test Results</h2>
-            <h3 class="text-xl mb-2">{{ stage.name }}</h3>
+        <div class="result-header text-center mb-6">
+            <h2>Test Results</h2>
+            <h3>{{ stage.name }}</h3>
         </div>
 
         <!-- Score Display -->
-        <div class="text-center mb-8">
-            <div class="text-4xl font-bold mb-2 
-                        {% if passed %}text-green-600{% else %}text-red-600{% endif %}">
+        <div class="text-center mb-6">
+            <div class="score-display 
+                        {% if passed %}score-passed{% else %}score-failed{% endif %}">
                 {{ score|floatformat:1 }}%
             </div>
-            <p class="text-gray-600">
-                Correct Answers: {{ correct_answers }}/{{ total_questions }}
-            </p>
+            <p>Correct Answers: {{ correct_answers }}/{{ total_questions }}</p>
             {% if best_score %}
-            <p class="text-gray-600 mt-2">
-                Your Best Score: {{ best_score|floatformat:1 }}%
-            </p>
+            <p>Your Best Score: {{ best_score|floatformat:1 }}%</p>
             {% endif %}
         </div>
 
-        <!-- Badge Section (if passed) -->
+        <!-- Badge Section -->
         {% if passed and badge_image %}
-        <div class="text-center mb-8">
-            <h4 class="text-xl font-semibold mb-4">Badge Earned!</h4>
-            <img src="{{ badge_image.url }}" alt="Stage Badge" 
-                 class="mx-auto w-32 h-32 object-contain mb-4" style="width: 30px; height:30px">
-            <a href="{{ badge_image.url }}" download >
-                Download Badge
-            </a>
+        <div class="badge-section text-center mb-6">
+            <h4 class="text-lg font-semibold">Congratulations! You Earned a Badge</h4>
+            <img src="{{ badge_image.url }}" alt="Badge" class="mx-auto">
+            <a href="{{ badge_image.url }}" download class="btn btn-primary mt-2">Download Badge</a>
         </div>
         {% endif %}
 
-        <!-- Tips Section (if failed) -->
+        <!-- Tips Section -->
         {% if not passed and tips %}
-        <div class="mb-8">
-            <h4 class="text-xl font-semibold mb-4">Tips for Improvement</h4>
-            <ul class="list-disc pl-5 space-y-2">
+        <div class="tips-section mb-6">
+            <h4 class="text-lg font-semibold">Tips for Improvement</h4>
+            <ul class="list-disc pl-5">
                 {% for tip in tips %}
-                <li class="text-gray-700">{{ tip }}</li>
+                <li>{{ tip }}</li>
                 {% endfor %}
             </ul>
         </div>
         {% endif %}
 
-        <!-- Navigation Buttons my update-->
-        <div class="flex justify-center space-x-4">
+        <!-- Navigation Buttons -->
+        <div class="action-buttons text-center">
             {% if passed %}
                 {% if next_stage %}
-                <a href="{% url 'roadmap_stages' %}">
-                    Start Next Stage
-                </a>
+                <a href="{% url 'roadmap_stages' %}" class="btn btn-primary">Start Next Stage</a>
                 {% else %}
-                <a href="{% url 'roadmap_stages' %}">
-                    Complete! Return to Stages
-                </a>
+                <a href="{% url 'roadmap_stages' %}" class="btn btn-primary">Complete! Return to Stages</a>
                 {% endif %}
             {% else %}
-                <a href="{% url 'roadmap_course' stage_id=stage.id course_order=1 %}">
-                    Review Stage
-                </a>
-                <a href="{% url 'roadmap_test' stage_id=stage.id %}">
-                    Retake Test
-                </a>
+                <a href="{% url 'roadmap_course' stage_id=stage.id course_order=1 %}" class="btn btn-secondary">Review Stage</a>
+                <a href="{% url 'roadmap_test' stage_id=stage.id %}" class="btn btn-primary">Retake Test</a>
             {% endif %}
         </div>
     </div>

@@ -1,203 +1,350 @@
 {% extends 'main/base.html' %}
-{% block styling %}
+{% load static %}
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
-  .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-  }
-
-  .profile-header {
-    display: flex;
-    align-items: center;
-    background: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
-  }
-
-  .profile-header img {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    object-fit: cover;
-  }
-
-  .profile-header .details {
-    margin-left: 20px;
-  }
-
-  .profile-header .details h1 {
-    font-size: 1.8rem;
-    margin-bottom: 5px;
-  }
-
-  .profile-header .details p {
-    color: #555;
-    font-size: 1rem;
-  }
-
-  .card {
-    background: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
-  }
-
-  .card h2 {
-    font-size: 1.5rem;
-    margin-bottom: 15px;
-    border-bottom: 2px solid #3077b1;
-    display: inline-block;
-    padding-bottom: 5px;
-  }
-
-  .progress-bar {
-    background: #e9ecef;
-    border-radius: 10px;
-    height: 10px;
-    overflow: hidden;
-    margin-bottom: 10px;
-  }
-
-  .progress-bar .progress {
-    height: 100%;
-    background: #4b8ec4;
-  }
-
-  .badge-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 20px;
-  }
-
-  .badge-card {
-    text-align: center;
-    padding: 10px;
-    background: #f9f9f9;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-
-  .badge-card img {
-    width: 80px;
-    height: 80px;
-    margin-bottom: 10px;
-    object-fit: contain;
-  }
-
-  .button {
-    display: inline-block;
-    padding: 10px 20px;
-    font-size: 1rem;
-    color: #fff;
-    background: #4490ce;
-    border: none;
-    border-radius: 5px;
-    text-decoration: none;
-    text-align: center;
-    transition: background 0.3s;
-  }
-
-  .button:hover {
-    background: #0056b3;
-    color: white;
-  }
-
-  @media (max-width: 768px) {
-    .profile-header {
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
+    body {
+        font-family: 'Roboto', Arial, sans-serif;
+        line-height: 1.6;
+        background-color: #031125;
+        color: white;
     }
 
-    .profile-header .details {
-      margin-left: 0;
-      margin-top: 10px;
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    /* Profile Header Section */
+    .profile-header {
+        background: linear-gradient(135deg, #3c7cbc, #00bfff);
+        border-radius: 15px;
+        padding: 3rem 2rem;
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        animation: fadeInDown 1s;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .profile-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+        pointer-events: none;
+    }
+
+    .profile-pic-container {
+        flex-shrink: 0;
+        position: relative;
+    }
+
+    .profile-pic {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        background: rgba(255, 255, 255, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        color: white;
+        transition: transform 0.3s ease;
+    }
+
+    .profile-pic:hover {
+        transform: scale(1.05);
+    }
+
+    .profile-info {
+        flex-grow: 1;
+    }
+
+    .profile-info h1 {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        font-weight: 700;
+    }
+
+    .profile-info p {
+        font-size: 1.2rem;
+        opacity: 0.9;
+    }
+
+    /* Stats Cards */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+        animation: fadeInUp 1s;
+    }
+
+    .stat-card {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 15px;
+        padding: 2rem;
+        border: 1px solid rgba(60, 124, 188, 0.3);
+        transition: transform 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        background: rgba(255, 255, 255, 0.08);
+    }
+
+    .stat-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .stat-icon {
+        font-size: 1.8rem;
+        color: #00bfff;
+    }
+
+    .stat-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #00bfff;
+    }
+
+    /* Progress Bar */
+    .progress-container {
+        margin: 1.5rem 0;
     }
 
     .progress-bar {
-      height: 8px;
+        height: 8px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+        overflow: hidden;
+        margin: 0.5rem 0;
     }
 
-    .badge-grid {
-      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    .progress {
+        height: 100%;
+        background: linear-gradient(90deg, #3c7cbc, #00bfff);
+        border-radius: 4px;
+        transition: width 0.6s ease;
     }
 
-    .badge-card img {
-      width: 60px;
-      height: 60px;
+    /* Badges Section */
+    .badges-section {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 15px;
+        padding: 2rem;
+        margin-top: 2rem;
+        animation: fadeInUp 1s;
+        border: 1px solid rgba(60, 124, 188, 0.3);
     }
-  }
+
+    .badges-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+    }
+
+    .badge-card {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        padding: 1.5rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(60, 124, 188, 0.2);
+    }
+
+    .badge-card:hover {
+        transform: translateY(-5px);
+        background: rgba(255, 255, 255, 0.08);
+    }
+
+    .badge-image {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 1rem;
+        transition: transform 0.3s ease;
+    }
+
+    .badge-card:hover .badge-image {
+        transform: scale(1.1);
+    }
+
+    .badge-title {
+        font-size: 1.2rem;
+        color: #00bfff;
+        margin-bottom: 0.5rem;
+    }
+
+    .badge-date {
+        font-size: 0.9rem;
+        opacity: 0.8;
+    }
+
+    .btn {
+        padding: 0.8rem 1.5rem;
+        border-radius: 8px;
+        border: none;
+        background: linear-gradient(135deg, #3c7cbc, #00bfff);
+        color: white;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 191, 255, 0.2);
+    }
+
+    /* Animations */
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .profile-header {
+            flex-direction: column;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .profile-info {
+            text-align: center;
+        }
+
+        .stat-header {
+            justify-content: center;
+        }
+
+        .badges-grid {
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        }
+    }
 </style>
-{% endblock %}
 
-{% block content %}
 <div class="container">
     <!-- Profile Header -->
     <div class="profile-header">
-        {% if user.profile_pic %}
-            <img src="{{ user.profile_pic.url }}" alt="Profile Picture">
-        {% else %}
-            <div style="width: 100px; height: 100px; background: #ddd; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                <span style="font-size: 2rem; color: #666;">{{ user.username|make_list|first|upper }}</span>
-            </div>
-        {% endif %}
-        <div class="details">
+        <div class="profile-pic-container">
+            {% if user.profile_pic %}
+                <img class="profile-pic" src="{{ user.profile_pic.url }}" alt="Profile Picture">
+            {% else %}
+                <div class="profile-pic">
+                    <span>{{ user.username|make_list|first|upper }}</span>
+                </div>
+            {% endif %}
+        </div>
+        <div class="profile-info">
             <h1>{{ user.username }}</h1>
             <p>{{ user.college }}</p>
         </div>
     </div>
 
-    <!-- Course Progress Stats -->
-    <div class="card">
-        <h2>Course Progress</h2>
-        <p>Total Enrolled Courses: <strong>{{ total_enrolled }}</strong></p>
-        <p>Completed Courses: <strong>{{ completed_courses }}</strong></p>
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+        <!-- Course Progress Card -->
+        <div class="stat-card">
+            <div class="stat-header">
+                <i class="fas fa-book-reader stat-icon"></i>
+                <h2 class="stat-title">Course Progress</h2>
+            </div>
+            <p>Total Enrolled: <strong>{{ total_enrolled }}</strong></p>
+            <p>Completed: <strong>{{ completed_courses }}</strong></p>
+        </div>
+
+        <!-- Roadmap Progress Card -->
+        <div class="stat-card">
+            <div class="stat-header">
+                <i class="fas fa-map-marker-alt stat-icon"></i>
+                <h2 class="stat-title">Roadmap Progress</h2>
+            </div>
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress" style="width: {{ progress_percentage }}%;"></div>
+                </div>
+                <p>{{ completed_stages }} of {{ total_stages }} stages completed ({{ progress_percentage|floatformat:1 }}%)</p>
+            </div>
+        </div>
     </div>
 
-    <!-- Roadmap Progress -->
-    <div class="card">
-        <h2>Roadmap Progress</h2>
-        <div class="progress-bar">
-            <div class="progress" style="width: {{ progress_percentage }}%;"></div>
+    {% if current_progress %}
+    <div class="stat-card">
+        <div class="stat-header">
+            <i class="fas fa-clock stat-icon"></i>
+            <h2 class="stat-title">Current Progress</h2>
         </div>
-        <p>{{ completed_stages }} of {{ total_stages }} stages completed ({{ progress_percentage|floatformat:1 }}%)</p>
-
-        {% if current_progress %}
-        <div class="card" style="background: #f1f9ff;">
-            <h3>Currently On:</h3>
-            <p>Stage: {{ current_progress.stage.name }}</p>
-            {% if current_progress.current_course %}
-                <p>Course: {{ current_progress.current_course.title }}</p>
-            {% endif %}
-            <a href="{% url 'roadmap_stages' %}" class="button" style="text-decoration: none;">Continue Learning</a>
-        </div>
+        <p>Stage: {{ current_progress.stage.name }}</p>
+        {% if current_progress.current_course %}
+            <p>Course: {{ current_progress.current_course.title }}</p>
         {% endif %}
+        <a href="{% url 'roadmap_stages' %}" class="btn">
+            <i class="fas fa-play"></i> Continue Learning
+        </a>
     </div>
+    {% endif %}
 
-    <!-- Earned Badges -->
-    <div class="card">
-        <h2>Earned Badges</h2>
+    <!-- Badges Section -->
+    <div class="badges-section">
+        <div class="stat-header">
+            <i class="fas fa-medal stat-icon"></i>
+            <h2 class="stat-title">Earned Badges</h2>
+        </div>
         {% if earned_badges %}
-            <div class="badge-grid">
+            <div class="badges-grid">
                 {% for badge in earned_badges %}
                 <div class="badge-card">
                     {% if badge.stage.badge_image %}
-                    <img src="{{ badge.stage.badge_image.url }}" alt="{{ badge.stage.name }} Badge">
+                        <img class="badge-image" src="{{ badge.stage.badge_image.url }}" alt="{{ badge.stage.name }} Badge">
                     {% endif %}
-                    <h3>{{ badge.stage.name }}</h3>
-                    <p>Earned {{ badge.earned_date|date:"M d, Y" }}</p>
+                    <h3 class="badge-title">{{ badge.stage.name }}</h3>
+                    <p class="badge-date">Earned {{ badge.earned_date|date:"M d, Y" }}</p>
                     {% if badge.stage.badge_image %}
-                    <a href="{{ badge.stage.badge_image.url }}" download class="button" style="text-decoration: none;">Download</a>
+                        <a href="{{ badge.stage.badge_image.url }}" download class="btn">
+                            <i class="fas fa-download"></i> Download
+                        </a>
                     {% endif %}
                 </div>
                 {% endfor %}
             </div>
         {% else %}
-            <p>No badges earned yet. Complete stages to earn badges!</p>
+            <p class="text-center">No badges earned yet. Complete stages to earn badges!</p>
         {% endif %}
     </div>
 </div>

@@ -1,8 +1,154 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 {% extends 'main/base.html' %}
+
+{% block styling %}
+<style>
+    /* General Styles */
+    body {
+        background-color: #121212;
+        color: #ffffff;
+    }
+
+   
+    .container {
+        color: #f1f1f1;
+        background-color: rgba(4, 25, 62, 0.85);
+        border-radius: 10px;
+        padding: 40px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        justify-content: center;
+    }
+    .new-container{
+        color: #f1f1f1;
+        background-color: #1e1e1e;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        
+    }
+
+    h2, h3 {
+        color: #00bcd4;
+    }
+
+    .btn {
+        border: none;
+        border-radius: 5px;
+        padding: 10px 20px;
+        font-size: 1rem;
+        font-weight: 500;
+        transition: background-color 0.3s, transform 0.2s;
+    }
+
+    .btn-secondary {
+        background-color: #4a4a4a;
+        color: #ffffff;
+    }
+
+    .btn-secondary:hover {
+        background-color: #616161;
+        transform: scale(1.05);
+    }
+
+    .btn-primary {
+        background-color: #00bcd4;
+        color: #ffffff;
+    }
+
+    .btn-primary:hover {
+        background-color: #0097a7;
+        transform: scale(1.05);
+    }
+
+    .btn-success {
+        background-color: #4caf50;
+        color: #ffffff;
+    }
+
+    .btn-success:hover {
+        background-color: #388e3c;
+        transform: scale(1.05);
+    }
+
+    /* Slide Content Styling */
+    .slide-content {
+        margin-top: 20px;
+    }
+
+    .slide-content h3 {
+        text-transform: uppercase;
+        font-size: 1.8rem;
+        margin-bottom: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="new-container mt-4">
+    <h2>{{ course.title }}</h2>
+    <hr>
+    <div class="slide-content">
+        <h3>{{ slide.title }}</h3>
+        {{ slide.content|safe }}
+    </div>
+    <div class="d-flex justify-content-between mt-4">
+        {% if prev_slide %}
+            <a href="{% url 'course_detail' course.id prev_slide.order %}" class="btn btn-secondary">Previous</a>
+        {% endif %}
+
+        {% if next_slide %}
+            <a href="{% url 'course_detail' course.id next_slide.order %}" class="btn btn-primary">Next</a>
+        {% else %}
+            <form action="{% url 'complete_course' course.id %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-success">Complete</button>
+            </form>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+
+
+
+
+
+{# remove above if you like light theme#}
+
+
+{% comment lighttheme %}
+
+{% extends 'main/base.html' %}
+
+
+{% block styling%}
+
+<style>
+    .container{
+        color: rgb(0, 0, 0);
+        background-color: rgba(255, 255, 255, 0.85);
+    }
+</style>
+   
+
+{% endblock %}
 
 {% block content %}
 
-<!-- templates/course_detail.html -->
+<!-- templates/course_detail.html changingggggggggggggggggggggggggggggggggggggggggggggggggggggggg -->
 <div class="container mt-4">
     <h2>{{ course.title }}</h2>
     <hr>
@@ -29,3 +175,5 @@
 
 
 {% endblock %}
+
+{% endcomment %}

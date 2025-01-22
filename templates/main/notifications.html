@@ -1,7 +1,25 @@
 {% extends 'main/base.html' %}
+{% block styling %}
+    <style>
+        .text-center{
+            color: #e2e8f0;
+        font-size: 2.5rem;
+        font-weight: 600;
+        margin-bottom: 2rem;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        }
+        .card{
+            background-color: rgba(5, 32, 79, 0.85);
+            color: aliceblue;
+        }
+        
+    </style>
+{% endblock %}
+
 
 {% block content %}
-<div class="container mt-4">
+<div class="container mt-4" style="box-shadow:none;">
     <h2 class="mb-4 text-center">Notifications</h2>
     <div class="row">
         {% for notification in notifications %}

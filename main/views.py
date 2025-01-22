@@ -6,7 +6,17 @@ from .models import CodingQuestion
 def index(request):
     return render(request, 'main/index.html')
 
+def about(request):
+    return render(request,"main/about.html")
 
+# views.py
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+import sys
+import io
+from django.shortcuts import render, get_object_or_404
+from .models import CodingQuestion
 
 def questions(request):
     coding_questions = CodingQuestion.objects.all()
@@ -15,48 +25,102 @@ def questions(request):
 def code(request, question_id):
     question = get_object_or_404(CodingQuestion, id=question_id)
     return render(request, 'main/code.html', {'question': question})
-
-
-
-
-# main/views.py
-
+# views.py
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
 import sys
 import io
+from django.shortcuts import render, get_object_or_404
+from .models import CodingQuestion
 
 @csrf_exempt
 def run_code(request):
     if request.method == "POST":
         data = json.loads(request.body)
         code = data.get("code", "")
+        question_id = data.get("questionId")
         
-        # Capture the output
-        old_stdout = sys.stdout
-        new_stdout = io.StringIO()
-        sys.stdout = new_stdout
-
         try:
-            exec_globals = {}
-            exec_locals = {}
-            exec(code, exec_globals, exec_locals)
-            output = new_stdout.getvalue()
+            question = CodingQuestion.objects.get(id=question_id)
+            test_cases = question.test_cases
+            test_results = []
+            
+            for test_case in test_cases:
+                # Capture output
+                old_stdout = sys.stdout
+                new_stdout = io.StringIO()
+                sys.stdout = new_stdout
+                
+                try:
+                    # Prepare the test inputs
+                    test_inputs = test_case.get('input', '').split('\n')
+                    input_iterator = iter(test_inputs)
+                    
+                    # Modified code to handle multiple inputs
+                    modified_code = f"""
+# Create an input iterator
+_input_values = {test_inputs}
+_input_iterator = iter(_input_values)
+
+# Override input function
+def input():
+    try:
+        return next(_input_iterator)
+    except StopIteration:
+        raise EOFError("Not enough input values provided")
+
+# User's code starts here
+{code}
+"""
+                    # Execute the code
+                    exec_globals = {}
+                    exec(modified_code, exec_globals)
+                    
+                    # Get the output
+                    output = new_stdout.getvalue().strip()
+                    expected_output = test_case.get('output', '').strip()
+                    
+                    # Compare output
+                    test_passed = output == expected_output
+                    test_results.append({
+                        'passed': test_passed,
+                        'input': test_case.get('input', ''),
+                        'expected': expected_output,
+                        'actual': output,
+                        'error': '' if test_passed else 'Output does not match expected result'
+                    })
+                    
+                except Exception as e:
+                    test_results.append({
+                        'passed': False,
+                        'input': test_case.get('input', ''),
+                        'expected': test_case.get('output', ''),
+                        'actual': '',
+                        'error': str(e)
+                    })
+                finally:
+                    sys.stdout = old_stdout
+            
+            # Calculate overall results
+            passed_tests = sum(1 for result in test_results if result['passed'])
+            total_tests = len(test_results)
+            
+            return JsonResponse({
+                'testResults': test_results,
+                'summary': {
+                    'passed': passed_tests,
+                    'total': total_tests,
+                    'success': passed_tests == total_tests
+                }
+            })
+            
+        except CodingQuestion.DoesNotExist:
+            return JsonResponse({'error': 'Question not found'}, status=404)
         except Exception as e:
-            output = str(e)
-        finally:
-            sys.stdout = old_stdout
-        
-        return JsonResponse({"output": output})
+            return JsonResponse({'error': str(e)}, status=500)
 
     return JsonResponse({"error": "Invalid request"}, status=400)
-
-
-
-
-
-
 
 
 #user login
@@ -169,7 +233,7 @@ from .models import Course , Slide
 def courses(request):
     courses = Course.objects.all()
     return render(request, 'main/courses.html', {'courses': courses})
-@login_required
+@login_required(login_url='sign_in')
 def course_detail(request, course_id, slide_order=1):
     course = get_object_or_404(Course, pk=course_id)
     slides = course.slides.all().order_by('order')
@@ -213,8 +277,64 @@ def complete_course(request, course_id):
 
 
 
-# views.py erorrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr
 
+
+
+
+
+
+#contact
+from django.core.mail import send_mail
+from django.shortcuts import render, redirect
+from django.contrib import messages
+
+def send_email(request):
+    if request.method == 'POST':
+        name = request.POST['name']
+        email = request.POST['email']
+        subject = request.POST['subject']
+        message = request.POST['message']
+        
+        # Email content
+        email_message = f"""
+        New contact form submission from {name}
+        
+        From: {email}
+        Subject: {subject}
+        
+        Message:
+        {message}
+        """
+        
+        try:
+            send_mail(
+                subject=f'New Contact Form Submission: {subject}',
+                message=email_message,
+                from_email=email,
+                recipient_list=['akhilmavannoor@gmail.com'],
+                fail_silently=False,
+            )
+            messages.success(request, 'Your message has been sent successfully!')
+        except Exception as e:
+            messages.error(request, 'An error occurred while sending your message. Please try again later.')
+        
+        return redirect('send_email')
+    
+    return render(request, 'main/contact.html')
+
+
+
+
+
+
+
+
+
+
+
+
+# views.py erorrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr
+#boommmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
 # main/utils/rag_utils.py
 
 # main/views.py
@@ -229,27 +349,63 @@ from .utilss.rag_utils import RAGProcessor
 
 rag_processor = None
 
+# Bot configuration
+BOT_CONFIG = {
+    "name": "ArK Bot",
+    "creator": "Akhil Krishna",
+    "website_info": {
+        "name": "GuiD",
+        "features": {
+            # You can add your website features here
+            # Example structure:
+            # "feature_name": "feature_description",
+            "Roadmap":"Andi poora"
+        }
+    }
+}
+
 def get_rag_processor():
     global rag_processor
     if rag_processor is None:
         rag_processor = RAGProcessor()
     return rag_processor
 
+def generate_bot_introduction():
+    return f"Hello! I'm {BOT_CONFIG['name']}, how can I assist you today?"
+
+def check_special_queries(user_message):
+    """Handle special queries about bot identity and website information"""
+    user_message_lower = user_message.lower()
+    
+    # Check for creator-related questions
+    if any(q in user_message_lower for q in ["who created you", "who made you", "your creator"]):
+        return f"I was created by {BOT_CONFIG['creator']}."
+    
+    # Check for website-related questions
+   
+    return None
+
 @csrf_exempt
 def chat_with_llama(request):
     try:
         processor = get_rag_processor()
         data = json.loads(request.body)
-        user_message = data.get('message')
+        user_message = data.get('message', '')
+        
+        # Check for special queries first
+        special_response = check_special_queries(user_message)
+        if special_response:
+            return JsonResponse({
+                'response': special_response,
+                'status': 'success',
+                'used_dataset': False
+            })
         
         # Check if query matches dataset
         is_similar, context = processor.find_similar_questions(user_message)
         
         if is_similar:
-            # Use RAG approach with fallback
-            prompt = f"""Answer the following question. First, use the provided context if it's relevant. 
-            If the context doesn't fully answer the question or if you have additional relevant information, 
-            please include your own knowledge to provide a complete answer.
+            prompt = f"""As {BOT_CONFIG['name']}, answer the following question using the provided context and additional knowledge if needed.
 
             Context from similar questions:
             {context}
@@ -258,9 +414,7 @@ def chat_with_llama(request):
 
             Please provide a complete, helpful answer:"""
         else:
-            # For general queries, create a prompt that encourages a complete response
-            prompt = f"""Please provide a complete and helpful answer to the following question, 
-            using your knowledge to give the best possible response:
+            prompt = f"""As {BOT_CONFIG['name']}, please provide a complete and helpful answer to the following question:
 
             Question: {user_message}
 
@@ -272,7 +426,7 @@ def chat_with_llama(request):
                 "model": "llama3.2:1b",
                 "prompt": prompt,
                 "stream": False,
-                "temperature": 0.7  # Add some variability to responses
+                "temperature": 0.7
             })
         
         if response.status_code == 200:

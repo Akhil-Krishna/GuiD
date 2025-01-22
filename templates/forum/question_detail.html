@@ -1,15 +1,44 @@
 {% extends 'main/base.html' %}
-
+{% block styling%}
+    <style>
+        .text-center{
+            color: #e2e8f0;
+        font-size: 2.5rem;
+        font-weight: 600;
+        margin-bottom: 2rem;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        }
+        .card{
+            background-color: aliceblue;
+            border-radius: 7px;
+        }
+        .showlist{
+            background-color: aliceblue;
+        }
+        .qContent{
+            color: rgb(181, 215, 244);
+        }
+        .log {
+            color: #b48700;
+            /* background-color: #fff3cd; */
+            border-color: #ffeeba;
+            font-size: large;
+        }
+    </style>
+{% endblock %}
 {% block content %}
-<div class="container mt-5">
+<div class=" mt-5">
     <!-- Back Button -->
     <button class="btn btn-secondary mb-4" onclick="goBack()">Back</button>
 
     <!-- Question Title -->
     <h1 class="text-center mb-4">{{ question.title }}</h1>
-    <p>{{ question.content }}</p>
-    <p><strong>Asked by:</strong> {{ question.author }} on {{ question.created_at|date:"F j, Y, g:i a" }}</p>
-
+    <div class="qContent">
+        <p>{{ question.content }}</p>
+        <p><strong>Asked by:</strong> {{ question.author }} on {{ question.created_at|date:"F j, Y, g:i a" }}</p>    
+    </div>
+   
     <!-- Answer Submission Form -->
 {% if user.is_authenticated %}
 <div class="card mb-4">
@@ -28,7 +57,7 @@
     </div>
 </div>
 {% else %}
-<p class="text-center">
+<p class="log">
     You need to <a href="{% url 'sign_in' %}">log in</a> to submit an answer.
 </p>
 {% endif %}

@@ -1,21 +1,19 @@
 {% extends 'main/base.html' %}
-
+{% load static %}
 {% block content %}
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
-    /* General Styling changingggggggg*/
     body {
         font-family: 'Roboto', Arial, sans-serif;
         line-height: 1.6;
-      
+        background-color: #031125;
     }
 
-    /* Container Styling */
     .container {
         max-width: 1200px;
         margin: 0 auto;
         padding: 2rem;
-      
     }
 
     /* Hero Section */
@@ -24,142 +22,245 @@
         flex-wrap: wrap;
         align-items: center;
         justify-content: space-between;
-        padding: 3rem;
+        padding: 4rem;
         background: linear-gradient(135deg, #3c7cbc, #00bfff);
         color: white;
-        border-radius: 10px;
-        margin-bottom: 2rem;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        border-radius: 15px;
+        margin-bottom: 3rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        position: relative;
+        overflow: hidden;
     }
+    .hero-image{
+        border-radius: 20px;
+    }
+
+    .hero::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('{% static "main/images/pattern.png" %}') repeat;
+        opacity: 0.1;
+    }
+
     .hero-text {
         flex: 1;
         max-width: 600px;
         margin-right: 2rem;
+        position: relative;
+        z-index: 1;
         animation: fadeInLeft 1s;
     }
+
     .hero-text h1 {
-        font-size: 3rem;
-        margin-bottom: 1rem;
+        font-size: 3.5rem;
+        margin-bottom: 1.5rem;
         font-weight: 700;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
     }
+
     .hero-text p {
-        margin: 1rem 0;
-        font-size: 1.2rem;
-        font-weight: 500;
+        font-size: 1.3rem;
+        margin-bottom: 2rem;
+        opacity: 0.9;
     }
-    .hero-text .cta {
+
+    .cta-buttons {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .cta {
         display: inline-block;
-        padding: 0.75rem 1.5rem;
+        padding: 1rem 2rem;
+        font-weight: 600;
+        text-decoration: none;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .cta-primary {
         background-color: white;
         color: #1e90ff;
-        font-weight: 700;
         text-decoration: none;
-        border-radius: 5px;
-        margin-top: 1rem;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
-    .hero-text .cta:hover {
-        transform: scale(1.1);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+
+    .cta-secondary {
+        background-color: transparent;
+        border: 2px solid white;
+        color: white;
+        text-decoration: none;
     }
-    .hero-image {
-        flex: 1;
-        animation: fadeInRight 1s;
+
+    .cta:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
     }
-    .hero-image img {
-        max-width: 100%;
+
+    /* Features Grid */
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        padding: 4rem 0;
+    }
+
+    .feature-card {
+        background: rgba(255, 255, 255, 0.05);
         border-radius: 15px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        padding: 2rem;
+        text-align: center;
+        color: white;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
-    /* Features Section */
-    .features {
-        padding: 4rem 3rem;
-        background-color: #f8f9fa;
-        text-align: center;
-        border-radius: 10px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        margin-bottom: 2rem;
+    .feature-card:hover {
+        transform: translateY(-10px);
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.2);
     }
-    .features h2 {
+
+    .feature-icon {
         font-size: 2.5rem;
-        margin-bottom: 1.5rem;
-        animation: fadeIn 1s;
-        font-weight: 700;
+        margin-bottom: 1rem;
+        color: #00bfff;
     }
-    .features .feature-list {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-around;
+
+    /* Roadmap Section */
+    .roadmap-section {
+        background: rgba(255, 255, 255, 0.02);
+        border-radius: 15px;
+        padding: 4rem 2rem;
+        margin: 3rem 0;
+        color: white;
+    }
+
+    .stages-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.5rem;
         margin-top: 2rem;
     }
-    .feature {
-        max-width: 300px;
-        margin: 1rem;
-        animation: fadeInUp 1s;
-        background-color: white;
-        padding: 2rem;
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    .feature:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    }
-    .feature h3 {
-        font-size: 1.5rem;
-        margin-bottom: 0.5rem;
-        font-weight: 700;
-    }
-    .feature p {
-        color: #555;
-        font-weight: 500;
-    }
 
-    /* Additional Content Section */
-    .additional-content {
-        padding: 4rem 3rem;
+    .stage-card {
+        background: rgba(60, 124, 188, 0.1);
+        border: 1px solid rgba(60, 124, 188, 0.3);
+        border-radius: 10px;
+        padding: 1.5rem;
         text-align: center;
-        background-color: #f8f9fa;
-        border-radius: 10px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        margin-bottom: 2rem;
-    }
-    .additional-content h2 {
-        font-size: 2.5rem;
-        margin-bottom: 1.5rem;
-        font-weight: 700;
-    }
-    .additional-content .cards {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-around;
-        margin-top: 2rem;
-    }
-    .card {
-        background-color: white;
-        padding: 2rem;
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        max-width: 300px;
-        margin: 1rem;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    .card:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    }
-    .card h3 {
-        font-size: 1.5rem;
-        margin-bottom: 0.5rem;
-        font-weight: 700;
-    }
-    .card p {
-        color: #555;
-        font-weight: 500;
+        position: relative;
     }
 
+    .stage-card::after {
+        content: '→';
+        position: absolute;
+        right: -1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #00bfff;
+        font-size: 1.5rem;
+    }
+
+    .stage-card:nth-child(4n)::after {
+        display: none;
+    }
+
+    .badge-icon {
+        color: #ffd700;
+        font-size: 1.5rem;
+        margin-top: 1rem;
+    }
+
+    /* Testimonials */
+    .testimonials {
+        padding: 4rem 0;
+    }
+
+    .testimonial-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+    }
+
+    .testimonial-card {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 15px;
+        padding: 2rem;
+        color: white;
+    }
+
+    .testimonial-text {
+        font-style: italic;
+        margin-bottom: 1rem;
+    }
+
+    .testimonial-author {
+        color: #00bfff;
+        font-weight: 600;
+    }
+
+    .testimonial-college {
+        font-size: 0.9rem;
+        opacity: 0.7;
+    }
+
+    /* Stats Section */
+    .stats-section {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 2rem;
+        margin: 4rem 0;
+        text-align: center;
+        color: white;
+    }
+
+    .stat-item h3 {
+        font-size: 2.5rem;
+        color: #00bfff;
+        margin-bottom: 0.5rem;
+    }
+    .footer-cta
+
+    /* Animations */
+    @keyframes fadeInLeft {
+        from {
+            opacity: 0;
+            transform: translateX(-50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .section-title {
+        font-size: 2.5rem;
+        color: white;
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .section-subtitle {
+        color: #00bfff;
+        text-align: center;
+        margin-bottom: 2rem;
+        font-size: 1.2rem;
+    }
     /* Footer Call to Action */
     .footer-cta {
         padding: 2rem;
@@ -168,6 +269,12 @@
         color: white;
         border-radius: 10px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    .hero-image img {
+        max-width: 100%;
+        border-radius: 15px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        margin-top: 10px;
     }
     .footer-cta a {
         display: inline-block;
@@ -183,100 +290,168 @@
         transform: scale(1.1);
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     }
-
-    /* Animations */
-    @keyframes fadeInLeft {
-        from {
-            opacity: 0;
-            transform: translateX(-50px);
+    @media (max-width: 768px) {
+        .hero {
+            padding: 2rem;
         }
-        to {
-            opacity: 1;
-            transform: translateX(0);
+        
+        .stages-grid {
+            grid-template-columns: repeat(2, 1fr);
         }
-    }
-    @keyframes fadeInRight {
-        from {
-            opacity: 0;
-            transform: translateX(50px);
-        }
-        to {
-            opacity: 1;
-            transform: translateX(0);
-        }
-    }
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(50px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-        }
-        to {
-            opacity: 1;
+        
+        .stats-section {
+            grid-template-columns: repeat(2, 1fr);
         }
     }
 </style>
 
+<!-- Hero Section -->
 <section class="hero">
     <div class="hero-text">
-        <h1>Welcome to GuiD</h1>
-        <p>Embark on a transformative journey of learning and skill development. Our AI-powered roadmap and courses ensure you reach your goals effectively.</p>
-        <a href="/roadmap" class="cta">Explore Roadmap</a>
+        <h1>Transform Your Tech Career with GuiD</h1>
+        <p>Master in-demand skills through our AI-powered learning platform. Follow a structured roadmap, practice with real coding challenges, and build your career path to success.</p>
+        <div class="cta-buttons">
+            <a href="/roadmap" class="cta cta-primary" style="text-decoration: none;">Start Learning</a>
+            <a href="{% url 'about' %}" class="cta cta-secondary" style="text-decoration: none;">Learn More</a>
+        </div>
     </div>
-    {% load static %}
     <div class="hero-image">
         <img src="{% static 'main/images/image3.png' %}" alt="Learning illustration">
     </div>
 </section>
 
-<section class="features">
-    <h2>What Makes GuiD Special?</h2>
-    <div class="feature-list">
-        <div class="feature">
+<!-- Stats Section -->
+<div class="stats-section">
+    <div class="stat-item">
+        <h3>8</h3>
+        <p>Learning Stages</p>
+    </div>
+    <div class="stat-item">
+        <h3>100+</h3>
+        <p>Interactive Courses</p>
+    </div>
+    <div class="stat-item">
+        <h3>1000+</h3>
+        <p>Practice Questions</p>
+    </div>
+    <div class="stat-item">
+        <h3>24/7</h3>
+        <p>AI Support</p>
+    </div>
+</div>
+
+<!-- Main Features -->
+<section>
+    <h2 class="section-title">Comprehensive Learning Experience</h2>
+    <div class="features-grid">
+        <div class="feature-card">
+            <i class="fas fa-road feature-icon"></i>
             <h3>Structured Roadmap</h3>
-            <p>Follow a step-by-step path to master skills and earn badges at each stage.</p>
+            <p>Follow our 8-stage learning path with AI-enhanced content and earn badges as you progress.</p>
         </div>
-        <div class="feature">
-            <h3>Interactive Learning</h3>
-            <p>Engage with AI-powered training and community-driven resources.</p>
+        <div class="feature-card">
+            <i class="fas fa-robot feature-icon"></i>
+            <h3>AI-Powered Assistant</h3>
+            <p>Get instant help with coding, placement preparation, and technical concepts using our specialized chatbot.</p>
         </div>
-        <div class="feature">
-            <h3>Personalized Reviews</h3>
-            <p>Track your progress and improve with tailored feedback.</p>
+        <div class="feature-card">
+            <i class="fas fa-laptop-code feature-icon"></i>
+            <h3>Practice Platform</h3>
+            <p>Solve real coding problems with our integrated code editor and test cases.</p>
+        </div>
+        <div class="feature-card">
+            <i class="fas fa-book feature-icon"></i>
+            <h3>Industry Courses</h3>
+            <p>Master modern technologies like Django, Flutter, and more with hands-on projects.</p>
+        </div>
+        <div class="feature-card">
+            <i class="fas fa-users feature-icon"></i>
+            <h3>Community Forum</h3>
+            <p>Connect with peers, share knowledge, and grow together in our active learning community.</p>
+        </div>
+        <div class="feature-card">
+            <i class="fas fa-file-alt feature-icon"></i>
+            <h3>Resume Builder</h3>
+            <p>Create professional resumes that highlight your skills and achievements.</p>
         </div>
     </div>
 </section>
 
-        <section class="additional-content">
-            <h2>Start Your Learning Journey</h2>
-            <div class="cards">
-                <div class="card">
-                    <h3>Explore Courses</h3>
-                    <p>Dive into a wide range of courses tailored to your interests and goals.</p>
-                </div>
-                <div class="card">
-                    <h3>Build Your Resume</h3>
-                    <p>Create a professional resume and showcase your achievements.</p>
-                </div>
-                <div class="card">
-                    <h3>Join the Community</h3>
-                    <p>Engage with peers, share ideas, and grow together.</p>
-                </div>
-            </div>
-        </section>
-        
-        <div class="footer-cta">
-            <h2>Ready to Get Started?</h2>
-            <a href="{% url 'sign_up' %}">Join GuiD Today</a>
+<!-- Roadmap Preview -->
+<section class="roadmap-section">
+    <h2 class="section-title">Your Path to Success</h2>
+    <p class="section-subtitle">Complete all 8 stages to become placement-ready</p>
+    <div class="stages-grid">
+        <div class="stage-card">
+            <h3>Stage 1</h3>
+            <p>Fundamentals</p>
+            <i class="fas fa-medal badge-icon"></i>
         </div>
-        
-        {% endblock %}
-        
+        <div class="stage-card">
+            <h3>Stage 2</h3>
+            <p>Data Structures</p>
+            <i class="fas fa-medal badge-icon"></i>
+        </div>
+        <div class="stage-card">
+            <h3>Stage 3</h3>
+            <p>Algorithms</p>
+            <i class="fas fa-medal badge-icon"></i>
+        </div>
+        <div class="stage-card">
+            <h3>Stage 4</h3>
+            <p>Advanced Concepts</p>
+            <i class="fas fa-medal badge-icon"></i>
+        </div>
+        <div class="stage-card">
+            <h3>Stage 5</h3>
+            <p>System Design</p>
+            <i class="fas fa-medal badge-icon"></i>
+        </div>
+        <div class="stage-card">
+            <h3>Stage 6</h3>
+            <p>Projects</p>
+            <i class="fas fa-medal badge-icon"></i>
+        </div>
+        <div class="stage-card">
+            <h3>Stage 7</h3>
+            <p>Interview Prep</p>
+            <i class="fas fa-medal badge-icon"></i>
+        </div>
+        <div class="stage-card">
+            <h3>Stage 8</h3>
+            <p>Final Assessment</p>
+            <i class="fas fa-medal badge-icon"></i>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials -->
+<section class="testimonials">
+    <h2 class="section-title">What Our Users Say</h2>
+    <div class="testimonial-grid">
+        <div class="testimonial-card">
+            <p class="testimonial-text">"GuiD helped me structure my learning and prepare effectively for placements. The AI-powered roadmap was a game-changer!"</p>
+            <p class="testimonial-author">Akhil Krishna</p>
+            <p class="testimonial-college">College of Engineering Chengannur</p>
+        </div>
+        <div class="testimonial-card">
+            <p class="testimonial-text">"The practice platform and instant AI feedback helped me improve my coding skills significantly."</p>
+            <p class="testimonial-author">Parthip P.R</p>
+            <p class="testimonial-college">College of Engineering Chengannur</p>
+        </div>
+        <div class="testimonial-card">
+            <p class="testimonial-text">"The structured approach and community support made my learning journey smooth and effective."</p>
+            <p class="testimonial-author">Aswin Satheesh</p>
+            <p class="testimonial-college">College of Engineering Chengannur</p>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<div class="footer-cta">
+    <h2>Ready to Start Your Journey?</h2>
+    <p>Join thousands of students already learning with GuiD</p>
+    <a href="{% url 'sign_up' %}" class="cta cta-primary">Get Started Today</a>
+</div>
+
+{% endblock %}

@@ -1,28 +1,244 @@
 {% extends 'main/base.html' %}
-
+{% load static %}
 {% block content %}
-<div class="container mt-5">
-    <h2>Your Resumes</h2>
-    <a href="{% url 'create_resume' %}" class="btn btn-primary mb-3">Create New Resume</a>
-    <ul class="list-group">
-        {% for resume in resumes %}
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-                <div>
-                    <h5>{{ resume.title }}</h5>
-                    <p>{{ resume.summary|truncatewords:5}}...</p>
-                </div>
-                <div>
-                    <a href="{% url 'view_resume' resume.id %}" class="btn btn-info">View</a>
-                    <a href="{% url 'edit_resume' resume.id %}" class="btn btn-secondary">Edit</a>
-                    <a href="{% url 'delete_resume' resume.id %}" class="btn btn-danger" 
-                       onclick="return confirm('Are you sure you want to delete this resume?');">Delete</a>
-                    <a href="{% url 'download_resume' resume.id %}" class="btn btn-success">Download PDF</a>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+    body {
+        font-family: 'Roboto', Arial, sans-serif;
+        line-height: 1.6;
+        background-color: #031125;
+        color: white;
+    }
 
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    /* Header Section */
+    .header-section {
+        background: linear-gradient(135deg, #3c7cbc, #00bfff);
+        border-radius: 15px;
+        padding: 3rem 2rem;
+        margin-bottom: 3rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        animation: fadeInDown 1s;
+    }
+
+    .header-section h1 {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        font-weight: 700;
+    }
+
+    .header-section p {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        margin-bottom: 1.5rem;
+    }
+
+    /* Create Resume Button */
+    .create-resume-btn {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 0.8rem 2rem;
+        border-radius: 30px;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.3s ease;
+        border: 2px solid white;
+        font-weight: 500;
+    }
+
+    .create-resume-btn:hover {
+        background: white;
+        color: #3c7cbc;
+        transform: translateY(-2px);
+    }
+
+    /* Resume List */
+    .resume-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        margin-top: 2rem;
+        animation: fadeInUp 1s;
+    }
+
+    .resume-card {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 15px;
+        padding: 2rem;
+        transition: transform 0.3s ease;
+        border: 1px solid rgba(60, 124, 188, 0.3);
+    }
+
+    .resume-card:hover {
+        transform: translateY(-5px);
+        background: rgba(255, 255, 255, 0.08);
+    }
+
+    .resume-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .resume-info h3 {
+        color: #00bfff;
+        margin-bottom: 0.5rem;
+        font-size: 1.5rem;
+    }
+
+    .resume-info p {
+        opacity: 0.8;
+        margin-bottom: 0;
+    }
+
+    .resume-actions {
+        display: flex;
+        gap: 0.8rem;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        font-weight: 500;
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-view {
+        background: rgba(60, 124, 188, 0.2);
+        color: #00bfff;
+    }
+
+    .btn-edit {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+    }
+
+    .btn-delete {
+        background: rgba(255, 0, 0, 0.1);
+        color: #ff4d4d;
+    }
+
+    .btn-download {
+        background: rgba(40, 167, 69, 0.2);
+        color: #28a745;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+        filter: brightness(120%);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 15px;
+        margin-top: 2rem;
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        color: #00bfff;
+        margin-bottom: 1rem;
+    }
+
+    /* Animations */
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .resume-content {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .resume-actions {
+            justify-content: center;
+        }
+
+        .header-section {
+            padding: 2rem;
+        }
+    }
+</style>
+
+<div class="container">
+    <!-- Header Section -->
+    <section class="header-section">
+        <h1>Your Resume Portfolio</h1>
+        <p>Create, manage, and download professional resumes tailored to your career goals</p>
+        <a href="{% url 'create_resume' %}" class="create-resume-btn">
+            <i class="fas fa-plus-circle"></i> Create New Resume
+        </a>
+    </section>
+
+    <!-- Resume List -->
+    <div class="resume-grid">
+        {% for resume in resumes %}
+            <div class="resume-card">
+                <div class="resume-content">
+                    <div class="resume-info">
+                        <h3>{{ resume.title }}</h3>
+                        <p>{{ resume.summary|truncatewords:3 }}...</p>
+                    </div>
+                    <div class="resume-actions">
+                        <a href="{% url 'view_resume' resume.id %}" class="btn btn-view">
+                            <i class="fas fa-eye"></i> View
+                        </a>
+                        <a href="{% url 'edit_resume' resume.id %}" class="btn btn-edit">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                        <a href="{% url 'delete_resume' resume.id %}" class="btn btn-delete" 
+                           onclick="return confirm('Are you sure you want to delete this resume?');">
+                            <i class="fas fa-trash"></i> Delete
+                        </a>
+                        <a href="{% url 'download_resume' resume.id %}" class="btn btn-download">
+                            <i class="fas fa-download"></i> Download PDF
+                        </a>
+                    </div>
                 </div>
-            </li>
+            </div>
         {% empty %}
-            <li class="list-group-item">No resumes found. Create one now!</li>
+            <div class="empty-state">
+                <i class="fas fa-file-alt"></i>
+                <h3>No Resumes Found</h3>
+                <p>Start by creating your first resume!</p>
+            </div>
         {% endfor %}
-    </ul>
+    </div>
 </div>
 {% endblock %}

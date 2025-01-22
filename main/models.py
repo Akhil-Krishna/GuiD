@@ -8,6 +8,7 @@ class CodingQuestion(models.Model):
     description = models.TextField()
     difficulty = models.CharField(max_length=50)
     test_cases = models.JSONField(default=list)  # Ensure this field is added
+    solution=models.TextField(default="Def func():")
 
     def __str__(self):
         return self.title

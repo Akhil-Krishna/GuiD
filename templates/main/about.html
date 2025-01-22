@@ -1,0 +1,340 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+    body {
+        font-family: 'Roboto', Arial, sans-serif;
+        line-height: 1.6;
+        background-color: #031125;
+        color: white;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    /* Mission Section */
+    .mission-section {
+        background: linear-gradient(135deg, #3c7cbc, #00bfff);
+        border-radius: 15px;
+        padding: 4rem 2rem;
+        margin-bottom: 3rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .mission-section h1 {
+        font-size: 3rem;
+        margin-bottom: 1.5rem;
+        font-weight: 700;
+        animation: fadeInDown 1s;
+    }
+
+    .mission-section p {
+        font-size: 1.2rem;
+        max-width: 800px;
+        margin: 0 auto;
+        opacity: 0.9;
+        animation: fadeInUp 1s;
+    }
+
+    /* Vision Section */
+    .vision-section {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 15px;
+        padding: 3rem;
+        margin-bottom: 3rem;
+        animation: fadeIn 1s;
+    }
+
+    .vision-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+
+    .vision-card {
+        background: rgba(60, 124, 188, 0.1);
+        border: 1px solid rgba(60, 124, 188, 0.3);
+        border-radius: 10px;
+        padding: 2rem;
+        text-align: center;
+        transition: transform 0.3s ease;
+    }
+
+    .vision-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .vision-icon {
+        font-size: 2.5rem;
+        color: #00bfff;
+        margin-bottom: 1rem;
+    }
+
+    /* Team Section */
+    .team-section {
+        padding: 4rem 0;
+    }
+
+    .team-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+        
+    }
+
+    .team-member {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 15px;
+        padding: 2rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        animation: fadeInUp 1s;
+    }
+
+    .team-member:hover {
+        transform: translateY(-10px);
+        background: rgba(255, 255, 255, 0.08);
+    }
+
+    .member-photo {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        margin: 0 auto 1.5rem;
+        background: linear-gradient(135deg, #3c7cbc, #00bfff);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .member-photo i {
+        font-size: 4rem;
+        color: white;
+    }
+
+    .member-name {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: #00bfff;
+    }
+
+    .member-title {
+        font-size: 1rem;
+        opacity: 0.8;
+        margin-bottom: 1rem;
+    }
+
+    /* Roadmap Info Section */
+    .roadmap-info {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 15px;
+        padding: 3rem;
+        margin: 3rem 0;
+    }
+
+    .roadmap-features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+
+    .roadmap-feature {
+        padding: 1.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        text-align: center;
+    }
+
+    /* Section Titles */
+    .section-title {
+        font-size: 2.5rem;
+        text-align: center;
+        margin-bottom: 1rem;
+        color: white;
+    }
+
+    .section-subtitle {
+        text-align: center;
+        color: #00bfff;
+        margin-bottom: 2rem;
+        font-size: 1.2rem;
+    }
+
+    /* Animations */
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .mission-section {
+            padding: 2rem;
+        }
+        
+        .mission-section h1 {
+            font-size: 2rem;
+        }
+        
+        .team-grid {
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        }
+    }
+</style>
+
+<!-- Mission Section -->
+<section class="mission-section">
+    <h1>Our Mission</h1>
+    <p>Empowering engineering students to achieve their career goals through structured learning and comprehensive technical preparation. We aim to ensure every student is placement-ready by their final year.</p>
+</section>
+
+<!-- Vision Section -->
+<section class="vision-section">
+    <h2 class="section-title">Our Vision</h2>
+    <div class="vision-grid">
+        <div class="vision-card">
+            <i class="fas fa-graduation-cap vision-icon"></i>
+            <h3>Structured Learning</h3>
+            <p>Eight-semester roadmap designed to parallel engineering curriculum</p>
+        </div>
+        <div class="vision-card">
+            <i class="fas fa-code vision-icon"></i>
+            <h3>Technical Excellence</h3>
+            <p>Comprehensive training in Python, Java, and essential programming skills</p>
+        </div>
+        <div class="vision-card">
+            <i class="fas fa-comments vision-icon"></i>
+            <h3>Complete Development</h3>
+            <p>Focus on aptitude, communication skills, and technical knowledge</p>
+        </div>
+    </div>
+</section>
+
+<!-- Team Section -->
+<section class="team-section">
+    <h2 class="section-title">Meet Our Team</h2>
+    <p class="section-subtitle">B.Tech Computer Science Engineering Students from College of Engineering Chengannur</p>
+    <div class="team-grid">
+        <div class="team-member">
+            <a href="https://www.linkedin.com/in/akhil-krishna-686166229/" style="text-decoration: none; color:white;">
+                <div class="member-photo">
+                    <i class="fas fa-user"></i>
+                </div>
+                <h3 class="member-name">Akhil Krishna</h3>
+                <p class="member-title">CEO & Developer</p>
+            </a>  
+        </div>
+        <a href="https://www.linkedin.com/in/aswin-satheesh-505968273"  style="text-decoration: none; color:white;">
+        <div class="team-member">
+            <div class="member-photo">
+                <i class="fas fa-user"></i>
+            </div>
+            <h3 class="member-name">Aswin Satheesh</h3>
+            <p class="member-title">Treasurer & Developer</p>
+        </div>
+        </a>
+        <a href="https://www.linkedin.com/in/parthip-p-r-25987b229?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app"  style="text-decoration: none; color:white;">
+        <div class="team-member">
+            <div class="member-photo">
+                <i class="fas fa-user"></i>
+            </div>
+            <h3 class="member-name">Parthip P.R</h3>
+            <p class="member-title">Community Lead & Developer</p>
+        </div>
+        </a>
+        <a href="https://www.linkedin.com/in/blessen-thomas-300146333"  style="text-decoration: none; color:white;">
+        <div class="team-member">
+            <div class="member-photo">
+                <i class="fas fa-user"></i>
+            </div>
+            <h3 class="member-name">Blessen Thomas</h3>
+            <p class="member-title">Marketing Lead & Developer</p>
+        </div>
+    </a>
+        <div class="team-member">
+            <div class="member-photo">
+                <i class="fas fa-user"></i>
+            </div>
+            <h3 class="member-name">Ajith Gopi</h3>
+            <p class="member-title">Design Lead & Developer</p>
+        </div>
+        
+    </div>
+</section>
+
+<!-- Roadmap Info Section -->
+<section class="roadmap-info">
+    <h2 class="section-title">Our Unique Approach</h2>
+    <p class="section-subtitle">A Comprehensive Learning Journey</p>
+    <div class="roadmap-features">
+        <div class="roadmap-feature">
+            <i class="fas fa-certificate vision-icon"></i>
+            <h3>Badge System</h3>
+            <p>Earn certificates and badges as you progress through each stage</p>
+        </div>
+        <div class="roadmap-feature">
+            <i class="fas fa-tasks vision-icon"></i>
+            <h3>Semester-Based</h3>
+            <p>Aligned with engineering curriculum for optimal learning pace</p>
+        </div>
+        <div class="roadmap-feature">
+            <i class="fas fa-brain vision-icon"></i>
+            <h3>Complete Development</h3>
+            <p>Technical skills, aptitude, and communication training</p>
+        </div>
+        <div class="roadmap-feature">
+            <i class="fas fa-check-circle vision-icon"></i>
+            <h3>Achievement System</h3>
+            <p>Track progress with completion certificates and skill badges</p>
+        </div>
+        <div class="roadmap-feature">
+            <i class="fas fa-robot vision-icon"></i>
+            <h3>ArK AI-enhancer</h3>
+            <p>ArK will enhance the contents of roadmap slides to make the it more clear</p>
+        </div>
+        <div class="roadmap-feature">
+            <i class="fas fa-list-ol vision-icon"></i>
+            <h3>Coding & MCQs</h3>
+            <p>Coding round Questions and MCQs simulating Real world Problems</p>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

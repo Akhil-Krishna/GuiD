@@ -2,108 +2,176 @@
 
 {% block styling %}
 <style>
-  /* Global Styling */
-
+  body {
+    background-color: #0a192f;
+  }
 
   /* Questions Section */
   .questions-section {
-    padding: 20px;
+    padding: 30px 20px;
   }
 
   h1 {
     text-align: center;
-    color: #2c3e50;
-    margin-bottom: 20px;
+    color: #e2e8f0;
+    margin-bottom: 35px;
     font-size: 2.5rem;
+    font-weight: 600;
+    letter-spacing: 1px;
   }
 
   .questions-container {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 20px; /* Space between cards */
+    gap: 25px;
+    max-width: 1200px;
+    margin: 0 auto;
   }
 
   .question-card {
-    width: 320px; /* Adjust card width */
-    background: #fff;
-    border: 1px solid #e0e0e0;
+    width: 320px;
+    background: #dceef2;
+    border: none;
     border-radius: 12px;
     overflow: hidden;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
   }
 
   .question-card:hover {
-    transform: translateY(-5px); /* Lift card on hover */
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
   }
 
   .question-card .card-header {
     background: #1984a4;
     color: #fff;
-    padding: 10px 15px;
+    padding: 15px;
     text-align: center;
     font-size: 1.2rem;
-    font-weight: bold;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    border-bottom: 3px solid #146d8c;
   }
 
   .question-card .card-body {
-    padding: 15px;
+    padding: 20px;
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-color: #dceef2;
   }
 
   .question-card h3 {
     font-size: 1.1rem;
-    color: #333;
-    margin-bottom: 10px;
+    color: #2c3e50;
+    margin-bottom: 12px;
+    line-height: 1.4;
   }
 
   .question-card p {
-    font-size: 0.9rem;
-    color: #555;
-    margin: 5px 0;
+    font-size: 0.95rem;
+    color: #505c6e;
+    margin: 8px 0;
+    line-height: 1.5;
   }
 
   .question-card .difficulty {
     display: inline-block;
-    background: #dac32f;
-    color: #fff;
-    border-radius: 3px;
-    padding: 3px 8px;
+    background: #ffd700;
+    color: #333;
+    border-radius: 6px;
+    padding: 6px 12px;
     font-size: 0.85rem;
-    margin-top: 8px;
+    margin-top: 12px;
+    font-weight: 500;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 70%;
   }
 
   .question-card .card-footer {
     text-align: center;
-    padding: 10px;
-  
-    border-top: 1px solid #e0e0e0;
+    padding: 15px 20px;
+    background: #dceef2;
+    border-top: 1px solid #eaecef;
   }
 
   .question-card a {
     display: inline-block;
     background-color: #5ab382;
     color: #fff;
-    padding: 8px 12px;
+    padding: 10px 20px;
     text-decoration: none;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     border-radius: 6px;
-    transition: background-color 0.3s ease;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    width: 100%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
 
   .question-card a:hover {
-    background-color: #49ab75;
+    background-color: #4a9b6f;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   }
+
+  @media (max-width: 768px) {
+    .questions-container {
+      gap: 20px;
+      padding: 10px;
+    }
+
+    .question-card {
+      width: 100%;
+      max-width: 340px;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 25px;
+    }
+
+    .question-card .card-body {
+      min-height: 100px;
+    }
+  }
+  .text-center {
+       
+    text-align: center;
+    padding: 1rem 0;
+    background: linear-gradient(135deg, #3c7cbc, #00bfff);
+    border-radius: 15px;
+    margin-bottom: 3rem;
+    position: relative;
+    overflow: hidden;
+    color: aliceblue;
+}
+
+.text-center h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    margin: 0;
+    position: relative;
+    z-index: 1;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
 </style>
 {% endblock %}
 
 {% block content %}
-<h1>Questions</h1>
+
+<div class="text-center my-4">
+    <h1>QUESTIONS</h1>
+</div>
 
 <div class="questions-section">
   <div class="questions-container">
-    
     {% for question in coding_questions %}
       <div class="question-card">
         <!-- Card Header -->

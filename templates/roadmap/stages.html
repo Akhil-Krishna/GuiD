@@ -3,14 +3,59 @@
 
 {% block styling %}
 <style>
-    /*myupdate*/
-    /* General Roadmap Styles */ 
-    
+    body {
+        background-color: #020d2b;
+        color: #ecf0f1;
+        font-family: 'Roboto', sans-serif;
+    }
+
+    .container {
+        background: none;
+        box-shadow: none;
+    }
+
+    /* Header Section */
+    .roadmap-header {
+        text-align: center;
+        padding: 3rem 0;
+        background: linear-gradient(135deg, #3c7cbc, #00bfff);
+        border-radius: 15px;
+        margin-bottom: 3rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .roadmap-header h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        margin: 0;
+        position: relative;
+        z-index: 1;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .roadmap-header::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><circle cx="2" cy="2" r="1" fill="rgba(255,255,255,0.1)"/></svg>') repeat;
+        opacity: 0.3;
+    }
+
+    /* Roadmap Container */
     .roadmap-container {
-        max-width: 800px;
+        max-width: 1000px;
         margin: 0 auto;
-        padding: 20px;
-        
+        padding: 2rem;
+        background: rgba(4, 25, 62, 0.95);
+        border-radius: 20px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     .roadmap {
@@ -19,50 +64,53 @@
         flex-direction: column;
         align-items: center;
         padding: 20px 0;
-        
     }
 
+    /* Stage Styling */
     .stage {
         display: flex;
         align-items: center;
         position: relative;
         margin-bottom: 50px;
         width: 100%;
+        animation: fadeInUp 0.5s ease-out;
+        animation-fill-mode: both;
     }
 
-    .stage:last-child {
-        margin-bottom: 0;
-    }
+    .stage:nth-child(1) { animation-delay: 0.1s; }
+    .stage:nth-child(2) { animation-delay: 0.2s; }
+    .stage:nth-child(3) { animation-delay: 0.3s; }
+    .stage:nth-child(4) { animation-delay: 0.4s; }
+    .stage:nth-child(5) { animation-delay: 0.5s; }
+    .stage:nth-child(6) { animation-delay: 0.6s; }
+    .stage:nth-child(7) { animation-delay: 0.7s; }
+    .stage:nth-child(8) { animation-delay: 0.8s; }
 
-    /* Vertical Line Path */
+    /* Progress Path */
     .path {
         position: absolute;
-        top: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 4px;
+        left: 32px;
+        width: 6px;
         height: 100%;
-        background-color: #ecf0f1;
-        z-index: 0;
+        background: linear-gradient(to bottom, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+        border-radius: 3px;
+        top: 100px;
     }
 
     .path .progress {
         position: absolute;
-        top: 0;
-        left: 0;
         width: 100%;
-        height: {{ progress_percentage }}%;
-        background-color: #3498db;
-        z-index: 1;
+        background: linear-gradient(to bottom, #00bfff, #1abc9c);
+        border-radius: 3px;
+        transition: height 0.5s ease;
+        box-shadow: 0 0 10px rgba(26, 188, 156, 0.5);
     }
 
-    /* Circle representing stage number */
+    /* Stage Circle */
     .stage-circle {
-        width: 60px;
-        height: 60px;
+        width: 64px;
+        height: 64px;
         border-radius: 50%;
-        background-color: #bdc3c7;
-        color: white;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -70,74 +118,142 @@
         font-weight: bold;
         z-index: 2;
         position: relative;
+        transition: all 0.3s ease;
+        border: 3px solid rgba(255, 255, 255, 0.1);
+        background: linear-gradient(145deg, #1a1a2e, #0f0f1e);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     }
 
     .stage-circle.completed {
-        background-color: #2ecc71;
+        background: linear-gradient(145deg, #27ae60, #2ecc71);
+        border-color: #27ae60;
     }
 
     .stage-circle.in-progress {
-        background-color: #3498db;
+        background: linear-gradient(145deg, #2980b9, #3498db);
+        border-color: #2980b9;
     }
 
-    /* Stage details rectangle */
+    /* Stage Details */
     .stage-details {
-        background-color: white;
-        border: 2px solid #bdc3c7;
-        padding: 20px;
-        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 25px;
+        border-radius: 15px;
         margin-left: 80px;
         flex-grow: 1;
-        transition: transform 0.3s, box-shadow 0.3s;
+        transition: all 0.3s ease;
         position: relative;
         z-index: 2;
+        backdrop-filter: blur(10px);
     }
 
     .stage-details:hover {
-        transform: scale(1.03);
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        border-color: rgba(255, 255, 255, 0.2);
     }
 
     .stage-details h2 {
-        margin: 0 0 10px;
-        font-size: 1.5rem;
+        margin: 0 0 15px;
+        font-size: 1.6rem;
+        background: linear-gradient(to right, #00bfff, #1abc9c);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-weight: 700;
     }
 
     .stage-details p {
-        color: #7f8c8d;
-        font-size: 1rem;
-        margin-bottom: 10px;
+        color: #bdc3c7;
+        font-size: 1.1rem;
+        line-height: 1.6;
+        margin-bottom: 15px;
     }
 
+    /* Status Badges */
     .status-badge {
         display: inline-block;
-        padding: 6px 10px;
-        border-radius: 4px;
+        padding: 8px 16px;
+        border-radius: 20px;
         font-size: 0.9rem;
-        margin-top: 10px;
-        color: white;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
     }
 
     .status-complete {
-        background-color: #2ecc71;
+        background: linear-gradient(135deg, #27ae60, #2ecc71);
+        box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
     }
 
     .status-progress {
-        background-color: #3498db;
+        background: linear-gradient(135deg, #2980b9, #3498db);
+        box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        color: white;
     }
 
     .status-start {
-        background-color: #f1c40f;
+        background: linear-gradient(135deg, #f39c12, #f1c40f);
+        box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3);
     }
 
     .locked-message {
         color: #e74c3c;
-        font-size: 0.9rem;
-        margin-top: 10px;
+        font-size: 1rem;
+        margin-top: 15px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    /* Trophy Icon */
+    .trophy-container {
+        min-height: 70px;
+        height: 60px;
+        margin-bottom: 10px;
+        position: relative;
+    }
+
+    .trophy-circle {
+        position: fixed;
+        bottom: 25px;
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 2rem;
+        background: linear-gradient(145deg, #f1c40f, #f39c12);
+        box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3);
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
     /* Responsive Design */
     @media (max-width: 768px) {
+        .roadmap-container {
+            padding: 1rem;
+        
+        }
+
         .stage {
             flex-direction: column;
             align-items: flex-start;
@@ -146,21 +262,30 @@
         .stage-details {
             margin-left: 0;
             margin-top: 20px;
+            width: 100%;
+            background-color: #020d2b;
         }
 
         .path {
-            left: 25px;
+            left: 32px;
+        }
+
+        .roadmap-header h1 {
+            font-size: 2rem;
         }
     }
 </style>
 {% endblock %}
 
 {% block content %}
+<div class="roadmap-header">
+    <h1>Your Learning Journey</h1>
+</div>
+
 <div class="roadmap-container">
-    <h1>Roadmap Stages</h1>
     <div class="roadmap">
-        <div class="path" style="position:absolute; left:32px; top:102px; ">
-            <div class="progress"  style="height: {{ progress_percentage }}% ; width: 6px ; background-color:rgb(50,250,10);"></div>
+        <div class="path">
+            <div class="progress" style="height: {{ progress_percentage }}%"></div>
         </div>
         {% for stage in stages %}
         {% with stage_progress=progress_dict|get:stage.id %}
@@ -179,15 +304,15 @@
                 {% if stage_progress.accessible %}
                     {% if stage_progress.progress %}
                         {% if stage_progress.progress.is_stage_completed %}
-                            <div class="status-badge status-complete">Completed</div>
+                            <div class="status-badge status-complete">Completed ✓</div>
                         {% else %}
-                            <div class="status-badge status-progress">In Progress</div>
+                            <div class="status-badge status-progress">In Progress ↗</div>
                         {% endif %}
                     {% else %}
-                        <div class="status-badge status-start">Start Stage</div>
+                        <div class="status-badge status-start">Start Stage ▶</div>
                     {% endif %}
                 {% else %}
-                    <div class="locked-message">🔒 Complete previous stage to unlock</div>
+                    <div class="locked-message">🔒 Complete previous stage to unlock this level</div>
                 {% endif %}
 
             {% if stage_progress.accessible %}
@@ -198,6 +323,11 @@
         </div>
         {% endwith %}
         {% endfor %}
+    </div>
+    <div class="trophy-container">
+        <div class="trophy-circle">
+            🏆
+        </div>
     </div>
 </div>
 {% endblock %}

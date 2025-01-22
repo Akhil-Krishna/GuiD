@@ -14,10 +14,9 @@ from django.http import JsonResponse
 
 
 
-
 from .models import RoadmapCourse,RoadmapSlide,RoadmapStage,UserProgress,RoadmapTest,TestQuestion,TestAttempt ,UserBadge
 class RoadmapStageView(View):
-    @method_decorator(login_required)
+    @method_decorator(login_required(login_url="/sign_in"))
     def get(self, request):
         stages = RoadmapStage.objects.all()
         progress_dict = {}
@@ -141,7 +140,7 @@ class StageCourseListView(View):
         progress, created = UserProgress.objects.get_or_create(
             user=request.user, 
             stage=stage,
-            defaults={'current_course': None}
+            defaults={'current_course': None, 'current_slide': None}
         )
         
         courses_status = []
@@ -151,22 +150,27 @@ class StageCourseListView(View):
             status = {
                 'course': course,
                 'status': 'locked',  # default status
+                'current_slide': None
             }
             
-            # First course is always available
+            # First course logic
             if course.order == 1:
-                status['status'] = 'start' if current_course_order == 0 else 'complete'
-            # Current course
+                if current_course_order == 1:  
+                    status['status'] = 'in_progress'
+                    status['current_slide'] = progress.current_slide
+                elif current_course_order > 1:  
+                    status['status'] = 'complete'
+                else:  
+                    status['status'] = 'start'
+            # Rest of the courses
             elif course.order == current_course_order:
                 status['status'] = 'in_progress'
-            # Completed courses - now accessible
+                status['current_slide'] = progress.current_slide
             elif course.order < current_course_order:
                 status['status'] = 'complete'
-            # Next available course
             elif course.order == current_course_order + 1:
                 status['status'] = 'start'
             
-            # Make completed courses clickable
             status['clickable'] = status['status'] in ['complete', 'in_progress', 'start']
             
             courses_status.append(status)
@@ -176,15 +180,13 @@ class StageCourseListView(View):
             'courses_status': courses_status,
             'progress': progress,
         })
-        
-#changing this viewbb
+
 class RoadmapCourseView(View):
     @method_decorator(login_required)
     def get(self, request, stage_id, course_order):
         stage = get_object_or_404(RoadmapStage, id=stage_id)
         course = get_object_or_404(RoadmapCourse, stage=stage, order=course_order)
 
-        # Get or create progress for the user
         progress, created = UserProgress.objects.get_or_create(
             user=request.user,
             stage=stage,
@@ -194,32 +196,41 @@ class RoadmapCourseView(View):
         # Check if reviewing a completed course
         is_review = progress.current_course and course.order < progress.current_course.order
 
-        # Update progress for new courses
-        if not is_review:
-            if course_order == 1 or progress.current_course != course:
+        # Handle first course specially
+        if course.order == 1 and not is_review:
+            # If there's a saved slide for the first course, use it
+            if progress.current_slide and progress.current_slide.course == course:
+                return redirect('roadmap_slide', course_id=course.id, slide_order=progress.current_slide.order)
+            # If starting/resuming the first course
+            else:
                 progress.current_course = course
-                progress.current_slide = None  # Reset slide for new course
                 progress.save()
 
-            # Redirect to the current slide if resuming
+        # For other courses
+        elif not is_review:
+            if progress.current_course != course:
+                progress.current_course = course
+                progress.current_slide = None
+                progress.save()
+
             if progress.current_slide and progress.current_slide.course == course:
                 return redirect('roadmap_slide', course_id=course.id, slide_order=progress.current_slide.order)
 
-        # Start from the first slide for reviews or new courses
+        # Get first slide for new courses or reviews
         first_slide = RoadmapSlide.objects.filter(course=course).order_by('order').first()
         if first_slide:
+            if not progress.current_slide or progress.current_slide.course != course:
+                progress.current_slide = first_slide
+                progress.save()
             return redirect('roadmap_slide', course_id=course.id, slide_order=first_slide.order)
 
-        # Render course details if no slides are available
-        total_slides = RoadmapSlide.objects.filter(course=course).count()
         return render(request, 'roadmap/course.html', {
             'stage': stage,
             'course': course,
-            'total_slides': total_slides,
+            'total_slides': RoadmapSlide.objects.filter(course=course).count(),
             'has_progress': bool(progress.current_slide and progress.current_slide.course == course),
             'progress': progress
         })
-
 #gpt recommended
 class RoadmapSlideView(View):
     @method_decorator(login_required)

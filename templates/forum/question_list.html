@@ -1,67 +1,318 @@
 {% extends 'main/base.html' %}
+{% load static %}
 {% block content %}
-<div class="container ">
-    <!-- Page Heading -->
-    <h1 class="text-center mb-5 fw-bold" style="font-weight: 900;">Forum</h1>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+    body {
+        font-family: 'Inter', sans-serif;
+        line-height: 1.6;
+        background-color: #0a0a14;
+        color: #e1e1e6;
+    }
 
-    <!-- Question Submission Form -->
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 1.5rem;
+    }
+
+    /* Navigation Tabs */
+    .forum-tabs {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        overflow-x: auto;
+        padding: 0.5rem 0;
+    }
+
+    .tab {
+        padding: 0.75rem 1.5rem;
+        border-radius: 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: all 0.3s ease;
+    }
+
+    .tab.active {
+        background: #6c5dd3;
+        color: white;
+    }
+
+    .tab:not(.active) {
+        background: rgba(108, 93, 211, 0.1);
+        color: #6c5dd3;
+    }
+
+    /* Question Form Card */
+    .question-form-card {
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 1rem;
+        margin-bottom: 2rem;
+        border: 1px solid rgba(108, 93, 211, 0.2);
+    }
+
+    .card-header {
+        padding: 1.25rem;
+        border-bottom: 1px solid rgba(108, 93, 211, 0.2);
+    }
+
+    .card-header h4 {
+        color: #e1e1e6;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .card-body {
+        padding: 1.5rem;
+    }
+
+    /* Form Styling */
+    form label {
+        color: #6c5dd3;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    form input[type="text"],
+    form textarea {
+        width: 100%;
+        padding: 0.8rem;
+        border-radius: 0.75rem;
+        border: 1px solid rgba(108, 93, 211, 0.3);
+        background: rgba(255, 255, 255, 0.03);
+        color: #e1e1e6;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    form input:focus,
+    form textarea:focus {
+        outline: none;
+        border-color: #6c5dd3;
+        background: rgba(255, 255, 255, 0.05);
+    }
+    textarea.form-control {
+        height: auto;
+        background: rgba(255, 255, 255, 0.05);
+        border-color: #6c5dd3;
+    }
+
+    /* Question Items */
+    .questions-list {
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 1rem;
+        border: 1px solid rgba(108, 93, 211, 0.2);
+    }
+
+    .question-item {
+        padding: 1.25rem;
+        border-bottom: 1px solid rgba(108, 93, 211, 0.1);
+        transition: all 0.3s ease;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .question-item:last-child {
+        border-bottom: none;
+    }
+
+    .question-content {
+        flex-grow: 1;
+    }
+
+    .author-avatar {
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 50%;
+        background: #6c5dd3;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        color: white;
+    }
+
+    .question-header {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+
+    .question-title {
+        color: #e1e1e6;
+        text-decoration: none;
+        font-size: 1.1rem;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .question-meta {
+        display: flex;
+        gap: 1rem;
+        color: rgba(225, 225, 230, 0.6);
+        font-size: 0.9rem;
+    }
+
+    .question-stats {
+        display: flex;
+        gap: 1rem;
+        margin-top: 0.5rem;
+    }
+
+    .stat {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        color: rgba(225, 225, 230, 0.6);
+    }
+
+    /* Buttons */
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.75rem;
+        font-weight: 500;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-primary {
+        background: #6c5dd3;
+        color: white;
+    }
+
+    .btn-danger {
+        background: #dc3545;
+        color: white;
+    }
+
+    .btn:hover {
+        opacity: 0.9;
+        transform: translateY(-1px);
+    }
+
+    /* Login Notice */
+    .login-notice {
+        background: rgba(108, 93, 211, 0.1);
+        border: 1px solid rgba(108, 93, 211, 0.2);
+        color: #e1e1e6;
+        padding: 1rem;
+        border-radius: 0.75rem;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    .login-notice a {
+        color: #6c5dd3;
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .question-item {
+            flex-direction: column;
+        }
+
+        .question-actions {
+            margin-top: 1rem;
+            align-self: flex-end;
+        }
+
+        .forum-tabs {
+            padding-bottom: 0.5rem;
+        }
+    }
+</style>
+
+<div >
+    <!-- Forum Tabs -->
+    <div class="forum-tabs">
+        <div class="tab active">Feed</div>
+        <div class="tab">Announcement</div>
+    </div>
+
+    <!-- Question Form -->
     {% if user.is_authenticated %}
-    <div class="card shadow-sm mb-4">
-        <div class="card-header text-white" style="background-color: #2d6c9c;">
-            <h4 class="mb-0">Add a New Question</h4>
+    <div class="question-form-card">
+        <div class="card-header">
+            <h4>Ask a Question</h4>
         </div>
         <div class="card-body">
             <form method="POST">
                 {% csrf_token %}
-                <div class="mb-3">
-                    {{ form.as_p }}
-                </div>
-                <button type="submit" class="btn btn-success">Submit Question</button>
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-paper-plane"></i> Submit Question
+                </button>
             </form>
         </div>
     </div>
     {% else %}
-    <div class="alert alert-warning text-center">
-        <p>You need to <a href="{% url 'sign_in' %}" class="text-primary fw-bold">log in</a> to submit a question.</p>
+    <div class="login-notice">
+        <p>You need to <a href="{% url 'sign_in' %}">log in</a> to submit a question.</p>
     </div>
     {% endif %}
 
-    <!-- Existing Questions -->
-    <div class="card shadow-sm">
-        <div class="card-header bg-secondary text-white">
-            <h4 class="mb-0">Existing Questions</h4>
+    <!-- Questions List -->
+    <div class="questions-list">
+        <div class="card-header">
+            <h4>Community Questions</h4>
         </div>
-        <ul class="list-group list-group-flush">
-            {% for question in questions %}
-            <li class="list-group-item d-flex flex-column flex-md-row justify-content-between align-items-start" id="question-{{ question.id }}">
-                <div class="question-content">
-                    <h5 class="mb-2">
-                        <a href="{% url 'question_detail' question.id %}" class="text-decoration-none text-dark fw-bold hover-text-primary">{{ question.title }}</a>
-                    </h5>
-                    <p class="text-muted small mb-1">Asked by <span class="fw-semibold">{{ question.author }}</span> on {{ question.created_at|date:"F j, Y, g:i a" }}</p>
+        {% for question in questions %}
+        <div class="question-item" id="question-{{ question.id }}">
+            <div class="author-avatar">
+                {{ question.author.username|first|upper }}
+            </div>
+            <div class="question-content">
+                <a href="{% url 'question_detail' question.id %}" class="question-title">
+                    {{ question.title }}
+                </a>
+                <div class="question-meta">
+                    <span>{{ question.author }}</span>
+                    <span>•</span>
+                    <span>{{ question.created_at|date:"F j, Y" }}</span>
                 </div>
-                <div>
-                    
-                    <button class="btn btn-outline-danger btn-sm mt-2 mt-md-0" onclick="handleDeleteQuestion({{question.id}})">
-                        <i class="fas fa-trash-alt"></i> Delete
-                    </button>
+                <div class="question-stats">
+                    <div class="stat">
+                        <i class="far fa-comment"></i>
+                        <span>0</span>
+                    </div>
+                    <div class="stat">
+                        <i class="far fa-heart"></i>
+                        <span>0</span>
+                    </div>
                 </div>
-            </li>
-            {% empty %}
-            <li class="list-group-item text-center">
-                <p class="fw-bold text-muted">No questions have been posted yet.</p>
-            </li>
-            {% endfor %}
-        </ul>
+            </div>
+            <div class="question-actions">
+                <button class="btn btn-danger" onclick="handleDeleteQuestion({{question.id}})">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+            </div>
+        </div>
+        {% empty %}
+        <div class="question-item" style="text-align: center;">
+            <p>No questions have been posted yet. Be the first to start a discussion!</p>
+        </div>
+        {% endfor %}
     </div>
 </div>
 
-<!-- Script for Handling Deletion -->
 <script>
     function handleDeleteQuestion(questionId) {
         if (confirm("Are you sure you want to delete this question?")) {
             fetch(`/forum/question/${questionId}/delete/`, {
-                method: 'GET', // Use GET if your delete logic relies on this method
+                method: 'GET',
                 headers: {
                     'X-CSRFToken': '{{ csrf_token }}',
                 },
@@ -69,10 +320,13 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // Remove the question from the list
                     const questionElement = document.querySelector(`#question-${questionId}`);
                     if (questionElement) {
-                        questionElement.remove();
+                        questionElement.style.opacity = '0';
+                        questionElement.style.transform = 'translateY(-10px)';
+                        setTimeout(() => {
+                            questionElement.remove();
+                        }, 300);
                     }
                 } else {
                     alert(data.message || "Failed to delete the question.");
@@ -85,22 +339,4 @@
         }
     }
 </script>
-
-<!-- Font Awesome for icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
-<!-- Custom CSS for Hover Effects -->
-<style>
-    .hover-text-primary:hover {
-        color: #0d6efd !important; /* Bootstrap primary color */
-    }
-    .btn-outline-danger {
-        transition: all 0.3s ease;
-    }
-    .btn-outline-danger:hover {
-        background-color: #dc3545;
-        color: #fff;
-    }
-</style>
-
 {% endblock %}

@@ -1,71 +1,225 @@
 {% extends 'main/base.html' %}
-
+{% load static %}
 {% block content %}
-<div class="container mt-5">
-    <!-- Sign In Section -->
-    <div class="row justify-content-center">
-        <div class="col-md-8 col-lg-6">
-            <div class="card shadow-lg border-0 rounded-lg">
-                <!-- Header -->
-                <div class="card-header text-white text-center py-4" style="background-color: #196aa4;">
-                    <h2 class="fw-bold mb-0">Welcome Back!</h2>
-                    <p class="small mb-0">Sign in to continue</p>
-                </div>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
-                <!-- Card Body - Form -->
-                <div class="card-body p-4">
-                    <form method="POST">
-                        {% csrf_token %}
-                        <!-- Django Form Fields Rendered with Custom Styling -->
-                        <div class="form-group mb-3">
-                            {{ form.as_p }}
-                        </div>
+<style>
+    body {
+        font-family: 'Roboto', Arial, sans-serif;
+        line-height: 1.6;
+        background-color: #031125;
+        color: white;
+        min-height: 100vh;
+    }
 
-                        <!-- Submit Button -->
-                        <div class="text-center">
-                            <button type="submit" class="btn btn-primary btn-lg w-100">
-                                <i class="fas fa-sign-in-alt me-2"></i>Sign In
-                            </button>
-                        </div>
-                    </form>
-                </div>
+    .login-container {
+        max-width: 450px;
+        margin: 4rem auto;
+        padding: 0 1rem;
+        animation: fadeInUp 0.8s ease-out;
+    }
 
-                <!-- Footer -->
-                <div class="card-footer text-center bg-light">
-                    <p class="mb-0">Don't have an account? 
-                        <a href="{% url 'sign_up' %}" class="text-primary fw-bold">Sign Up</a>
-                    </p>
+    .login-card {
+        background: rgba(5, 32, 79, 0.85);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(60, 124, 188, 0.2);
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .login-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 40px rgba(0, 98, 255, 0.2);
+    }
+
+    .login-header {
+        background: linear-gradient(135deg, #3c7cbc, #00bfff);
+        padding: 2.5rem 2rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .login-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1));
+        pointer-events: none;
+    }
+
+    .login-header h2 {
+        font-size: 2.2rem;
+        font-weight: 700;
+        margin: 0;
+        color: white;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .login-header p {
+        margin: 0.5rem 0 0;
+        opacity: 0.9;
+        font-size: 1rem;
+    }
+
+    .login-body {
+        padding: 2.5rem 2rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+        display: block;
+        color: #00bfff;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 0.8rem 1rem;
+        background: rgba(15, 23, 42, 0.6);
+        border: 1px solid rgba(60, 124, 188, 0.3);
+        border-radius: 8px;
+        color: white;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-group input:focus {
+        outline: none;
+        border-color: #00bfff;
+        background: rgba(15, 23, 42, 0.8);
+        box-shadow: 0 0 0 3px rgba(0, 191, 255, 0.1);
+    }
+
+    .submit-btn {
+        width: 100%;
+        padding: 1rem;
+        background: linear-gradient(135deg, #3c7cbc, #00bfff);
+        border: none;
+        border-radius: 8px;
+        color: white;
+        font-size: 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 1rem;
+    }
+
+    .submit-btn:hover {
+        background: linear-gradient(135deg, #00bfff, #3c7cbc);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 191, 255, 0.2);
+    }
+
+    .submit-btn i {
+        margin-right: 0.5rem;
+    }
+
+    .login-footer {
+        padding: 1.5rem;
+        text-align: center;
+        background: rgba(5, 32, 79, 0.5);
+        border-top: 1px solid rgba(60, 124, 188, 0.2);
+    }
+
+    .login-footer p {
+        margin: 0;
+        color: rgba(255, 255, 255, 0.8);
+    }
+
+    .login-footer a {
+        color: #00bfff;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.3s ease;
+    }
+
+    .login-footer a:hover {
+        color: #3c7cbc;
+    }
+
+    .errorlist {
+        list-style: none;
+        padding: 0;
+        margin: 0.5rem 0;
+        color: #ff4b4b;
+        font-size: 0.9rem;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .login-container {
+            margin: 2rem auto;
+        }
+        
+        .login-header {
+            padding: 2rem 1.5rem;
+        }
+        
+        .login-header h2 {
+            font-size: 1.8rem;
+        }
+        
+        .login-body {
+            padding: 2rem 1.5rem;
+        }
+    }
+</style>
+
+<div class="login-container">
+    <div class="login-card">
+        <div class="login-header">
+            <h2>Welcome Back!</h2>
+            <p>Sign in to continue your journey</p>
+        </div>
+
+        <div class="login-body">
+            <form method="POST">
+                {% csrf_token %}
+                {% for field in form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                    <ul class="errorlist">
+                        {% for error in field.errors %}
+                        <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
                 </div>
-            </div>
+                {% endfor %}
+
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-sign-in-alt"></i>Sign In
+                </button>
+            </form>
+        </div>
+
+        <div class="login-footer">
+            <p>Don't have an account? <a href="{% url 'sign_up' %}">Sign Up</a></p>
         </div>
     </div>
 </div>
-
-<!-- Optional Font Awesome for Icons -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-
-<!-- Additional Custom Styles -->
-<style>
-    body {
-        background: #f8f9fa; /* Light gray background */
-    }
-    .card {
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    .card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-    }
-    .btn-primary {
-        background-color: #196aa4;
-        border-color: #4b80a6;
-    }
-    .btn-primary:hover {
-        background-color: #06548c;
-        border-color: #004085;
-    }
-    .form-group label {
-        font-weight: 600;
-    }
-</style>
 {% endblock %}
