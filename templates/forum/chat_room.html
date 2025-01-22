@@ -1,0 +1,110 @@
+<!-- templates/forum/chat_room_list.html -->
+{% extends 'main/base.html' %}
+{% block content %}
+<div class="container">
+    <h1 class="text-center mb-5">Chat Rooms</h1>
+
+    {% if user.is_authenticated %}
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Create New Chat Room</h4>
+        </div>
+        <div class="card-body">
+            <form id="createRoomForm">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="roomName" class="form-label">Room Name</label>
+                    <input type="text" class="form-control" id="roomName" name="name" required>
+                </div>
+                <div class="mb-3">
+                    <label for="roomDescription" class="form-label">Description</label>
+                    <textarea class="form-control" id="roomDescription" name="description" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Create Room</button>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="row">
+        {% for room in rooms %}
+        <div class="col-md-6 col-lg-4 mb-4" id="room-{{ room.id }}">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">{{ room.name }}</h5>
+                    <p class="card-text">{{ room.description|default:"No description available" }}</p>
+                    <p class="text-muted small">Created by {{ room.created_by.username }}</p>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a href="{% url 'chat_room' room_name=room.name %}" class="btn btn-primary">
+                            <i class="fas fa-comments"></i> Join Chat
+                        </a>
+                        {% if user == room.created_by %}
+                        <button class="btn btn-outline-danger" onclick="deleteRoom({{ room.id }})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center">
+            <p class="text-muted">No chat rooms available.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+function deleteRoom(roomId) {
+    if (confirm('Are you sure you want to delete this chat room?')) {
+        fetch(`/forum/chat-room/${roomId}/delete/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById(`room-${roomId}`).remove();
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while deleting the room.');
+        });
+    }
+}
+
+document.getElementById('createRoomForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    
+    fetch('/forum/create-chat-room/', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            window.location.reload();
+        } else {
+            alert(data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while creating the room.');
+    });
+});
+</script>
+{% endblock %}

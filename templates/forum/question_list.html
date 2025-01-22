@@ -1,5 +1,14 @@
 {% extends 'main/base.html' %}
 {% block content %}
+<div class="card shadow-sm mb-4">
+    <div class="card-body text-center">
+        <h5 class="card-title">Chat Room</h5>
+        <p class="card-text">Join the conversation in the testroom.</p>
+        <a href="{% url 'chat_room_list'  %}" class="btn btn-primary btn-lg shadow-sm">
+            <i class="fas fa-comments"></i> Enter Chat Room
+        </a>
+    </div>
+</div>
 <div class="container ">
     <!-- Page Heading -->
     <h1 class="text-center mb-5 fw-bold" style="font-weight: 900;">Forum</h1>
