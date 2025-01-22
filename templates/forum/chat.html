@@ -1,0 +1,355 @@
+{% extends 'main/base.html' %}
+{% block content %}
+<div class="chat-page">
+    <style>
+        /* Base layout */
+.chat-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f8fafc;
+    padding: 1rem;
+}
+
+.chat-container {
+    width: 100%;
+    max-width: 800px;
+    height: 85vh;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header */
+.chat-header {
+    padding: 1rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 16px 16px 0 0;
+    font-weight: 600;
+    font-size: 1.125rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Messages area */
+.messages-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+    background: #ffffff;
+    scroll-behavior: smooth;
+}
+
+/* Message components */
+.message-container {
+    display: flex;
+    flex-direction: column;
+    max-width: 70%;
+    margin: 0.75rem 0;
+    opacity: 0;
+    animation: slideIn 0.2s ease forwards;
+}
+
+.message-container.user {
+    align-self: flex-end;
+}
+
+.message-container.other {
+    align-self: flex-start;
+}
+
+/* Metadata alignment fixes */
+.message-metadata {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.user .message-metadata {
+    justify-content: flex-end;
+    padding-right: 4px;
+}
+
+.other .message-metadata {
+    justify-content: flex-start;
+    padding-left: 4px;
+}
+
+.message-username {
+    font-weight: 600;
+    font-size: 0.8125rem;
+    color: #4b5563;
+    order: 1;
+}
+
+.message-timestamp {
+    font-size: 0.75rem;
+    color: #9ca3af;
+    order: 2;
+}
+
+.user .message-username {
+    order: 2;
+}
+
+.user .message-timestamp {
+    order: 1;
+}
+
+/* Message bubbles */
+.message-content {
+    padding: 0.75rem 1rem;
+    font-size: 0.9375rem;
+    line-height: 1.4;
+    max-width: 100%;
+    word-wrap: break-word;
+}
+
+.user .message-content {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 16px 16px 2px 16px;
+    align-self: flex-end;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.other .message-content {
+    background: #f3f4f6;
+    color: #1f2937;
+    border-radius: 16px 16px 16px 2px;
+    align-self: flex-start;
+}
+
+/* System messages */
+.system-message {
+    align-self: center;
+    background-color: #fef3c7;
+    color: #92400e;
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    font-size: 0.8125rem;
+    max-width: 85%;
+    text-align: center;
+    margin: 0.75rem 0;
+    animation: fadeIn 0.4s ease;
+}
+
+/* Input area */
+.chat-input-area {
+    padding: 1rem;
+    background: #f8fafc;
+    border-top: 1px solid #e5e7eb;
+    border-radius: 0 0 16px 16px;
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.chat-input {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 999px;
+    font-size: 0.9375rem;
+    transition: all 0.2s ease;
+    background: white;
+}
+
+.chat-input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.chat-input::placeholder {
+    color: #9ca3af;
+}
+
+.send-button {
+    padding: 0.75rem 1.25rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.send-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.send-button:active {
+    transform: translateY(0);
+}
+
+/* Animations */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Scrollbar */
+.messages-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.messages-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.messages-container::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+}
+
+.messages-container::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Consecutive messages */
+.message-container + .message-container {
+    margin-top: 0.5rem;
+}
+    </style>
+
+    <div class="chat-container">
+        <div class="chat-header">
+            Chat Room: {{ room_name }}
+        </div>
+        
+        <div id="messages" class="messages-container">
+            <!-- Messages will be inserted here -->
+        </div>
+        
+        <div class="chat-input-area">
+            <input 
+                id="chat-message-input" 
+                class="chat-input"
+                type="text" 
+                placeholder="Type your message..."
+                maxlength="500"
+            >
+            <button id="chat-message-submit" class="send-button">
+                Send
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const roomName = "{{ room_name }}";
+    
+    const chatSocket = new WebSocket(`ws://127.0.0.1:8000/ws/chat/${roomName}/`);
+
+    function getCurrentTime() {
+        const now = new Date();
+        return now.toLocaleTimeString('en-US', { 
+            hour: '2-digit', 
+            minute: '2-digit',
+            hour12: false 
+        });
+    }
+
+    chatSocket.onopen = function(e) {
+        appendSystemMessage('Connected to chat room');
+    };
+
+    chatSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        appendMessage(data.message, 'other', data.username, data.timestamp);
+    };
+
+    chatSocket.onclose = function(e) {
+        appendSystemMessage('Connection lost. Attempting to reconnect...');
+        setTimeout(function() {
+            window.location.reload();
+        }, 3000);
+    };
+
+    function appendMessage(message, type, username, timestamp) {
+        const messages = document.getElementById('messages');
+        const messageContainer = document.createElement('div');
+        messageContainer.className = `message-container ${type}`;
+
+        const metadata = document.createElement('div');
+        metadata.className = 'message-metadata';
+        metadata.innerHTML = `
+            <span class="message-username">${username}</span>
+            <span class="message-timestamp">${timestamp}</span>
+        `;
+
+        const messageContent = document.createElement('div');
+        messageContent.className = 'message-content';
+        messageContent.textContent = message;
+
+        messageContainer.appendChild(metadata);
+        messageContainer.appendChild(messageContent);
+        messages.appendChild(messageContainer);
+        scrollToBottom();
+    }
+
+    function appendSystemMessage(message) {
+        const messages = document.getElementById('messages');
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'system-message';
+        messageDiv.textContent = message;
+        messages.appendChild(messageDiv);
+        scrollToBottom();
+    }
+
+    function scrollToBottom() {
+        const messages = document.getElementById('messages');
+        messages.scrollTop = messages.scrollHeight;
+    }
+
+    function sendMessage() {
+        const input = document.getElementById('chat-message-input');
+        const message = input.value.trim();
+        
+        if (message && chatSocket.readyState === WebSocket.OPEN) {
+            const timestamp = getCurrentTime();
+            appendMessage(message, 'user', currentUsername, timestamp);
+            
+            chatSocket.send(JSON.stringify({
+                'message': message
+            }));
+            
+            input.value = '';
+        }
+    }
+
+    document.getElementById('chat-message-input').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
+        }
+    });
+
+    document.getElementById('chat-message-submit').addEventListener('click', sendMessage);
+
+    // Focus input on load
+    window.addEventListener('load', function() {
+        document.getElementById('chat-message-input').focus();
+    });
+</script>
+{% endblock %}
