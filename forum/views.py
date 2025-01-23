@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Question, Answer, Vote, ChatRoom, ChatMessage
+from .models import Question, Answer, Vote
 from .forms import QuestionForm
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
@@ -100,59 +100,3 @@ def delete_question(request, question_id):
         return JsonResponse({'success': True, 'message': 'Question deleted successfully.'})
     else:
         return JsonResponse({'success': False, 'message': 'You are not authorized to delete this question.'}, status=403)
-
-# Chatroom views
-
-@login_required
-def create_chat_room(request):
-    if request.method == 'POST':
-        name = request.POST.get('name')
-        description = request.POST.get('description')
-        
-        if ChatRoom.objects.filter(name=name).exists():
-            return JsonResponse({
-                'success': False,
-                'message': 'A chat room with this name already exists.'
-            }, status=400)
-            
-        room = ChatRoom.objects.create(
-            name=name,
-            description=description,
-            created_by=request.user
-        )
-        
-        return JsonResponse({
-            'success': True,
-            'message': 'Chat room created successfully.',
-            'room_id': room.id,
-            'room_name': room.name
-        })
-    
-    return render(request, 'forum/create_chat_room.html')
-
-@login_required
-def delete_chat_room(request, room_id):
-    room = get_object_or_404(ChatRoom, id=room_id)
-    
-    if request.user != room.created_by:
-        raise PermissionDenied
-        
-    room.delete()
-    return JsonResponse({
-        'success': True,
-        'message': 'Chat room deleted successfully.'
-    })
-
-def chat_room_list(request):
-    rooms = ChatRoom.objects.filter(is_active=True).order_by('-created_at')
-    return render(request, 'forum/chat_room.html', {'rooms': rooms})
-
-@login_required
-def chat_room(request, room_name):
-    room = get_object_or_404(ChatRoom, name=room_name, is_active=True)
-    messages = ChatMessage.objects.filter(room=room).select_related('author')
-    return render(request, 'forum/chat.html', {
-        'room': room,
-        'messages': messages,
-        'room_name': room_name
-    })
