@@ -1,5 +1,6 @@
 {% extends "main/base.html" %}
 
+
 {% block styling %}
 <style>
     /* General Styles */
@@ -64,7 +65,7 @@
         opacity: 0;
         transition: transform 0.3s ease-out, opacity 0.3s ease-out;
         overflow-y: auto;
-        max-height: 95%;
+        max-height: 80%;
         color: #e0e0e0;
     }
 
@@ -78,7 +79,7 @@
         position: fixed;
         top: 10px;
         right: 10px;
-        background-color: #ff5252;
+        background-color: #ffdddd;
         color: white;
         border: none;
         border-radius: 5px;
@@ -88,7 +89,7 @@
     }
 
     #popper button:hover {
-        background-color: #ff1744;
+        background-color: #ffcfd8;
     }
 
     #overlay {
@@ -105,7 +106,15 @@
     #overlay.visible {
         display: block;
     }
-
+    
+    #here {
+        color: rgb(247, 240, 240);
+    }
+    #here pre{
+        background-color: #454444;
+        color: white;
+    }
+    
     .navigation a {
         padding: 10px 20px;
         border-radius: 5px;
@@ -140,13 +149,161 @@
     .navigation .btn-success:hover {
         background-color: #43a047;
     }
+    .audio-button {
+        position: absolute;
+        right: 52px;
+        background-color: rgba(0, 0, 0, 0.01);
+        color: #121212;
+        border: none;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        font-size: 24px;
+        cursor: pointer;
+    }
+
+    .audio-button:hover {
+        transform: scale(1.2);
+       
+    }
+
+    .audio-button.speaking {
+        background-color: rgba(255, 64, 64, 0.1);
+    }
+
+    /*for each slide*/
+    
+ 
+        body {
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        #contentSlide .slide {
+            background-color: #2d2d2d;
+            border-radius: 8px;
+            padding: 25px;
+            margin: 20px auto;
+            max-width: 800px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        #contentSlide h2 {
+            color: #4CAF50;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+
+        #contentSlide pre {
+            background-color: #363636;
+            color: #66ccff;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: 'Consolas', monospace;
+            border: 1px solid #444;
+        }
+
+        #contentSlide .game-container {
+            background-color: #363636;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border: 1px solid #444;
+        }
+        #contentSlide canvas {
+            background: #424242;
+            border: 2px solid #4CAF50;
+            border-radius: 5px;
+        }  #contentSlide .sequence-box {
+            background: #363636;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        #contentSlide .theory-section {
+            background-color: #333;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+
+        #contentSlide .highlight {
+            color: #ffeb3b;
+            font-weight: bold;
+        }
+
+        #contentSlide .practice-section {
+            background-color: #383838;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+
+        #contentSlide button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        #contentSlide button:hover {
+            background-color: #45a049;
+        }
+
+        #contentSlide .output {
+            background-color: #424242;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            min-height: 30px;
+        }
+        #contentSlide .palette, .sequence {
+            background-color: #424242;
+            padding: 10px;
+            border-radius: 8px;
+            min-height: 50px;
+            margin: 10px 0;
+        }
+
+        #contentSlide .command {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: grab;
+            display: inline-block;
+        }
+
+        #contentSlide .command:hover {
+            background-color: #45a049;
+        }
+
+        #contentSlide canvas {
+            background: #424242;
+            border: 2px solid #4CAF50;
+            border-radius: 5px;
+        }
+
+       
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="slide-container">
+    <!-- Testing slide.html changes -->
     <h1>Slide {{ slide.order }}
         <button class="enhancer-button" onclick="sendMagic()">🪄</button>
+        <button class="audio-button" onclick="toggleSpeech()">🔊</button>
     </h1>
     <div id="contentSlide">{{ slide.content|safe }}</div>
 
@@ -156,7 +313,7 @@
         <h4>ArK - Enhancer</h4>
         <button onclick="closePop()">❌</button>
         <div id="here">
-            <hr>
+            <hr style="color: #ede6e6;">
         </div>
     </div>
 
@@ -201,9 +358,18 @@
 
             const data = await response.json();
             if (data.status === 'success') {
+                const horiz = document.createElement('hr');
+                area.appendChild(horiz);
+                    
+                const breaking = document.createElement('br');
+                area.appendChild(breaking);
+                
                 const aiMessageEl = document.createElement('div');
-                aiMessageEl.innerHTML = data.response;
+                aiMessageEl.innerHTML =  marked.parse(data.response);
                 area.appendChild(aiMessageEl);
+                
+                area.appendChild(breaking);
+                
             } else {
                 throw new Error(data.error || 'Unknown error occurred');
             }
@@ -221,8 +387,110 @@
         popper.classList.remove("visible");
         overlay.classList.remove("visible");
     }
+    let speechSynthesis = window.speechSynthesis;
+    let speaking = false;
+
+    function getTextContent() {
+        const content = document.getElementById('contentSlide');
+        // Create temporary container
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = content.innerHTML;
+        
+        // Remove all script tags
+        const scripts = tempDiv.getElementsByTagName('script');
+        while(scripts[0]) {
+            scripts[0].parentNode.removeChild(scripts[0]);
+        }
+        
+        // Get clean text content
+        return tempDiv.textContent.trim();
+    }
+
+    function toggleSpeech() {
+        const audioButton = document.querySelector('.audio-button');
+        
+        if (speaking) {
+            speechSynthesis.cancel();
+            speaking = false;
+            audioButton.classList.remove('speaking');
+            audioButton.textContent = '🔊';
+            return;
+        }
+
+        const text = getTextContent();
+        const utterance = new SpeechSynthesisUtterance(text);
+        
+        utterance.onend = () => {
+            speaking = false;
+            audioButton.classList.remove('speaking');
+            audioButton.textContent = '🔊';
+        };
+
+        speaking = true;
+        audioButton.classList.add('speaking');
+        audioButton.textContent = '🔇';
+        speechSynthesis.speak(utterance);
+    }
 </script>
 {% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 {# remove the above code if you dont like dark theme #}
@@ -333,6 +601,9 @@
         overflow-y: auto;
         scroll-behavior:smooth ;
     }
+    
+    
+    
 </style>
 {% endblock %}
 
@@ -361,6 +632,8 @@
 </div>
 
 <div class="navigation d-flex justify-content-between">
+    
+    
     {% if prev_slide %}
         <a href="{% url 'roadmap_slide' slide.course.id prev_slide.order %}" class="btn btn-secondary">Previous</a>
     {% endif %}
@@ -485,6 +758,7 @@
         popper.classList.remove("visible");
         overlay.classList.remove("visible");
     }
+   
 </script>
 
 {% endblock %}
