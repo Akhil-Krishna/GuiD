@@ -13,7 +13,7 @@ class CodingQuestion(models.Model):
     def __str__(self):
         return self.title
 
-# main/models.py
+# main/models.py chang
 
 
 

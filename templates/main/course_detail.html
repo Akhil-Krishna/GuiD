@@ -93,6 +93,131 @@
         font-size: 1.8rem;
         margin-bottom: 10px;
     }
+    /*for each slide*/
+    
+ 
+    body {
+        background-color: #1a1a1a;
+        color: #e0e0e0;
+        font-family: 'Arial', sans-serif;
+        margin: 0;
+        padding: 20px;
+        line-height: 1.6;
+    }
+
+    #contentSlide .slide {
+        background-color: #2d2d2d;
+        border-radius: 8px;
+        padding: 25px;
+        margin: 20px auto;
+        max-width: 800px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    #contentSlide h2 {
+        color: #4CAF50;
+        border-bottom: 2px solid #4CAF50;
+        padding-bottom: 10px;
+        margin-top: 0;
+        font-weight: 600;
+    }
+
+    #contentSlide pre {
+        background-color: #363636;
+        color: #66ccff;
+        padding: 15px;
+        border-radius: 5px;
+        overflow-x: auto;
+        font-family: 'Consolas', monospace;
+        border: 1px solid #5a5858;
+    }
+
+    #contentSlide .game-container {
+        background-color: #363636;
+        padding: 20px;
+        border-radius: 8px;
+        margin: 20px 0;
+        border: 1px solid #444;
+    }
+    #contentSlide canvas {
+        background: #424242;
+        border: 2px solid #4CAF50;
+        border-radius: 5px;
+    }  #contentSlide .sequence-box {
+        background: #363636;
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 5px;
+    }
+    #contentSlide .theory-section {
+        background-color: #333;
+        padding: 15px;
+        border-radius: 5px;
+        margin: 15px 0;
+    }
+
+    #contentSlide .highlight {
+        color: #ffeb3b;
+        font-weight: bold;
+    }
+
+    #contentSlide .practice-section {
+        background-color: #383838;
+        padding: 15px;
+        border-radius: 5px;
+        margin: 15px 0;
+    }
+
+    #contentSlide button {
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin: 5px;
+    }
+
+    #contentSlide button:hover {
+        background-color: #45a049;
+    }
+
+    #contentSlide .output {
+        background-color: #424242;
+        padding: 10px;
+        border-radius: 5px;
+        margin-top: 10px;
+        min-height: 30px;
+    }
+    #contentSlide .palette, .sequence {
+        background-color: #424242;
+        padding: 10px;
+        border-radius: 8px;
+        min-height: 50px;
+        margin: 10px 0;
+    }
+
+    #contentSlide .command {
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px;
+        margin: 5px;
+        border-radius: 5px;
+        cursor: grab;
+        display: inline-block;
+    }
+
+    #contentSlide .command:hover {
+        background-color: #45a049;
+    }
+
+    #contentSlide canvas {
+        background: #424242;
+        border: 2px solid #4CAF50;
+        border-radius: 5px;
+    }
+
+   
 </style>
 {% endblock %}
 
@@ -100,7 +225,7 @@
 <div class="new-container mt-4">
     <h2>{{ course.title }}</h2>
     <hr>
-    <div class="slide-content">
+    <div id="contentSlide">
         <h3>{{ slide.title }}</h3>
         {{ slide.content|safe }}
     </div>

@@ -67,7 +67,7 @@ class TestQuestion(models.Model):
     def __str__(self):
         return f"Question {self.id} - {self.test.stage.name}"
 
-# Model to track user progress
+# Model to track user progress big changeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
 class UserProgress(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='roadmap_progress', on_delete=models.CASCADE)
     stage = models.ForeignKey(RoadmapStage, related_name='user_progress', on_delete=models.CASCADE)
@@ -75,6 +75,8 @@ class UserProgress(models.Model):
     is_stage_completed = models.BooleanField(default=False)  # If the stage is fully completed
     badge_earned = models.BooleanField(default=False)  # If the badge is earned for this stage
     current_slide = models.ForeignKey(RoadmapSlide, null=True, blank=True, on_delete=models.SET_NULL) 
+    completed_courses = models.ManyToManyField('RoadmapCourse', blank=True, related_name='completed_by_users')
+  
     class Meta:
         unique_together = ('user', 'stage')
 

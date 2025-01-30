@@ -337,14 +337,29 @@
 </div>
 
 <script>
+    function getCleanMessage() {
+        const contentSlide = document.getElementById('contentSlide');
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = contentSlide.innerHTML;
+        
+        // Remove all script tags
+        const scripts = tempDiv.getElementsByTagName('script');
+        while(scripts[0]) {
+            scripts[0].parentNode.removeChild(scripts[0]);
+        }
+        
+        const cleanText = tempDiv.textContent.trim();
+        return cleanText + " Note: Explain the above content in a more understandable manner.";
+    }
     async function sendMagic() {
         const popper = document.getElementById("popper");
         const overlay = document.getElementById("overlay");
 
         popper.classList.add("visible");
         overlay.classList.add("visible");
-
-        const message = document.getElementById('contentSlide').textContent + " Note: Explain the above content in a more understandable manner.";
+        
+        const message = getCleanMessage()
+        console.log(message)
         const area = document.getElementById('here');
 
         try {

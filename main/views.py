@@ -33,7 +33,7 @@ import sys
 import io
 from django.shortcuts import render, get_object_or_404
 from .models import CodingQuestion
-
+#changingggggggggg
 @csrf_exempt
 def run_code(request):
     if request.method == "POST":
@@ -359,7 +359,7 @@ BOT_CONFIG = {
             # You can add your website features here
             # Example structure:
             # "feature_name": "feature_description",
-            "Roadmap":"Andi poora"
+            "Roadmap":"nothing"
         }
     }
 }

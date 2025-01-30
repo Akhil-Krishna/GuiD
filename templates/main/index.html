@@ -303,23 +303,191 @@
             grid-template-columns: repeat(2, 1fr);
         }
     }
+    
+    
+    .site-footer {
+        background-color: rgba(44, 99, 255, 0.1);
+        color: rgb(170, 169, 169);
+        padding: 4rem 4rem 2rem;
+    }
+
+    .footer-content {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .footer-section h4 {
+        font-size: 1.2rem;
+        margin-bottom: 1.5rem;
+        color: var(--secondary-color);
+    }
+
+    .footer-section ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    .footer-section ul li {
+        margin-bottom: 0.8rem;
+    }
+
+    .footer-section a {
+        color: var(--text-light);
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .footer-section a:hover {
+        color: var(--secondary-color);
+    }
+
+    .social-icons {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .social-icon {
+        font-size: 1.5rem;
+        color: var(--text-light);
+        transition: color 0.3s ease;
+    }
+
+    .social-icon:hover {
+        color: var(--secondary-color);
+    }
+
+    .newsletter-form {
+        display: flex;
+    }
+
+    .newsletter-form input {
+        flex-grow: 1;
+        padding: 0.8rem;
+        background: rgba(255,255,255,0.1);
+        border: none;
+        color: var(--text-light);
+    }
+
+    .newsletter-form button {
+        padding: 0.8rem 1.5rem;
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .newsletter-form button:hover {
+        background-color: var(--secondary-color);
+    }
+
+    .footer-bottom {
+        text-align: center;
+        padding-top: 2rem;
+        border-top: 1px solid rgba(255,255,255,0.1);
+    }
+
+    @media (max-width: 768px) {
+        .footer-content {
+            grid-template-columns: 1fr;
+        }
+    }
+    /* Hero Section */
+    .hero {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 6rem 4rem;
+        background: linear-gradient(135deg, rgba(44, 146, 255, 0.9), rgba(0, 209, 255, 0.9));
+        clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
+        transform-origin: top;
+        animation: heroSlideIn 1.5s ease-out;
+    }
+
+    .hero-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: url('{% static "main/images/pattern.png" %}') repeat;
+        opacity: 0.1;
+        pointer-events: none;
+    }
+
+    .hero-content {
+        display: flex;
+        align-items: center;
+        gap: 4rem;
+        z-index: 2;
+    }
+
+    .hero-text {
+        flex: 1;
+        opacity: 0;
+        transform: translateY(50px);
+        animation: fadeInUp 1s forwards 0.5s;
+    }
+
+    .hero-text h1 {
+        font-size: 4rem;
+        font-weight: 800;
+        margin-bottom: 1.5rem;
+        background: linear-gradient(to right, white, #E0E6F7);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .hero-text p {
+        font-size: 1.3rem;
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 2.5rem;
+    }
+
+    .hero-image {
+        flex: 1;
+        perspective: 1000px;
+    }
+
+    .hero-image img {
+        max-width: 100%;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        transform: rotateY(-15deg) rotateX(10deg);
+        transition: transform 0.5s;
+    }
+
+    .hero-image img:hover {
+        transform: rotateY(0) rotateX(0) scale(1.05);
+    }
+    .hero a{
+        text-decoration: none;
+    }
+    
 </style>
 
 <!-- Hero Section -->
-<section class="hero">
-    <div class="hero-text">
-        <h1>Transform Your Tech Career with GuiD</h1>
-        <p>Master in-demand skills through our AI-powered learning platform. Follow a structured roadmap, practice with real coding challenges, and build your career path to success.</p>
-        <div class="cta-buttons">
-            <a href="/roadmap" class="cta cta-primary" style="text-decoration: none;">Start Learning</a>
-            <a href="{% url 'about' %}" class="cta cta-secondary" style="text-decoration: none;">Learn More </a>
+<section class="parallax-container">
+    <div class="hero">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1>Transform Your Tech Career</h1>
+                <p>AI-powered learning platform designed to accelerate your tech skills and career growth.</p>
+                <div class="cta-buttons">
+                    <a href="/roadmap" class="cta cta-primary">Start Learning</a>
+                    <a href="{% url 'about' %}" class="cta cta-secondary">Explore More</a>
+                </div>
+            </div>
+            <div class="hero-image">
+                <img src="{% static 'main/images/image3.png' %}" alt="Learning illustration">
+            </div>
         </div>
     </div>
-    <div class="hero-image">
-        <img src="{% static 'main/images/image3.png' %}" alt="Learning illustration">
-    </div>
 </section>
-
 <!-- Stats Section -->
 <div class="stats-section">
     <div class="stat-item">
@@ -453,6 +621,46 @@
     <p>Join thousands of students already learning with GuiD</p>
     <a href="{% url 'sign_up' %}" class="cta cta-primary">Get Started Today</a>
 </div>
+
+
+<!-- Add this after the previous sections -->
+
+<!-- Footer -->
+<footer class="site-footer">
+    <div class="footer-content">
+        <div class="footer-section">
+            <h4>GuiD</h4>
+            <p>AI-powered learning platform to accelerate your tech career.</p>
+        </div>
+        <div class="footer-section">
+            <h4>Quick Links</h4>
+            <ul>
+                <li><a href="/roadmap">Learning Roadmap</a></li>
+                <li><a href="/courses">Courses</a></li>
+                <li><a href="/community">Community</a></li>
+                <li><a href="/about">About Us</a></li>
+            </ul>
+        </div>
+        <div class="footer-section">
+            <h4>Connect</h4>
+            <div class="social-icons">
+                <a href="#" class="social-icon"><i class="fab fa-linkedin"></i></a>
+                <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                <a href="#" class="social-icon"><i class="fab fa-github"></i></a>
+            </div>
+        </div>
+        <div class="footer-section">
+            <h4>Newsletter</h4>
+            <form class="newsletter-form">
+                <input type="email" placeholder="Enter your email" required>
+                <button type="submit">Subscribe</button>
+            </form>
+        </div>
+    </div>
+   
+</footer>
+
 
 
 

@@ -143,6 +143,10 @@ class StageCourseListView(View):
             defaults={'current_course': None, 'current_slide': None}
         )
         
+        current_course_order = 0
+        if progress.current_course:
+            current_course_order = progress.current_course.order
+        
         courses_status = []
         current_course_order = progress.current_course.order if progress.current_course else 0
         
@@ -153,20 +157,23 @@ class StageCourseListView(View):
                 'current_slide': None
             }
             
+            # Check if course is completed
+            is_completed = progress.completed_courses.filter(id=course.id).exists()
+            
             # First course logic
             if course.order == 1:
-                if current_course_order == 1:  
+                if current_course_order == 1 and not is_completed:  
                     status['status'] = 'in_progress'
                     status['current_slide'] = progress.current_slide
-                elif current_course_order > 1:  
+                elif current_course_order > 1 or is_completed:  
                     status['status'] = 'complete'
                 else:  
                     status['status'] = 'start'
             # Rest of the courses
-            elif course.order == current_course_order:
+            elif course.order == current_course_order and not is_completed:
                 status['status'] = 'in_progress'
                 status['current_slide'] = progress.current_slide
-            elif course.order < current_course_order:
+            elif course.order < current_course_order or is_completed:
                 status['status'] = 'complete'
             elif course.order == current_course_order + 1:
                 status['status'] = 'start'
@@ -180,7 +187,7 @@ class StageCourseListView(View):
             'courses_status': courses_status,
             'progress': progress,
         })
-
+#big changeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
 class RoadmapCourseView(View):
     @method_decorator(login_required)
     def get(self, request, stage_id, course_order):
@@ -269,6 +276,8 @@ class RoadmapSlideView(View):
         progress = get_object_or_404(UserProgress, user=request.user, stage=course.stage)
         
         if 'complete_course' in request.POST:
+            progress.completed_courses.add(course)  # This line is new
+           
             next_course = RoadmapCourse.objects.filter(
                 stage=course.stage, 
                 order__gt=course.order
@@ -422,8 +431,14 @@ class RoadmapTestView(View):
             # Update progress if passed
             if passed:
                 user_progress = get_object_or_404(UserProgress, user=request.user, stage=stage)
+                if user_progress.current_course:
+                    user_progress.completed_courses.add(user_progress.current_course)
+            
                 user_progress.is_stage_completed = True
                 user_progress.badge_earned = True
+                
+        # After test is passed successfully
+                
                 user_progress.save()
 
                 # Create badge record

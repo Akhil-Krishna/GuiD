@@ -4,7 +4,7 @@ It is an initial sample version of GuiD website
 
 #### Features
 
-1. Roadmap feature : From s1 to s8 (8 stages each with 4+ courses and test) : at the each stage badges are given and certificates at the end (gamification)
+1. Roadmap feature : AI powered Structured Learning strategy for getting into IT sector .From s1 to s8 (8 stages each with 4+ courses and test) : at the each stage badges are given and certificates at the end (gamification)
 2. AI Chatbot: Personalized training in aptitude, English, and coding.
 3. Courses with Certificates: Courses are presented in slides with "Start," "Next," and "Previous" buttons, and completion is tracked in the user's profile.
 4. Previous Year Coding Questions: Questions from your college for different companies, along with solutions.

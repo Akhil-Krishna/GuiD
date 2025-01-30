@@ -364,7 +364,74 @@
     color: #3a3434 !important;
     
 }
+.navbar {
+    background: rgba(5, 32, 79, 0.9); /* More pronounced background */
+    backdrop-filter: blur(30px); /* Increased blur for modern look */
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.4s ease;
+    padding: 5px 0;
+}
 
+.navbar-brand {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    color: #daf6ff;
+    font-size: 1.8rem;
+    letter-spacing: -1px;
+    transition: all 0.3s ease;
+}
+
+.navbar-brand:hover {
+    transform: scale(1.05) translateY(-3px);
+    color: #4fc3f7;
+}
+
+.nav-link {
+    color: #daf6ff;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    margin: 0 10px;
+    position: relative;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.nav-link::before {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: -5px;
+    left: 50%;
+    background-color: #4fc3f7;
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+}
+
+.nav-link:hover::before {
+    width: 100%;
+}
+
+.nav-link:hover {
+    color: #4fc3f7;
+    transform: translateY(-2px);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 992px) {
+    .navbar-nav {
+        text-align: center;
+        background-color: rgba(5, 32, 79, 0.95);
+        border-radius: 10px;
+        padding: 15px;
+    }
+
+    .nav-item {
+        margin: 10px 0;
+    }
+}
 /* Override any markdown styles if needed */
 
     </style>
@@ -431,7 +498,7 @@
     <!-- WhatsApp-like Chatbot Popup -->
     <div class="chatbot-popup" id="chatbotPopup">
         <div class="chatbot-header">
-            <h5 class="mb-0">GuiD Chatbot</h5>
+            <h5 class="mb-0">ArK Bot</h5>
             <button class="btn btn-link text-white p-0" onclick="toggleChatbot()">
                 <i class="fas fa-times"></i>
             </button>
@@ -455,6 +522,7 @@
     </div>
     
     <footer>
+        
         <a href="/contact" style="text-decoration: none; color:rgb(167, 153, 153);">Contact us</a>
         <p>&copy; 2025 GuiD. All rights reserved.</p>
     </footer>
