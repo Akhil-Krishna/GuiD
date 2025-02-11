@@ -33,12 +33,12 @@ import sys
 import io
 from django.shortcuts import render, get_object_or_404
 from .models import CodingQuestion
-#changingggggggggg
+
 @csrf_exempt
 def run_code(request):
     if request.method == "POST":
         data = json.loads(request.body)
-        code = data.get("code", "")
+        user_code = data.get("code", "")
         question_id = data.get("questionId")
         
         try:
@@ -46,6 +46,47 @@ def run_code(request):
             test_cases = question.test_cases
             test_results = []
             
+            # Prepare the environment
+            namespace = {}
+            
+            # Add necessary helper functions based on the question type
+            helper_code = """
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+        
+def create_linked_list(arr):
+    if not arr:
+        return None
+    head = ListNode(arr[0])
+    current = head
+    for val in arr[1:]:
+        current.next = ListNode(val)
+        current = current.next
+    return head
+
+def linked_list_to_array(head):
+    result = []
+    current = head
+    while current:
+        result.append(current.val)
+        current = current.next
+    return result
+"""
+            # Execute helper code
+            exec(helper_code, namespace)
+            
+            # Execute user's code
+            try:
+                exec(user_code, namespace)
+            except Exception as e:
+                return JsonResponse({
+                    'error': f'Code execution error: {str(e)}',
+                    'testResults': [],
+                    'summary': {'passed': 0, 'total': len(test_cases), 'success': False}
+                }, status=400)
+
             for test_case in test_cases:
                 # Capture output
                 old_stdout = sys.stdout
@@ -53,41 +94,51 @@ def run_code(request):
                 sys.stdout = new_stdout
                 
                 try:
-                    # Prepare the test inputs
-                    test_inputs = test_case.get('input', '').split('\n')
-                    input_iterator = iter(test_inputs)
+                    input_data = test_case.get('input', '')
+                    expected_output = test_case.get('output', '')
                     
-                    # Modified code to handle multiple inputs
-                    modified_code = f"""
-# Create an input iterator
-_input_values = {test_inputs}
-_input_iterator = iter(_input_values)
-
-# Override input function
-def input():
-    try:
-        return next(_input_iterator)
-    except StopIteration:
-        raise EOFError("Not enough input values provided")
-
-# User's code starts here
-{code}
-"""
-                    # Execute the code
-                    exec_globals = {}
-                    exec(modified_code, exec_globals)
+                    # Handle different question types
+                    if "Two Sum" in question.title:
+                        nums = eval(input_data.split('\n')[0])
+                        target = int(input_data.split('\n')[1])
+                        result = namespace['twoSum'](nums, target)
+                        actual_output = str(result)
                     
-                    # Get the output
-                    output = new_stdout.getvalue().strip()
-                    expected_output = test_case.get('output', '').strip()
+                    elif "Longest Substring" in question.title:
+                        s = input_data.strip()
+                        result = namespace['lengthOfLongestSubstring'](s)
+                        actual_output = str(result)
+                    
+                    elif "Reverse Linked List" in question.title:
+                        arr = eval(input_data)
+                        head = namespace['create_linked_list'](arr)
+                        result = namespace['reverseList'](head)
+                        actual_output = str(namespace['linked_list_to_array'](result))
+                    
+                    elif "Maximum Subarray" in question.title:
+                        nums = eval(input_data)
+                        result = namespace['maxSubArray'](nums)
+                        actual_output = str(result)
+                    
+                    elif "Merge Two Sorted List" in question.title:
+                        arr1, arr2 = map(eval, input_data.split('\n'))
+                        l1 = namespace['create_linked_list'](arr1)
+                        l2 = namespace['create_linked_list'](arr2)
+                        result = namespace['mergeTwoLists'](l1, l2)
+                        actual_output = str(namespace['linked_list_to_array'](result))
+                    
+                    elif "String is Palindrome" in question.title:
+                        s = input_data.strip()
+                        result = namespace['isPalindrome'](s)
+                        actual_output = str(result).lower()
                     
                     # Compare output
-                    test_passed = output == expected_output
+                    test_passed = str(actual_output).strip() == str(expected_output).strip()
                     test_results.append({
                         'passed': test_passed,
-                        'input': test_case.get('input', ''),
+                        'input': input_data,
                         'expected': expected_output,
-                        'actual': output,
+                        'actual': actual_output,
                         'error': '' if test_passed else 'Output does not match expected result'
                     })
                     
@@ -95,7 +146,7 @@ def input():
                     test_results.append({
                         'passed': False,
                         'input': test_case.get('input', ''),
-                        'expected': test_case.get('output', ''),
+                        'expected': expected_output,
                         'actual': '',
                         'error': str(e)
                     })
@@ -121,7 +172,6 @@ def input():
             return JsonResponse({'error': str(e)}, status=500)
 
     return JsonResponse({"error": "Invalid request"}, status=400)
-
 
 #user login
 # main/views.py

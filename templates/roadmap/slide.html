@@ -302,10 +302,10 @@
             position: absolute;
             font-size: 18px;
             cursor: pointer;
-            background: rgb(2, 99, 185);
+            background: rgb(67, 67, 60);
             color: white;
             border: none;
-            border-radius: 50%;
+            border-radius: 20%;
             width: 30px;
             height: 30px;
             text-align: center;
@@ -340,7 +340,7 @@
         <button class="audio-button" onclick="toggleSpeech()">🔊</button>
     </h1>
     <div id="contentSlide">{{ slide.content|safe }}</div>
-    <button id="pen-icon">📌</button>
+    <button id="pen-icon">🔍</button>
 
     <!-- Explanation Popup -->
     <div id="popup"></div>
@@ -348,7 +348,7 @@
     <!-- Popup Window -->
     <div id="overlay"></div>
     <div id="popper">
-        <h4>ArK - Enhancer</h4>
+        <h4>Professor</h4>
         <button onclick="closePop()">❌</button>
         <div id="here">
             <hr style="color: #ede6e6;">
@@ -513,7 +513,7 @@
         document.getElementById("pen-icon").addEventListener("click", async function () {
             let popup = document.getElementById("popup");
             popup.style.display = "block";
-            popup.innerHTML = "Generating explanation...";
+            popup.innerHTML = "Researcher is thinking...";
 
             let penIcon = document.getElementById("pen-icon");
             popup.style.top = `${penIcon.offsetTop + 30}px`;
