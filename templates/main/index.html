@@ -663,5 +663,131 @@
 
 
 
+<!-- Welcome Message -->
+<div class="welcome-message" id="welcomeMessage" style="display: none;">
+    <div class="welcome-content">
+        <img src="{% static 'main/images/logo.png' %}" alt="Dr.Frnd" class="chatbot-avatar">
+        <div class="message-bubble">
+            <p>Hey there! 👋</p>
+            <p>I'm Dr.Frnd, your learning companion. Ask me anything about your studies!</p>
+        </div>
+    </div>
+</div>
+
+<style>
+    .welcome-message {
+        position: fixed;
+        top: 100px;
+        right: 20px;
+        z-index: 9999;
+        opacity: 1; /* Changed from 0 */
+        max-width: 300px;
+    }
+
+    .welcome-content {
+        display: flex;
+        align-items: flex-end;
+        gap: 10px;
+    }
+
+    .chatbot-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        border: 2px solid #1f97ff;
+        background: #fff;
+        padding: 2px;
+    }
+
+    .message-bubble {
+        background: #1f97ff;
+        color: white;
+        padding: 15px;
+        border-radius: 15px;
+        border-bottom-left-radius: 5px;
+        position: relative;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .message-bubble p {
+        margin: 0;
+        padding: 2px 0;
+    }
+
+    .message-bubble p:first-child {
+        margin-bottom: 5px;
+    }
+
+    .welcome-message.show {
+        display: block !important;
+        animation: slideIn 0.5s ease forwards;
+    }
+
+    .welcome-message.hide {
+        animation: fadeOut 0.5s ease forwards;
+    }
+
+    @keyframes slideIn {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    @keyframes fadeOut {
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        to {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Force show welcome message immediately on homepage
+        const isHomePage = document.querySelector('.hero') !== null;
+        console.log(localStorage.getItem('welcomeMessageShown'));
+        if (isHomePage && !localStorage.getItem('welcomeMessageShown')) {
+            // Small delay to ensure everything is loaded
+            setTimeout(() => {
+                const welcomeMessage = document.getElementById('welcomeMessage');
+                if (welcomeMessage) {
+                    welcomeMessage.classList.add('show');
+                    
+                    localStorage.setItem('welcomeMessageShown', 'true');
+                    
+                    // Hide after 5 seconds
+                    setTimeout(() => {
+                        welcomeMessage.classList.add('hide');
+                        setTimeout(() => {
+                            welcomeMessage.classList.remove('show', 'hide');
+                        }, 500);
+                    }, 5000);
+                    
+                    // Click handler for chatbot
+                    welcomeMessage.addEventListener('click', () => {
+                        if (typeof toggleChatbot === 'function') {
+                            toggleChatbot();
+                        }
+                        welcomeMessage.classList.add('hide');
+                        setTimeout(() => {
+                            welcomeMessage.classList.remove('show', 'hide');
+                        }, 500);
+                    });
+                }
+            }, 1000); // 1 second delay to ensure page is fully loaded
+        }
+    });
+</script>
+
+
 
 {% endblock %}

@@ -331,25 +331,27 @@ def complete_course(request, course_id):
 
 
 
-
-
-#contact
+from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
-from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.shortcuts import render, redirect
 
 def send_email(request):
     if request.method == 'POST':
+        if not request.user.is_authenticated:
+            messages.error(request, 'You must be logged in to send a message.')
+            return redirect('login')
+        
         name = request.POST['name']
-        email = request.POST['email']
         subject = request.POST['subject']
         message = request.POST['message']
+        user_email = request.user.email  # Extracting email from the logged-in user
         
         # Email content
         email_message = f"""
         New contact form submission from {name}
         
-        From: {email}
+        From: {user_email}
         Subject: {subject}
         
         Message:
@@ -360,8 +362,8 @@ def send_email(request):
             send_mail(
                 subject=f'New Contact Form Submission: {subject}',
                 message=email_message,
-                from_email=email,
-                recipient_list=['akhilmavannoor@gmail.com'],
+                from_email=user_email,
+                recipient_list=['a.k.3.0.0.2.3.0.3.1@gmail.com'],
                 fail_silently=False,
             )
             messages.success(request, 'Your message has been sent successfully!')
@@ -371,8 +373,6 @@ def send_email(request):
         return redirect('send_email')
     
     return render(request, 'main/contact.html')
-
-
 
 
 
