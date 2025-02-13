@@ -41,7 +41,7 @@ GuiD is an **AI-driven educational platform** designed to provide **structured p
 
 ### **1️⃣ Clone the Repository**  
 ```bash
-git clone https://github.com/akhil-krishna/GuiD.git
+git clone [https://github.com/akhil-krishna/GuiD](https://github.com/Akhil-Krishna/GuiD).git
 cd GuiD
 ```
 
