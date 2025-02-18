@@ -15,11 +15,12 @@ class CodingQuestion(models.Model):
 
 # main/models.py chang
 
-
+#big changeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
 
 class customuser(AbstractUser):
     college = models.CharField(max_length=100)
     profile_pic = models.FileField(upload_to='profile_pics/', blank=True, null=True)
+    xp=models.IntegerField(default=0)
 
 
 

@@ -208,7 +208,7 @@ from .models import Enrollment
 
 
 # views.py
-
+from .models import customuser
 def profile(request):
     # Existing enrollment data
     enrollments = Enrollment.objects.filter(user=request.user)
@@ -234,6 +234,9 @@ def profile(request):
     # Calculate progress percentage
     progress_percentage = (completed_stages / total_stages * 100) if total_stages > 0 else 0
     
+    #leaderboard
+    top_users = customuser.objects.order_by('-xp')[:10]
+    xpp=request.user.xp
     context = {
         'user': request.user,
         'total_enrolled': total_enrolled,
@@ -243,6 +246,8 @@ def profile(request):
         'completed_stages': completed_stages,
         'total_stages': total_stages,
         'progress_percentage': progress_percentage,
+        'topusers': top_users,
+        'xp':xpp
     }
     return render(request, 'main/profile_test.html', context)
 
@@ -388,28 +393,31 @@ def send_email(request):
 # main/utils/rag_utils.py
 
 # main/views.py
+#dfghjklkjhgfdaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 
 # main/views.py
 # main/views.py
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 import json
-import requests
+from groq import Groq
 from .utilss.rag_utils import RAGProcessor
+from django.conf import settings
+
+# Initialize Groq client - you'll need to set this environment variable
+import os
+groq_client = Groq(api_key=settings.GROQ_API_KEY)
 
 rag_processor = None
 
 # Bot configuration
 BOT_CONFIG = {
-    "name": "ArK Bot",
+    "name": "Dr.FrnD",
     "creator": "Akhil Krishna",
     "website_info": {
         "name": "GuiD",
         "features": {
-            # You can add your website features here
-            # Example structure:
-            # "feature_name": "feature_description",
-            "Roadmap":"nothing"
+            "Roadmap": "nothing"
         }
     }
 }
@@ -427,12 +435,9 @@ def check_special_queries(user_message):
     """Handle special queries about bot identity and website information"""
     user_message_lower = user_message.lower()
     
-    # Check for creator-related questions
     if any(q in user_message_lower for q in ["who created you", "who made you", "your creator"]):
         return f"I was created by {BOT_CONFIG['creator']}."
     
-    # Check for website-related questions
-   
     return None
 
 @csrf_exempt
@@ -470,26 +475,30 @@ def chat_with_llama(request):
 
             Answer:"""
         
-        # Call Llama
-        response = requests.post('http://localhost:11434/api/generate',
-            json={
-                "model": "llama3.2:1b",
-                "prompt": prompt,
-                "stream": False,
-                "temperature": 0.7
-            })
+        # Call Groq API
+        completion = groq_client.chat.completions.create(
+            messages=[
+                {
+                    "role": "system",
+                    "content": f"You are {BOT_CONFIG['name']}, a helpful AI assistant."
+                },
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ],
+            model="mixtral-8x7b-32768",  # You can also use "llama2-70b-4096"
+            temperature=0.7,
+            max_tokens=1000,
+            top_p=1,
+            stream=False
+        )
         
-        if response.status_code == 200:
-            return JsonResponse({
-                'response': response.json()['response'],
-                'status': 'success',
-                'used_dataset': is_similar
-            })
-        else:
-            return JsonResponse({
-                'error': 'Failed to get response from Llama-2',
-                'status': 'error'
-            }, status=500)
+        return JsonResponse({
+            'response': completion.choices[0].message.content,
+            'status': 'success',
+            'used_dataset': is_similar
+        })
             
     except Exception as e:
         return JsonResponse({

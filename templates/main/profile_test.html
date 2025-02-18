@@ -257,9 +257,219 @@
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
         }
     }
+    .leaderboard-section {
+        margin: 2rem 0;
+        animation: fadeInUp 1s;
+    }
+    
+    .xp-display {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 15px;
+        padding: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 2rem;
+        border: 1px solid rgba(60, 124, 188, 0.3);
+    }
+    
+    .xp-card {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+    }
+    
+    .xp-icon {
+        font-size: 2.5rem;
+        color: #FFD700;
+        animation: pulse 2s infinite;
+    }
+    
+    .xp-info h3 {
+        font-size: 1.2rem;
+        color: rgba(255, 255, 255, 0.8);
+        margin-bottom: 0.5rem;
+    }
+    
+    .xp-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #00bfff;
+    }
+    
+    .leaderboard-btn {
+        padding: 1rem 2rem;
+        border-radius: 12px;
+        border: none;
+        background: linear-gradient(135deg, #3c7cbc, #00bfff);
+        color: white;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        font-size: 1.1rem;
+    }
+    
+    .leaderboard-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0, 191, 255, 0.3);
+    }
+    
+    /* Updated Popup Styles */
+    .popup {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(3, 17, 37, 0.95);
+        backdrop-filter: blur(8px);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+    
+    .popup-content {
+        width: 90%;
+        max-width: 800px;
+        background: linear-gradient(135deg, rgba(60, 124, 188, 0.1), rgba(0, 191, 255, 0.1));
+        border-radius: 20px;
+        border: 1px solid rgba(60, 124, 188, 0.3);
+        overflow: hidden;
+        animation: scaleIn 0.3s ease-out;
+    }
+    
+    .popup-header {
+        padding: 1.5rem 2rem;
+        background: rgba(60, 124, 188, 0.2);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid rgba(60, 124, 188, 0.3);
+    }
+    
+    .popup-header h2 {
+        color: #00bfff;
+        font-size: 1.8rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .close-btn {
+        background: none;
+        border: none;
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 1.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .close-btn:hover {
+        color: #00bfff;
+        transform: rotate(90deg);
+    }
+    
+    .leaderboard-table-container {
+        padding: 2rem;
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+    
+    .leaderboard-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 0.8rem;
+    }
+    
+    .leaderboard-table th {
+        padding: 1rem;
+        color: rgba(255, 255, 255, 0.8);
+        font-weight: 500;
+        text-align: left;
+        border-bottom: 1px solid rgba(60, 124, 188, 0.3);
+    }
+    
+    .leaderboard-table td {
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.03);
+    }
+    
+    .leaderboard-table tr {
+        transition: all 0.3s ease;
+    }
+    
+    .leaderboard-table tr:hover {
+        transform: translateX(5px);
+        background: rgba(60, 124, 188, 0.1);
+    }
+    
+    .rank {
+        font-weight: 700;
+        color: #00bfff;
+        width: 80px;
+    }
+    
+    .rank-1 {
+        color: #FFD700;
+        font-size: 1.2rem;
+    }
+    
+    .user-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        background: rgba(60, 124, 188, 0.3);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+    }
+    
+    .current-user {
+        background: rgba(0, 191, 255, 0.1);
+        border-radius: 8px;
+    }
+    
+    .xp {
+        font-weight: 600;
+        color: #00bfff;
+    }
+    
+    @keyframes scaleIn {
+        from {
+            transform: scale(0.9);
+            opacity: 0;
+        }
+        to {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+    
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.1);
+        }
+        100% {
+            transform: scale(1);
+        }
+    }
 </style>
 
-<div class="container">
+
     <!-- Profile Header -->
     <div class="profile-header">
         <div class="profile-pic-container">
@@ -303,7 +513,66 @@
             </div>
         </div>
     </div>
-
+    <!-- Leaderboard Section -->
+    <div class="leaderboard-section">
+        <div class="xp-display">
+            <div class="xp-card">
+                <i class="fas fa-star xp-icon"></i>
+                <div class="xp-info">
+                    <h3>Your Experience Points</h3>
+                    <p class="xp-value">{{ user.xp }} XP</p>
+                </div>
+            </div>
+            <button class="leaderboard-btn" onclick="openLeaderboard()">
+                <i class="fas fa-trophy"></i>
+                View Leaderboard
+            </button>
+        </div>
+    </div>
+    
+    <!-- Updated Leaderboard Popup -->
+    <div id="leaderboardPopup" class="popup">
+        <div class="popup-content">
+            <div class="popup-header">
+                <h2><i class="fas fa-trophy"></i> Global Leaderboard</h2>
+                <button class="close-btn" onclick="closeLeaderboard()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="leaderboard-table-container">
+                <table class="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Player</th>
+                            <th>XP</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for player in topusers %}
+                        <tr class="{% if player.username == user.username %}current-user{% endif %}">
+                            <td class="rank">
+                                {% if forloop.counter == 1 %}
+                                    <span class="rank-1"><i class="fas fa-crown"></i></span>
+                                {% else %}
+                                    {{ forloop.counter }}
+                                {% endif %}
+                            </td>
+                            <td class="username">
+                                <div class="user-info">
+                                    <span class="user-avatar">{{ player.username|make_list|first|upper }}</span>
+                                    <span>{{ player.username }}</span>
+                                </div>
+                            </td>
+                            <td class="xp">{{ player.xp }} XP</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
     {% if current_progress %}
     <div class="stat-card">
         <div class="stat-header">
@@ -320,7 +589,7 @@
     </div>
     {% endif %}
 
-    <!-- Badges Section -->
+    <!-- Badges Section big changeeeeeeeeeeeeeeeee-->
     <div class="badges-section">
         <div class="stat-header">
             <i class="fas fa-medal stat-icon"></i>
@@ -347,5 +616,32 @@
             <p class="text-center">No badges earned yet. Complete stages to earn badges!</p>
         {% endif %}
     </div>
-</div>
+
+
+<script>
+    
+    function openLeaderboard() {
+        const popup = document.getElementById("leaderboardPopup");
+        popup.style.display = "flex";
+       
+    }
+    
+    function closeLeaderboard() {
+        const popup = document.getElementById("leaderboardPopup");
+        popup.style.display = "none";
+        
+    }
+    
+    // Close popup when clicking outside
+    document.getElementById("leaderboardPopup").addEventListener("click", function(e) {
+        if (e.target === this) {
+            closeLeaderboard();
+        }
+    });
+    
+    </script>
+    
+
 {% endblock %}
+
+

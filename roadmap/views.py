@@ -12,7 +12,7 @@ from django.http import JsonResponse
 
 #error causing updates
 
-
+#big changeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
 
 from .models import RoadmapCourse,RoadmapSlide,RoadmapStage,UserProgress,RoadmapTest,TestQuestion,TestAttempt ,UserBadge
 class RoadmapStageView(View):
@@ -193,7 +193,9 @@ class RoadmapCourseView(View):
     def get(self, request, stage_id, course_order):
         stage = get_object_or_404(RoadmapStage, id=stage_id)
         course = get_object_or_404(RoadmapCourse, stage=stage, order=course_order)
-
+        user=request.user
+        user.xp-=1
+        user.save()
         progress, created = UserProgress.objects.get_or_create(
             user=request.user,
             stage=stage,
@@ -230,7 +232,7 @@ class RoadmapCourseView(View):
                 progress.current_slide = first_slide
                 progress.save()
             return redirect('roadmap_slide', course_id=course.id, slide_order=first_slide.order)
-
+       
         return render(request, 'roadmap/course.html', {
             'stage': stage,
             'course': course,
@@ -239,6 +241,8 @@ class RoadmapCourseView(View):
             'progress': progress
         })
 #gpt recommended
+
+
 class RoadmapSlideView(View):
     @method_decorator(login_required)
     def get(self, request, course_id, slide_order):
@@ -260,7 +264,9 @@ class RoadmapSlideView(View):
         is_last_course = not RoadmapCourse.objects.filter(
             stage=course.stage, order__gt=course.order
         ).exists()
-
+        user=request.user
+        user.xp+=1
+        user.save()
         context = {
             "slide": slide,
             "prev_slide": prev_slide,
@@ -285,6 +291,9 @@ class RoadmapSlideView(View):
             progress.current_course = next_course
             progress.current_slide = None
             progress.save()
+            user=request.user
+            user.xp+=5
+            user.save()
             return redirect('stage_courses', stage_id=course.stage.id)
         
         return redirect('roadmap_slide', course_id=course_id, slide_order=slide_order)
