@@ -41,7 +41,14 @@ class customuser(AbstractUser):
     stage7_attempt=models.PositiveIntegerField(default=0)
     stage8_attempt=models.PositiveIntegerField(default=0)
     
-    
+    stage1_score=models.PositiveIntegerField(default=0)
+    stage2_score=models.PositiveIntegerField(default=0)
+    stage3_score=models.PositiveIntegerField(default=0)
+    stage4_score=models.PositiveIntegerField(default=0)
+    stage5_score=models.PositiveIntegerField(default=0)
+    stage6_score=models.PositiveIntegerField(default=0)
+    stage7_score=models.PositiveIntegerField(default=0)
+    stage8_score=models.PositiveIntegerField(default=0)
     
 
 

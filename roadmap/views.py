@@ -429,6 +429,12 @@ class RoadmapTestView(View):
             score_percentage = (correct_answers / total_questions) * 100
             passed = score_percentage >= test.passing_score
             
+            stage_score=f"stage{stage_id}_score"
+            user=request.user
+            score=getattr(user,stage_score)
+            setattr(user,stage_score,max(score,correct_answers))
+            user.save()
+            
             # Record the attempt
             TestAttempt.objects.create(
                 user=request.user,

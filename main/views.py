@@ -243,11 +243,32 @@ def profile(request):
         f"Stage {i}": getattr(request.user, f'stage{i}_time')
         for i in range(1, 9)
     }
+    time_dict = {
+        f"Stage {i}": getattr(request.user, f'stage{i}_time')
+        for i in range(1, 9)
+    }
+    time_list=[0]+[getattr(request.user,f'stage{i}_time') for i in range(1,9)]
     
     # Calculate total time
     total_time_spent = sum(stage_times.values(), timezone.timedelta())
     
+    stage_attempts = {
+        f"Stage {i}": getattr(request.user, f'stage{i}_attempt')
+        for i in range(1, 9)
+    }
     
+    stage_score = {
+        f"Stage {i}": getattr(request.user, f'stage{i}_score')
+        for i in range(1, 9)
+    }
+    # stage_percentage = {
+    #     f"Stage {i}": (stage_score[f"Stage{i}"]/2)*100
+    #     for i in range(1, 9)
+    # } 
+    stage_percentage={}
+    for i in range(1, 9):
+        mykey=f"Stage {i}"
+        stage_percentage[mykey]=(stage_score[mykey]/2)*100
     context = {
         'user': request.user,
         'total_enrolled': total_enrolled,
@@ -261,6 +282,11 @@ def profile(request):
         'xp':xpp,
         'stage_times': stage_times,
         'total_time_spent': total_time_spent,
+        'stage_attempts':stage_attempts,
+        'stage_score':stage_score,
+        'stage_percentage':stage_percentage,
+        'time_list':time_list,
+        'time_dict':time_dict
     }
     return render(request, 'main/profile_test.html', context)
 
