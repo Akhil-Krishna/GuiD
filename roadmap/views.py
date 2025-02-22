@@ -309,6 +309,8 @@ from django.contrib import messages
 from django.urls import reverse
 from django.http import HttpResponseForbidden
 from django.db.models import Max
+
+from main.models import customuser
 class RoadmapTestView(View):
     @method_decorator(login_required)
     def get(self, request, stage_id):
@@ -395,6 +397,15 @@ class RoadmapTestView(View):
         elif 'submit' in request.POST:
             saved_answers = request.session.get(f'test_{test.id}_answers', {})
             
+            #testattempts incrementing
+            stage_test=f"stage{stage_id}_attempt"
+            user=request.user
+            attempt=getattr(user,stage_test)+1
+            setattr(user,stage_test,attempt)
+            user.save()
+            
+            
+            
             # Save the last answer if provided
             current_question_idx = request.session.get(f'test_{test.id}_current_question', 0)
             current_question = questions[current_question_idx]
@@ -417,7 +428,7 @@ class RoadmapTestView(View):
 
             score_percentage = (correct_answers / total_questions) * 100
             passed = score_percentage >= test.passing_score
-
+            
             # Record the attempt
             TestAttempt.objects.create(
                 user=request.user,
@@ -445,6 +456,7 @@ class RoadmapTestView(View):
             
                 user_progress.is_stage_completed = True
                 user_progress.badge_earned = True
+                
                 
         # After test is passed successfully
                 
@@ -528,3 +540,53 @@ def chat_with_llama(request):
             'error': str(e),
             'status': 'error'
         }, status=500)
+
+
+
+#timezone addingggggggggggggggggggggggggg
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_protect
+from django.utils import timezone
+import json
+import json
+from django.http import JsonResponse
+from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
+
+@csrf_exempt
+def update_stage_time(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            stage_id = int(data.get('stage_id'))
+            time_spent = data.get('time_spent')  # in milliseconds
+            
+            # Convert milliseconds to timedelta (Fix: Convert to seconds first)
+            duration = timezone.timedelta(seconds=time_spent / 1000)
+
+            # Get the logged-in user
+            user = request.user
+
+            # Construct the field name dynamically (e.g., "stage1_time", "stage2_time")
+            stage_field = f'stage{stage_id}_time'
+
+            
+            # Ensure the field exists in the user model
+            if hasattr(user, stage_field):
+                current_time = getattr(user, stage_field) or timezone.timedelta(0)  # Default to 0 if None
+                new_time = current_time + duration
+
+                # Update the field
+                setattr(user, stage_field, new_time)
+                user.save()
+
+                #print(f"Updated {stage_field}: {current_time} → {new_time}")
+                return JsonResponse({'status': 'success', 'new_time': str(new_time)})
+            else:
+                return JsonResponse({'status': 'error', 'message': f"Field {stage_field} does not exist"}, status=400)
+
+        except Exception as e:
+            #print("Error:", e)
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=400)

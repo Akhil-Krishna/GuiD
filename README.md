@@ -31,7 +31,7 @@ GuiD is an **AI-driven educational platform** designed to provide **structured p
 ## 🏗️ **Tech Stack**  
 - **Backend**: Django (Server-Side Rendering)  
 - **Database**: PostgreSQL (AWS RDS)  
-- **AI Model**: LLaMA 3.2:1B (via Ollama `/api/generate`)  
+- **AI Model**: LLaMA 3.2:1B (via Ollama `/api/generate`)  or mixtral from groq
 - **Frontend**: HTML, CSS, JavaScript (Django Templates)  
 - **Hosting**: Not deployed yet  
 

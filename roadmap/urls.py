@@ -14,5 +14,6 @@ urlpatterns = [
     path('chat/', views.chat_with_llama, name='chat_with_llama'),
     # In urls.py
     #path('stage/<int:stage_id>/course/', RoadmapCourseView.as_view(), name='roadmap_course'),
-    
+    path('update_stage_time/', views.update_stage_time, name='update_stage_time'),
+
 ]

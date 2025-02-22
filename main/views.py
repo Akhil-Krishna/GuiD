@@ -209,6 +209,7 @@ from .models import Enrollment
 
 # views.py
 from .models import customuser
+from django.utils import timezone
 def profile(request):
     # Existing enrollment data
     enrollments = Enrollment.objects.filter(user=request.user)
@@ -237,6 +238,16 @@ def profile(request):
     #leaderboard
     top_users = customuser.objects.order_by('-xp')[:10]
     xpp=request.user.xp
+    
+    stage_times = {
+        f"Stage {i}": getattr(request.user, f'stage{i}_time')
+        for i in range(1, 9)
+    }
+    
+    # Calculate total time
+    total_time_spent = sum(stage_times.values(), timezone.timedelta())
+    
+    
     context = {
         'user': request.user,
         'total_enrolled': total_enrolled,
@@ -247,7 +258,9 @@ def profile(request):
         'total_stages': total_stages,
         'progress_percentage': progress_percentage,
         'topusers': top_users,
-        'xp':xpp
+        'xp':xpp,
+        'stage_times': stage_times,
+        'total_time_spent': total_time_spent,
     }
     return render(request, 'main/profile_test.html', context)
 
@@ -563,3 +576,17 @@ def chat_with_llama(request):
 #     enrollment.completed = True
 #     enrollment.save()
 #     return redirect('profile')
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -467,6 +467,149 @@
             transform: scale(1);
         }
     }
+    .time-popup-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 1000;
+        backdrop-filter: blur(5px);
+    }
+    
+    .time-popup-content {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(12, 61, 103, 0.9);
+        border-radius: 20px;
+        padding: 30px;
+        width: 90%;
+        max-width: 800px;
+        max-height: 80vh;
+        overflow-y: auto;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+    
+    .popup-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        border-radius: 10px;
+    }
+    
+    .popup-header h2 {
+        margin: 0;
+        color: #e0e0e0;
+        font-size: 24px;
+    }
+    
+    .close-popup {
+        background: none;
+        border: none;
+        font-size: 28px;
+        cursor: pointer;
+        color: #a0a0a0;
+    }
+    
+    .total-time-card {
+        text-align: center;
+        padding: 20px;
+        background: linear-gradient(135deg, #2d3748, #1a202c);
+        border-radius: 15px;
+        color: #e0e0e0;
+        margin-bottom: 30px;
+        border: 1px solid #00bcd4;
+    }
+    
+    .time-icon {
+        font-size: 40px;
+        margin-bottom: 10px;
+        color: #00bcd4;
+    }
+    
+    .total-time {
+        font-size: 36px;
+        font-weight: bold;
+        margin-bottom: 5px;
+        color: #00bcd4;
+    }
+    
+    .time-label {
+        font-size: 16px;
+        opacity: 0.9;
+        color: #e0e0e0;
+    }
+    
+    .stage-time-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+    }
+    
+    .stage-card {
+        background: #2d2d2d;
+        border-radius: 12px;
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        transition: transform 0.2s;
+        border: 1px solid #363636;
+    }
+    
+    .stage-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        border-color: #00bcd4;
+    }
+    
+    .stage-number {
+        width: 40px;
+        height: 40px;
+        background: #00bcd4;
+        color: #121212;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        margin-right: 15px;
+    }
+    
+    .stage-details {
+        flex: 1;
+    }
+    
+    .stage-details h3 {
+        margin: 0 0 10px 0;
+        color: #e0e0e0;
+        font-size: 18px;
+    }
+    
+    .time-bar-container {
+        height: 8px;
+        background: #363636;
+        border-radius: 4px;
+        margin: 10px 0;
+    }
+    
+    .time-bar {
+        height: 100%;
+        background: linear-gradient(90deg, #00bcd4, #0097a7);
+        border-radius: 4px;
+        transition: width 0.3s ease;
+    }
+    
+    .stage-time {
+        color: #a0a0a0;
+        font-size: 14px;
+    }
+    
+    
 </style>
 
 
@@ -573,23 +716,71 @@
         </div>
     </div>
     
-    {% if current_progress %}
+   
     <div class="stat-card">
         <div class="stat-header">
-            <i class="fas fa-clock stat-icon"></i>
+            <i class="fas fa-road stat-icon"></i>
+        {% if current_progress %}
             <h2 class="stat-title">Current Progress</h2>
-        </div>
-        <p>Stage: {{ current_progress.stage.name }}</p>
-        {% if current_progress.current_course %}
-            <p>Course: {{ current_progress.current_course.title }}</p>
+        {% else %}
+            <h2 class="stat-title">Roadmap Completed</h2>
         {% endif %}
-        <a href="{% url 'roadmap_stages' %}" class="btn">
-            <i class="fas fa-play"></i> Continue Learning
+        </div>
+        {% if current_progress %}
+            <p>Stage: {{ current_progress.stage.name }}</p>
+            {% if current_progress.current_course %}
+                <p>Course: {{ current_progress.current_course.title }}</p>
+            {% endif %}
+            <a href="{% url 'roadmap_stages' %}" class="btn">
+                <i class="fas fa-play"></i> Continue Learning
+            </a>
+        {% else %}
+            <p>You are a complete Placement-Ready Material NOW! </p>
+            {% if current_progress.current_course %}
+                <p>Course: {{ current_progress.current_course.title }}</p>
+            {% endif %}
+            <a href="{% url 'roadmap_stages' %}" class="btn">
+                <i class="fas fa-play"></i> Review Roadmap
+            </a>
+        {% endif%}
+        <a onclick="progressTime()" class="btn" style="margin-left: 10px;">
+            <i class="fas fa-clock"></i> Track Time
         </a>
     </div>
-    {% endif %}
+    
+    {% load time_filters %}
 
-    <!-- Badges Section big changeeeeeeeeeeeeeeeee-->
+
+    <!-- Add this right after your existing time-stat div -->
+<div id="timeTrackingPopup" class="time-popup-overlay">
+    <div class="time-popup-content">
+        <div class="popup-header">
+            <h2>Your Learning Journey</h2>
+            <button class="close-popup" onclick="closeTimePopup()">&times;</button>
+        </div>
+        <div class="total-time-card">
+            <div class="time-icon">⏱️</div>
+            <div class="total-time">{{ total_time_spent|format_hms }}</div>
+            <div class="time-label">Total Learning Time</div>
+        </div>
+        <div class="stage-time-grid">
+            {% for stage_name, time in stage_times.items %}
+            <div class="stage-card">
+                <div class="stage-number">{{ forloop.counter }}</div>
+                <div class="stage-details">
+                    <h3>{{ stage_name }}</h3>
+                    <div class="time-bar-container">
+                        <div class="time-bar" style="width: {% widthratio time.total_seconds total_time_spent.total_seconds 100 %}%"></div>
+                    </div>
+                    <div class="stage-time">{{ time|format_hms }}</div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+   
+    <!-- Badges Section big changeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee-->
     <div class="badges-section">
         <div class="stat-header">
             <i class="fas fa-medal stat-icon"></i>
@@ -638,7 +829,24 @@
             closeLeaderboard();
         }
     });
+    function progressTime() {
+        document.getElementById('timeTrackingPopup').style.display = 'block';
+        
+    }
     
+    function closeTimePopup() {
+        document.getElementById('timeTrackingPopup').style.display = 'none';
+     
+    }
+    
+    // Close popup when clicking outside
+    document.addEventListener('click', function(event) {
+        const popup = document.querySelector('.time-popup-content');
+        const overlay = document.getElementById('timeTrackingPopup');
+        if (event.target === overlay) {
+            closeTimePopup();
+        }
+    })
     </script>
     
 

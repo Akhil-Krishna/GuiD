@@ -3,7 +3,7 @@ from . import views
 from django.contrib.auth import views as auth_views
 
 from .views import sign_up, sign_in, profile,notifications, mark_as_read
-
+from . import views
 urlpatterns = [
     path('', views.index, name='index'),
     
@@ -25,5 +25,5 @@ urlpatterns = [
     path('chat/', views.chat_with_llama, name='chat_with_llama'),
     path('about/',views.about,name="about"),
     path('contact/',views.send_email,name="send_email"),
-    
+   
 ]

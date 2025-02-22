@@ -16,12 +16,33 @@ class CodingQuestion(models.Model):
 # main/models.py chang
 
 #big changeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
-
+from django.utils import timezone
 class customuser(AbstractUser):
+    Name=models.CharField(max_length =255,default="Guid User")
     college = models.CharField(max_length=100)
     profile_pic = models.FileField(upload_to='profile_pics/', blank=True, null=True)
     xp=models.IntegerField(default=0)
-
+    
+    stage1_time = models.DurationField(default=timezone.timedelta)
+    stage2_time = models.DurationField(default=timezone.timedelta)
+    stage3_time = models.DurationField(default=timezone.timedelta)
+    stage4_time = models.DurationField(default=timezone.timedelta)
+    stage5_time = models.DurationField(default=timezone.timedelta)
+    stage6_time = models.DurationField(default=timezone.timedelta)
+    stage7_time = models.DurationField(default=timezone.timedelta)
+    stage8_time = models.DurationField(default=timezone.timedelta)
+    
+    stage1_attempt=models.PositiveIntegerField(default=0)
+    stage2_attempt=models.PositiveIntegerField(default=0)
+    stage3_attempt=models.PositiveIntegerField(default=0)
+    stage4_attempt=models.PositiveIntegerField(default=0)
+    stage5_attempt=models.PositiveIntegerField(default=0)
+    stage6_attempt=models.PositiveIntegerField(default=0)
+    stage7_attempt=models.PositiveIntegerField(default=0)
+    stage8_attempt=models.PositiveIntegerField(default=0)
+    
+    
+    
 
 
 #notifications

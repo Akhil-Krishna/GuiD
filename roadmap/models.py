@@ -104,9 +104,12 @@ class UserBadge(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     stage = models.ForeignKey(RoadmapStage, on_delete=models.CASCADE)
     earned_date = models.DateTimeField(auto_now_add=True)
-    
+    #user_name = models.CharField(max_length=255, blank=True)  # Add this field
+    #created_at = models.DateTimeField(auto_now_add=True) #remove this and above only
     class Meta:
         unique_together = ('user', 'stage')
 
     def __str__(self):
         return f"{self.user.username} - {self.stage.name} Badge"
+
+

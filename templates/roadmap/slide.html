@@ -386,6 +386,65 @@
 </div>
 
 <script>
+    var startTime = new Date();
+var isActive = true;
+var timeSent = false;  // Flag to prevent multiple requests
+
+console.log("Starting time:", startTime);
+
+// Track user activity
+document.addEventListener("visibilitychange", function () {
+    if (document.hidden && !timeSent) {
+        sendTimeSpent();
+        isActive = false;
+        timeSent = true;  // Prevent multiple calls
+    } else {
+        startTime = new Date();
+        isActive = true;
+        timeSent = false;  // Reset flag when user returns
+    }
+});
+
+// Send time spent when user leaves the page
+window.addEventListener("beforeunload", function () {
+    if (isActive && !timeSent) {
+        sendTimeSpent();
+        timeSent = true;  // Prevent duplicate request
+    }
+});
+
+// Send time spent when navigating to another slide
+document.querySelectorAll(".navigation a, .navigation button").forEach((elem) => {
+    elem.addEventListener("click", function () {
+        if (isActive && !timeSent) {
+            sendTimeSpent();
+            timeSent = true;  // Prevent duplicate request
+        }
+    });
+});
+
+function sendTimeSpent() {
+    const endTime = new Date();
+    const timeSpent = (endTime - startTime) / 1000; // Convert milliseconds to seconds
+
+    //console.log("End time:", endTime);
+    //console.log("Time spent (seconds):", timeSpent);
+
+    // Send time spent to backend
+    fetch("/roadmap/update_stage_time/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
+        },
+        body: JSON.stringify({
+            stage_id: "{{ slide.course.stage.id }}",
+            time_spent: timeSpent * 1000, // Convert to milliseconds for backend
+        }),
+    }).then(response => response.json())
+      .then(data => console.log("Server Response:", data))
+      .catch(error => console.error("Error sending time:", error));
+}
     function getCleanMessage() {
         const contentSlide = document.getElementById('contentSlide');
         const tempDiv = document.createElement('div');
@@ -549,6 +608,8 @@
                 document.getElementById("popup").style.display = "none";
             }
         });
+        
+        
 </script>
 {% endblock %}
 
@@ -781,6 +842,7 @@
 
 
 <script>
+    console.log("Start");
     
     async function sendMagic(){
         
@@ -876,7 +938,59 @@
         popper.classList.remove("visible");
         overlay.classList.remove("visible");
     }
-   
+   //timezone addding below
+        let startTime = new Date();
+        let isActive = true;
+     console.log(startTime)
+        // Track user activity
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                sendTimeSpent();
+                isActive = false;
+                console.log("Inside if");
+            } else {
+                startTime = new Date();
+                isActive = true;
+                console.log("insode else");
+            }
+        });
+    
+        // Send time spent when user leaves the page
+        window.addEventListener('beforeunload', function() {
+            if (isActive) {
+                console.log("Insde isActive beforeunload");
+                sendTimeSpent();
+            }
+        });
+    
+        // Send time spent when navigating to another slide
+        document.querySelectorAll('.navigation a, .navigation button').forEach(elem => {
+            elem.addEventListener('click', function() {
+                if (isActive) {
+                    console.log("insode isActive .nav a");
+                    sendTimeSpent();
+                }
+            });
+        });
+    
+        function sendTimeSpent() {
+            const endTime = new Date();
+            const timeSpent = endTime - startTime;
+            
+            // Send time spent to backend
+            fetch('/update_stage_time/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify({
+                    stage_id: '{{ slide.course.stage.id }}',
+                    time_spent: timeSpent
+                })
+            });
+        }
+    
 </script>
 
 {% endblock %}
