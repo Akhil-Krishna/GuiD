@@ -205,11 +205,68 @@ def sign_in(request):
 
 
 from .models import Enrollment
-
-
+from .recommend import call_predict_function
 # views.py
 from .models import customuser
 from django.utils import timezone
+from django.core.cache import cache
+
+from django.http import JsonResponse
+import json
+
+def get_prediction(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            user_id = data.get('user_id')
+            input_data_hash = data.get('input_data_hash')
+            
+            # First check if it's in cache
+            cache_key = f"user_prediction_{user_id}_{input_data_hash}"
+            stage = cache.get(cache_key)
+            
+            if stage is None:
+                # Get the user data
+                user = customuser.objects.get(id=user_id)
+                
+                # Reconstruct input_data
+                input_data = []
+                for i in range(1, 9):
+                    input_data.append(getattr(user, f'stage{i}_score'))
+                    time = getattr(user, f'stage{i}_time')
+                    input_data.append(int(time.total_seconds()//60))
+                    input_data.append(getattr(user, f'stage{i}_attempt'))
+                
+                # Make prediction
+                stage = call_predict_function(input_data)
+                # Cache the result
+                cache.set(cache_key, stage, 60*60)
+            
+            courses = {
+                "Semester1": ['Think To Code', "Introduction to Programming"],
+                "Semester2": ['Python Basics', "Python Functions"],
+                "Semester3": ['Stack', "Queue", "LinkedList"],
+                'Semester4': ['Database'],
+                'Semester5': ['Dynamic Programming'],
+                'Semester6': ['Graph,Tree'],
+                'Semester7': ["Analysing Code"],
+                'Semester8': ['Interview Preparation']
+            }
+            
+            stage_no = int(stage[-1])
+            
+            return JsonResponse({
+                'success': True,
+                'stage': stage,
+                'stage_no': stage_no,
+                'recommendedCourses': courses[stage]
+            })
+            
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    
+    return JsonResponse({'success': False, 'error': 'Invalid request method'})
+
 def profile(request):
     # Existing enrollment data
     enrollments = Enrollment.objects.filter(user=request.user)
@@ -269,6 +326,42 @@ def profile(request):
     for i in range(1, 9):
         mykey=f"Stage {i}"
         stage_percentage[mykey]=(stage_score[mykey]/2)*100
+        
+    #Recommendation Engine
+    
+    std=request.user
+    input_data=[]
+    for i in range(1,9):
+        input_data.append(getattr(std, f'stage{i}_score'))
+        time=getattr(std,f'stage{i}_time')
+        input_data.append(int(time.total_seconds()//60))
+        input_data.append(getattr(std,f'stage{i}_attempt'))
+    
+    cache_key = f"user_prediction_{request.user.id}_{hash(str(input_data))}"
+    
+    # Try to get prediction from cache first
+    stage = cache.get(cache_key)
+    courses={
+    "Semester1":['Think To Code',"Introduction to Programming"],
+    "Semester2":['Python Basics',"Python Functions"],
+    "Semester3":['Stack',"Queue","LinkedList"],
+    'Semester4':['Database'],
+    'Semester5':['Dynamic Programming'],
+    'Semester6':['Graph,Tree'],
+    'Semester7':["Analysing Code"],
+    'Semester8':['Interview Preparation']
+    }
+    # If not in cache, compute and store changinggggggggggggggggggggggggggggggggggggggggggggggggg
+    if stage is None:
+        #stage = call_predict_function(input_data)
+        stage_no=1
+        recommendedCourses=courses["Semester1"]
+        
+        # Cache for 1 hour (or however long makes sense for your app)
+        #cache.set(cache_key, stage, 60*60)
+    else:
+        stage_no=int(stage[-1])
+        recommendedCourses=courses[stage]
     context = {
         'user': request.user,
         'total_enrolled': total_enrolled,
@@ -286,7 +379,13 @@ def profile(request):
         'stage_score':stage_score,
         'stage_percentage':stage_percentage,
         'time_list':time_list,
-        'time_dict':time_dict
+        'time_dict':time_dict,
+        'input_data':input_data,
+        'recommendedCourses':recommendedCourses,
+        'stage':stage_no,
+        'prediction_needed': stage is None,  # Flag to indicate if client-side prediction is needed
+        'user_id': request.user.id,
+        'input_data_hash': hash(str(input_data))
     }
     return render(request, 'main/profile_test.html', context)
 

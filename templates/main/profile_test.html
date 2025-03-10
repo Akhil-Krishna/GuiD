@@ -833,6 +833,124 @@
         box-shadow: 0 4px 12px rgba(0, 191, 255, 0.2);
 }
     
+
+
+.recommendations-section {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    padding: 2rem;
+    margin: 2rem 0;
+    animation: fadeInUp 1s;
+    border: 1px solid rgba(60, 124, 188, 0.3);
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.recommendations-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.recommendation-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(60, 124, 188, 0.2);
+}
+
+.recommendation-card:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: #00bfff;
+}
+
+.course-icon {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #3c7cbc, #00bfff);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: white;
+    flex-shrink: 0;
+}
+
+.course-info {
+    flex-grow: 1;
+}
+
+.course-title {
+    font-size: 1.2rem;
+    margin-bottom: 0.8rem;
+    color: white;
+}
+
+.course-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.course-badge {
+    background: rgba(60, 124, 188, 0.3);
+    color: #00bfff;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.course-link {
+    color: #00bfff;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.course-link:hover {
+    color: white;
+}
+
+.no-recommendations {
+    grid-column: 1 / -1;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.7);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.no-recommendations i {
+    font-size: 2rem;
+    color: #00bfff;
+}
+
+@media (max-width: 768px) {
+    .recommendations-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 </style>
 
 
@@ -853,6 +971,37 @@
         </div>
     </div>
 
+    
+    <div class="recommendations-section">
+        <div class="section-header">
+            <i class="fas fa-lightbulb stat-icon"></i>
+            <h2 class="stat-title">Recommended 4 Review</h2>
+        </div>
+        <div class="recommendations-grid">
+            {%for course in recommendedCourses%}
+                <div class="recommendation-card">
+                    <div class="course-icon">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <div class="course-info">
+                        <h3 class="course-title">{{course}}</h3>
+                        <div class="course-meta">
+                            <span class="course-badge">Recommended</span>
+                            <a href="/roadmap/stage/{{ stage }}/courses/" class="course-link">
+                                <i class="fas fa-arrow-right"></i> Review
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="no-recommendations">
+                    <i class="fas fa-info-circle"></i>
+                    <p>No courses recommended at this time. Complete current courses to get new recommendations.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    
     <!-- Stats Grid -->
     <div class="stats-grid">
         <!-- Course Progress Card -->
@@ -1164,6 +1313,60 @@
             }
         });
     });
+    
+    
+document.addEventListener('DOMContentLoaded', function() {
+    // Check if prediction is needed
+    var predictionNeeded = {{prediction_needed|lower}};
+    
+    if (predictionNeeded) {
+      // Show loading indicator for recommendations
+      const recommendationContainer = document.getElementById('recommendation-container');
+      if (recommendationContainer) {
+        recommendationContainer.innerHTML = '<div class="loading">Loading recommendations...</div>';
+      }
+      
+      // Fetch prediction asynchronously
+      setTimeout(function() {
+        fetch('{% url "get_prediction" %}', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+          },
+          body: JSON.stringify({
+            user_id: {{user_id}} ,
+            input_data_hash: '{{ input_data_hash }}'
+          })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            // Update recommendation section
+            if (recommendationContainer) {
+              let html = '<h3>Recommended Courses (Stage ' + data.stage_no + ')</h3><ul>';
+              data.recommendedCourses.forEach(course => {
+                html += '<li>' + course + '</li>';
+              });
+              html += '</ul>';
+              recommendationContainer.innerHTML = html;
+            }
+          } else {
+            console.error('Error loading recommendations:', data.error);
+            if (recommendationContainer) {
+              recommendationContainer.innerHTML = '<p>Could not load recommendations. Please refresh the page.</p>';
+            }
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          if (recommendationContainer) {
+            recommendationContainer.innerHTML = '<p>Could not load recommendations. Please refresh the page.</p>';
+          }
+        });
+      }, 100); // Small delay to ensure page is rendered first
+    }
+  });
     </script>
     
 
