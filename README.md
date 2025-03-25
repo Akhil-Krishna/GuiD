@@ -1,4 +1,4 @@
-# 🚀 GuiD - AI-Powered Structured Placement Training Platform  
+# GuiD - AI-Powered Structured Placement Training Platform  
 
 ## 📌 Overview  
 GuiD is an **AI-driven educational platform** designed to provide **structured placement training** from the **first year** of engineering. Unlike traditional training, which starts in the **third year**, GuiD ensures continuous skill development across **eight semesters** through a well-defined **Roadmap**.  
