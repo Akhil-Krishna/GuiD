@@ -625,7 +625,7 @@ def chat_with_llama(request):
                     "content": prompt
                 }
             ],
-            model="mixtral-8x7b-32768",  # You can also use "llama2-70b-4096"
+            model="llama-3.3-70b-versatile",  # You can also use "llama2-70b-4096"
             temperature=0.7,
             max_tokens=1000,
             top_p=1,
