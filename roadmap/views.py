@@ -311,6 +311,12 @@ from django.http import HttpResponseForbidden
 from django.db.models import Max
 
 from main.models import customuser
+
+
+from PIL import Image, ImageDraw, ImageFont
+import os
+from django.conf import settings
+#adding name to certifcateeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
 class RoadmapTestView(View):
     @method_decorator(login_required)
     def get(self, request, stage_id):
@@ -467,14 +473,97 @@ class RoadmapTestView(View):
         # After test is passed successfully
                 
                 user_progress.save()
+                
+                
+                
+                                # Create badge record
+                if stage_id == 8:
+                    try:
+                        # Get user name, with fallback if Name is empty
+                        user_name = getattr(request.user, 'Name', '') or request.user.get_full_name() or request.user.username
+                        
+                        # Make sure MEDIA_ROOT is defined
+                        if not hasattr(settings, 'MEDIA_ROOT') or not settings.MEDIA_ROOT:
+                            raise ValueError("MEDIA_ROOT is not defined in settings")
+                        
+                        # Load the base badge image
+                        badge_path = os.path.join(settings.MEDIA_ROOT, 'badges', 'Certificate_of_GuiD_SJmYpEO_l18M3Bz.png')
+                        
+                        # Check if badge file exists
+                        if not os.path.exists(badge_path):
+                            print(f"Badge file not found: {badge_path}")
+                            raise FileNotFoundError(f"Badge file not found: {badge_path}")
+                        
+                        badge = Image.open(badge_path)
+                        
+                        # Try different font locations
+                        
+                        
+                        font_path = 'C:\\Windows\\Fonts\\arial.ttf'
+                        if not os.path.exists(font_path):
+                            raise FileNotFoundError(f"Font file not found: {font_path}")
+                        
+                        
+                        if not font_path:
+                            raise FileNotFoundError("Could not find a usable font file")
+                        
+                        print(f"Using font: {font_path}")
+                        font = ImageFont.truetype(font_path, 50)  # Adjust font size as needed
+                        
+                        draw = ImageDraw.Draw(badge)
+                        
+                        # Get text dimensions
+                        try:
+                            # For newer Pillow versions
+                            bbox = draw.textbbox((0, 0), user_name, font=font)
+                            text_width = bbox[2] - bbox[0]
+                            text_height = bbox[3] - bbox[1]
+                        except AttributeError:
+                            # Fallback for older Pillow versions
+                            text_width, text_height = draw.textsize(user_name, font=font)
+                        
+                        # Calculate position (center of badge)
+                        badge_width, badge_height = badge.size
+                        x_position = (badge_width - text_width) // 2
+                        y_position = (badge_height - text_height) // 2
+                        
+                        # Add text to the badge with clear contrasting color
+                        draw.text((x_position, y_position), user_name, fill=(184, 130, 14), font=font)  # Black text
+                        draw.text((x_position + 1, y_position), user_name, fill=(184, 130, 14), font=font)  # Slight right
+                        draw.text((x_position, y_position + 1), user_name, fill=(184, 130, 14), font=font)
+                        # Make sure badges directory exists
+                        badges_dir = os.path.join(settings.MEDIA_ROOT, 'badges')
+                        os.makedirs(badges_dir, exist_ok=True)
+                        
+                        # Generate a unique filename for the user
+                        filename = f'stage8_badge_{request.user.username}.png'
+                        user_badge_path = os.path.join(badges_dir, filename)
+                        user_badge_path = os.path.join(badges_dir, f'stage8_badge_{request.user.username}.png')
 
-                # Create badge record
-                UserBadge.objects.get_or_create(
-                    user=request.user,
-                    stage=stage
-                )
-
-            # Get next stage if exists
+                        
+                        # Save modified badge
+                        badge.save(user_badge_path)
+                        
+                        # Get relative path for database storage
+                        relative_path = f'badges/{filename}'
+                        
+                        # Assign the new badge to the user
+                        user_badge, created = UserBadge.objects.get_or_create(user=request.user, stage=stage)
+                        user_badge.image = relative_path
+                        user_badge.save()
+                        
+                        print(f"Successfully created custom badge at {user_badge_path}")
+                        
+                    except Exception as e:
+                        import traceback
+                        print(f"Error creating custom badge: {e}")
+                        print(traceback.format_exc())  # Print full traceback for debugging
+                        # Fall back to default badge creation
+                        UserBadge.objects.get_or_create(user=request.user, stage=stage)
+                else:
+                    # Normal badge assignment for other stages
+                    UserBadge.objects.get_or_create(user=request.user, stage=stage)
+                            # Get next stage if exists
             next_stage = RoadmapStage.objects.filter(id__gt=stage.id).first()
             
             # Prepare improvement tips
@@ -484,7 +573,15 @@ class RoadmapTestView(View):
                 "Practice with similar examples",
                 "Focus on understanding concepts rather than memorizing"
             ]
+            if stage_id == 8 and passed:
+                # Get the relative path from MEDIA_ROOT
+                #user_badge_path = os.path.join(badges_dir, f'stage8_badge_{request.user.username}.png')
 
+                relative_path = os.path.relpath(user_badge_path, settings.MEDIA_ROOT)
+                # Convert to URL format
+                certificate = os.path.join(settings.MEDIA_URL, relative_path)
+            else:
+                certificate = stage.badge_image.url if stage.badge_image else None
             return render(request, 'roadmap/test_result.html', {
                 'stage': stage,
                 'score': score_percentage,
@@ -493,7 +590,7 @@ class RoadmapTestView(View):
                 'passing_score': test.passing_score,
                 'next_stage': next_stage,
                 'tips': tips if not passed else None,
-                'badge_image': stage.badge_image if passed else None,
+                'badge_image': certificate if passed else None,
                 'total_questions': total_questions,
                 'correct_answers': correct_answers,
             })

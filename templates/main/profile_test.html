@@ -19,7 +19,7 @@
 
     /* Profile Header Section */
     .profile-header {
-        background: linear-gradient(135deg, #3c7cbc, #00bfff);
+        background: linear-gradient(135deg, #1e3a8a, #1a73e8);
         border-radius: 15px;
         padding: 3rem 2rem;
         margin-bottom: 2rem;
@@ -1094,8 +1094,12 @@
             <i class="fas fa-road stat-icon"></i>
         {% if current_progress %}
             <h2 class="stat-title">Current Progress</h2>
-        {% else %}
+        {% elif completed_stages == 8 %}
             <h2 class="stat-title">Roadmap Completed</h2>
+        {% elif completed_stages == 0 %}
+             <h2 class="stat-title">Start Your Journe</h2>
+        {% else %}
+            <h2 class="stat-title">Current Progress</h2>
         {% endif %}
         </div>
         {% if current_progress %}
@@ -1106,7 +1110,7 @@
             <a href="{% url 'roadmap_stages' %}" class="btn">
                 <i class="fas fa-play"></i> Continue Learning
             </a>
-        {% else %}
+        {% elif completed_stages == 8 %}
             <p>You are a complete Placement-Ready Material NOW! </p>
             {% if current_progress.current_course %}
                 <p>Course: {{ current_progress.current_course.title }}</p>
@@ -1114,6 +1118,22 @@
             <a href="{% url 'roadmap_stages' %}" class="btn">
                 <i class="fas fa-play"></i> Review Roadmap
             </a>
+        {% elif completed_stages == 0 %}
+        <p>Start Stage {{completed_stages|add:1}} of Roadmap</p>
+        
+        
+    
+    <a href="{% url 'roadmap_stages' %}" class="btn">
+        <i class="fas fa-play"></i> Start Learning
+    </a>
+        {% else %}
+                    <p>Start Stage {{completed_stages|add:1}}</p>
+                    <p>Congratulations for Passing Stage {{completed_stages}} </p>
+                    
+                
+                <a href="{% url 'roadmap_stages' %}" class="btn">
+                    <i class="fas fa-play"></i> Continue Learning
+                </a>
         {% endif%}
         <a onclick="progressTime()" class="btn" style="margin-left: 10px;">
             <i class="fas fa-clock"></i> Track Time
@@ -1227,12 +1247,18 @@
             <div class="badges-grid">
                 {% for badge in earned_badges %}
                 <div class="badge-card">
-                    {% if badge.stage.badge_image %}
-                        <img class="badge-image" src="{{ badge.stage.badge_image.url }}" alt="{{ badge.stage.name }} Badge">
-                    {% endif %}
+                    {% if badge.stage.id == 8 %}
+                    <img class="badge-image" src="{{ certificate }}" alt="{{ badge.stage.name }} Badge">
+                {% elif badge.stage.badge_image %}
+                    <img class="badge-image" src="{{ badge.stage.badge_image.url }}" alt="{{ badge.stage.name }} Badge">
+                {% endif %}
                     <h3 class="badge-title">{{ badge.stage.name }}</h3>
                     <p class="badge-date">Earned {{ badge.earned_date|date:"M d, Y" }}</p>
-                    {% if badge.stage.badge_image %}
+                    {% if badge.stage.id == 8 %}
+                        <a href="{{ certificate }}" download class="btn">
+                            <i class="fas fa-download"></i> Download
+                        </a>
+                    {% elif badge.stage.badge_image %}
                         <a href="{{ badge.stage.badge_image.url }}" download class="btn">
                             <i class="fas fa-download"></i> Download
                         </a>

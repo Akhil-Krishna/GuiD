@@ -194,18 +194,54 @@
             padding: 2rem;
         }
     }
+    
+      .header-container {
+        background: linear-gradient(135deg, #1e3a8a 0%, #1a73e8 100%);
+        border-radius: 16px;
+        padding: 2rem;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        position: relative;
+        overflow: hidden;
+        max-width: 90%;
+        margin: 0 auto;
+      }
+      
+      
+    
+      .header-title {
+        font-size: 2.8rem;
+        font-weight: 800;
+        color: #ffffff;
+        margin: 0;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        position: relative;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        line-height: 1.2;
+      }
+      
+      .header-title::after {
+        content: '';
+        display: block;
+        width: 80px;
+        height: 4px;
+        background: #64ffda;
+        margin: 0.8rem auto 0;
+        border-radius: 2px;
+      }
+    
 </style>
 
-<div class="container">
+
     <!-- Header Section -->
-    <section class="header-section">
-        <h1>Your Resume Portfolio</h1>
+    <section class="header-container header-section">
+        <h1 class="header-title">Your Resume Portfolio</h1>
         <p>Create, manage, and download professional resumes tailored to your career goals</p>
-        <a href="{% url 'create_resume' %}" class="create-resume-btn">
+        <a href="{% url 'create_resume' %}" class="create-resume-btn" style="text-decoration: none;">
             <i class="fas fa-plus-circle"></i> Create New Resume
         </a>
     </section>
-
+  
     <!-- Resume List -->
     <div class="resume-grid">
         {% for resume in resumes %}

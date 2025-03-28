@@ -270,14 +270,13 @@
             <h4>Community Questions</h4>
         </div>
         {% for question in questions %}
+        <a href="{% url 'question_detail' question.id %}" class="question-title" style="text-decoration: none;">
         <div class="question-item" id="question-{{ question.id }}">
             <div class="author-avatar">
                 {{ question.author.username|first|upper }}
             </div>
             <div class="question-content">
-                <a href="{% url 'question_detail' question.id %}" class="question-title">
-                    {{ question.title }}
-                </a>
+                    {{ question.title }}    
                 <div class="question-meta">
                     <span>{{ question.author }}</span>
                     <span>•</span>
@@ -286,20 +285,23 @@
                 <div class="question-stats">
                     <div class="stat">
                         <i class="far fa-comment"></i>
-                        <span>0</span>
+                        <span></span>
                     </div>
                     <div class="stat">
                         <i class="far fa-heart"></i>
-                        <span>0</span>
+                        <span></span>
                     </div>
                 </div>
             </div>
+            {% if request.user.is_staff %}
             <div class="question-actions">
                 <button class="btn btn-danger" onclick="handleDeleteQuestion({{question.id}})">
                     <i class="fas fa-trash-alt"></i>
                 </button>
             </div>
+            {% endif %}
         </div>
+    </a>
         {% empty %}
         <div class="question-item" style="text-align: center;">
             <p>No questions have been posted yet. Be the first to start a discussion!</p>

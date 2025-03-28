@@ -62,6 +62,18 @@ class Notification(models.Model):
     link = models.URLField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     is_read = models.BooleanField(default=False)
+    send_to_all = models.BooleanField(default=False)  # New field to send to all users
+
+    def save(self, *args, **kwargs):
+        """
+        Override save() to send notification to all users when `send_to_all` is True.
+        """
+        if self.send_to_all:
+            users = customuser.objects.all()  # Get all users
+            notifications = [Notification(user=user, message=self.message,link=self.link,created_at=self.created_at,is_read=False) for user in users]
+            Notification.objects.bulk_create(notifications)  # Bulk insert for efficiency
+        else:
+            super().save(*args, **kwargs)  # Save normally if send_to_all is False
 
     def __str__(self):
         return f"Notification for {self.user.username} - {self.message}" 

@@ -12,7 +12,7 @@
 
     .slide-container {
         margin: 20px auto;
-        padding: 20px;
+        padding: 30px;
         background-color: #1e1e1e;
         border-radius: 10px;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
@@ -336,6 +336,8 @@
        #mcq-form p{
         font-size: larger;
        }
+       
+       
 </style>
 {% endblock %}
 
@@ -609,6 +611,26 @@ function sendTimeSpent() {
             }
         });
         
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+
+       
+        
+
+        function checkAnswer(question, correctAnswer, explanation) {
+            const selectedOption = document.querySelector(`input[name="${question}"]:checked`);
+            const feedbackDiv = document.getElementById(`${question}-feedback`);
+            if (selectedOption) {
+                if (selectedOption.value === correctAnswer) {
+                    feedbackDiv.innerHTML = explanation;
+                } else {
+                    feedbackDiv.innerHTML = 'Incorrect. Try again!';
+                }
+            } else {
+                feedbackDiv.innerHTML = 'Please select an option!';
+            }
+        }
+
         
 </script>
 {% endblock %}

@@ -95,6 +95,14 @@
         .message-box.success {
             border-color: #2ecc71;
         }
+        pre{
+            color : rgb(190, 239, 255) ;
+            background-color: #34495e;
+            font-weight: 400;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 5px 0px 10px 0px;
+        }
     </style>
 {% endblock %}
 
@@ -113,7 +121,7 @@
         {% csrf_token %}
 
         <!-- Display Question -->
-        <div class="question-text">{{ question.question_text }}</div>
+        <div class="question-text">{{ question.question_text|safe }}</div>
 
         <!-- Display Options -->
         <div class="space-y-4">

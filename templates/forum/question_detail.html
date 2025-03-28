@@ -232,9 +232,11 @@
                 <button class="vote-button" onclick="handleUpvote({{ question.id|escapejs }}, {{ answer.id|escapejs }})">
                     <i class="fas fa-thumbs-up"></i> Votes: <span id="vote-count-{{ answer.id }}">{{ answer.upvote }}</span>
                 </button>
+                {% if request.user.is_staff %}
                 <button class="delete-button" onclick="handleDeleteAnswer({{ answer.id }})">
                     <i class="fas fa-trash"></i> Delete
                 </button>
+                {% endif %}
             </div>
             {% empty %}
             <div class="answer-item">

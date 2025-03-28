@@ -244,7 +244,7 @@ def get_prediction(request):
             
             courses = {
                 "Semester1": ['Think To Code', "Introduction to Programming"],
-                "Semester2": ['Python Basics', "Python Functions"],
+                "Semester2": ['Python Basics', "Python Intermediate","OOPs in Python"],
                 "Semester3": ['Stack', "Queue", "LinkedList"],
                 'Semester4': ['Database'],
                 'Semester5': ['Dynamic Programming'],
@@ -281,7 +281,7 @@ def profile(request):
         user=request.user,
         is_stage_completed=False
     ).select_related('stage', 'current_course').first()
-    
+    print(current_progress)
     # Calculate overall roadmap progress
     total_stages = RoadmapStage.objects.count()
     completed_stages = UserProgress.objects.filter(
@@ -325,7 +325,7 @@ def profile(request):
     stage_percentage={}
     for i in range(1, 9):
         mykey=f"Stage {i}"
-        stage_percentage[mykey]=(stage_score[mykey]/2)*100
+        stage_percentage[mykey]=(stage_score[mykey]/50)*100
         
     #Recommendation Engine
     
@@ -343,7 +343,7 @@ def profile(request):
     stage = cache.get(cache_key)
     courses={
     "Semester1":['Think To Code',"Introduction to Programming"],
-    "Semester2":['Python Basics',"Python Functions"],
+    "Semester2":['Python Basics', "Python Intermediate","OOPs in Python"],
     "Semester3":['Stack',"Queue","LinkedList"],
     'Semester4':['Database'],
     'Semester5':['Dynamic Programming'],
@@ -362,6 +362,21 @@ def profile(request):
     else:
         stage_no=int(stage[-1])
         recommendedCourses=courses[stage]
+    certificate=None
+    #print(stage_no)
+    
+    if completed_stages == 8:
+        filename = f'stage8_badge_{request.user.username}.png'
+        # print(filename)
+        badges_dir = os.path.join(settings.MEDIA_ROOT, 'badges')
+        os.makedirs(badges_dir, exist_ok=True)
+        user_badge_path = f"badges/{filename}"#os.path.join(badges_dir, filename)
+        # print(user_badge_path)
+        # relative_path = os.path.relpath(user_badge_path, settings.MEDIA_ROOT)
+        # print(relative_path)
+        certificate = os.path.join(settings.MEDIA_URL, user_badge_path)
+        
+   
     context = {
         'user': request.user,
         'total_enrolled': total_enrolled,
@@ -385,7 +400,8 @@ def profile(request):
         'stage':stage_no,
         'prediction_needed': stage is None,  # Flag to indicate if client-side prediction is needed
         'user_id': request.user.id,
-        'input_data_hash': hash(str(input_data))
+        'input_data_hash': hash(str(input_data)),
+        'certificate':certificate if certificate else None,
     }
     return render(request, 'main/profile_test.html', context)
 
@@ -578,6 +594,15 @@ def check_special_queries(user_message):
     
     return None
 
+
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+import json
+import logging
+from groq import Groq
+from django.conf import settings
+
+# Configure logging
 @csrf_exempt
 def chat_with_llama(request):
     try:

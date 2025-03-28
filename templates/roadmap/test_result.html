@@ -107,8 +107,9 @@
         {% if passed and badge_image %}
         <div class="badge-section text-center mb-6">
             <h4 class="text-lg font-semibold">Congratulations! You Earned a Badge</h4>
-            <img src="{{ badge_image.url }}" alt="Badge" class="mx-auto">
-            <a href="{{ badge_image.url }}" download class="btn btn-primary mt-2">Download Badge</a>
+            <img src="{{ badge_image }}" alt="Badge" class="mx-auto" style="border: 1px solid grey;"> <br>
+            <a href="{{ badge_image }}" download class="btn btn-primary mt-2">Download Badge</a>
+            <br><br>
         </div>
         {% endif %}
 
@@ -128,9 +129,9 @@
         <div class="action-buttons text-center">
             {% if passed %}
                 {% if next_stage %}
-                <a href="{% url 'roadmap_stages' %}" class="btn btn-primary">Start Next Stage</a>
+                <a href="{% url 'roadmap_stages' %}" class="btn btn-primary" style="width: 100%; background-color:rgb(39, 139, 39); border-color:green;">Start Next Stage</a>
                 {% else %}
-                <a href="{% url 'roadmap_stages' %}" class="btn btn-primary">Complete! Return to Stages</a>
+                <a href="{% url 'roadmap_stages' %}" class="btn btn-primary" style="width: 100%; background-color:rgb(203, 175, 14); border-color:rgb(212, 185, 7);">Complete! Return to Stages</a>
                 {% endif %}
             {% else %}
                 <a href="{% url 'roadmap_course' stage_id=stage.id course_order=1 %}" class="btn btn-secondary">Review Stage</a>
